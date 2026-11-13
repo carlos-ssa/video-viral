@@ -35,18 +35,33 @@ window.__timelines.main = tl;
 </body></html>
 ```
 
-`data-composition-id` identifica a raiz; a chave em `window.__timelines` deve ser igual. `data-width/height/duration` definem o quadro e a duração total; `data-fps` define o padrão usado pelo render quando a flag falta. `class="clip"`, `data-start` e `data-duration` delimitam a janela dos elementos; `data-track-index` organiza pistas do editor, não resolve sobreposição nem substitui CSS/z-index. Direcione fontes, hierarquia e área segura; o exemplo não é acabamento pronto.
+`data-composition-id` identifica a raiz; a chave em `window.__timelines` deve ser igual. `data-width/height/duration` definem o quadro e a duração total; `data-fps` define o padrão usado pelo render quando a flag falta. `class="clip"`, `data-start` e `data-duration` delimitam a janela dos elementos; `data-track-index` organiza pistas do editor, não resolve sobreposição nem substitui CSS/z-index. **Não anime `autoAlpha`, `visibility` ou `display` na própria `.clip`**: o runtime controla sua visibilidade. Anime `opacity`/transformação num filho, com estado inicial/final explícito. Direcione fontes, hierarquia e área segura; o exemplo não é acabamento pronto.
+
+## Regras de acabamento obrigatórias
+
+Aplique ao render final; lint/check não medem fidelidade ao formato nem substituem inspeção audiovisual.
+
+- **Quadro vertical:** fundo/cenário até as quatro bordas. Em 1080×1920, faça palco/imagem principal ocupar **≥70% da altura (1344 px)**, inclusive atrás das camadas editoriais; não comprima a ação num cartão superior deixando 30–55% inferior vazio. Preserve detalhes essenciais entre **x=90–930 e y=180–1580** (evite os 150 px da direita e 340 px inferiores da UI). Cenário pode sangrar; rosto, ação, números e CTA não. Verifique a UI real do destino.
+- **Caixas sem colisão:** reserve para legenda uma faixa exclusiva, por exemplo **x=90–930, y=1320–1540**, com **220 px** de altura para duas linhas, padding e contorno. Coloque rótulos fixos, referência bíblica, rodapé, fonte e CTA fora dela, com **≥24 px** entre caixas visíveis. Nenhum texto pode sair de sua caixa nem cruzar outro; confira o quadro com a legenda mais longa de duas linhas, não só a curta.
+- **Legenda por sentido:** quebre por frase/pontuação e unidade sintática, não só por contagem de palavras. Use no máximo duas linhas; não deixe palavra órfã nem artigo/preposição desligados do complemento. Corrija a transcrição visual de numerais/referências para algarismos: **“Neemias 2:17–18”**, não “Neemias dois, dezessete”. Preserve a fala original e os tempos medidos; agrupar/corrigir texto não autoriza inventar fala. `words_per_group` é limite técnico, não segmentador editorial: revise os blocos no HTML/ASS gerado antes da entrega.
+- **Tamanho e títulos:** em 1080×1920 use legenda **≥48 px**; em 1920×1080, **≥42 px**, entrelinha **≥1,15**. Escale proporcionalmente em outras resoluções. Equilibre títulos: a última linha deve ter **≥2 palavras e ≥35% da largura da maior linha**; reescreva ou refaça a quebra, sem reduzir abaixo do tamanho legível para encaixar.
+- **Fonte e escrita:** forneça `@font-face` local para família/peso usados; aguarde `document.fonts.ready`, confira `document.fonts.check('700 48px "NomeDaFonte"', 'ÁÉÍÓÚãç')` e o status `loaded` da face declarada. `check()` sozinho pode aceitar uma substituta se a face não existir: confirme também a declaração/arquivo e a fonte efetivamente renderizada no painel de fontes do browser. Inspecione títulos/marca d'água com acentos (“IDEIAS PRÁTICAS”), sem texto-fantasma ou linha atravessando letras.
+- **Um único gancho:** título, legenda e fala devem formular a mesma pergunta/promessa. Se houver pergunta, escute a entonação interrogativa; um “?” no texto não corrige voz afirmativa. Regrave ou reescreva antes de compor.
+- **Cama e pausas:** mantenha música ou ambiente durante a peça, inclusive entre frases; quando o silêncio for decisão editorial, registre a dispensa e os intervalos/motivo em `research/`, sem inventar campo no manifesto. Sem essa dispensa, não aceite silêncio total entre frases; investigue intervalos **≥0,3 s abaixo de −45 dB** na mix. Use a [reserva sonora](modules.md#reserva-de-ambiente-e-foley-sintetizados) quando adequada, sem fingir ambiente real.
+- **ASMR:** mantenha ambiente/textura e fricção/ressonância audíveis em **≥80% do tempo**; não entregue estalos isolados com o resto mudo. Procure lacunas de **≥0,3 s abaixo de −45 dB** e confirme por escuta se são intencionais. Loudness com gate ignora silêncio e não comprova densidade nem qualidade sensorial.
+- **Fecho sem cauda morta:** encerre junto do último som/legenda/ação, com margem **≤0,5 s**. Não prolongue música artificialmente para justificar quadro parado. Ajuste duração do HTML, cenas e mix depois de medir; confira os últimos 3 s do MP4.
+- **Fidelidade:** compare três quadros e uma passagem em movimento com o formato-alvo antes do filme inteiro. Se realismo, performance, gravação ou contato essenciais faltarem, PARE e avise; uma demo vetorial/zoom pode ser **animatic**, não entrega equivalente. Só produza essa alternativa com escopo aceito e identificação explícita.
 
 ## Tempo e módulos visuais
 
-O runtime busca a timeline pausada em cada quadro (`t = frame / fps`); não chame `play()` para animar. Calcule todo estado pelo tempo solicitado. Evite relógio real, timers, RAF autônomo e `Math.random()` sem semente. Carregue fontes/texturas antes da captura; teste busca **2 → 0 → 2** com pixels iguais no mesmo tempo. Fontes/browser/encoder também afetam reprodutibilidade: registre versões, ambiente e parâmetros.
+O runtime busca a timeline pausada em cada quadro (`t = frame / fps`); não chame `play()` para animar. Calcule todo estado pelo tempo solicitado. Evite relógio real, timers, RAF autônomo e `Math.random()` sem semente. Carregue fontes/texturas antes da captura; teste busca **2 → 0 → 2** com pixels iguais no mesmo tempo. Execute o [procedimento de quadros de estilo e seek](composition-check.md) antes do filme inteiro: ele usa `snapshot --at` e inclui comparação local de pixels e limites para vídeo/cenas aninhadas. Fontes/browser/encoder também afetam reprodutibilidade: registre versões, ambiente e parâmetros.
 
 `visual_scene.mjs` já gera raiz `main`, clip `visual`, bundle GSAP, `drawAt(t)` e parâmetros de semente. Há duas rotas de integração:
 
 1. **Rota simples e verificável:** adapte a cena conforme [módulos](modules.md), reconstrua seu bundle e renderize a pasta de cena com os comandos abaixo, usando saída `composition/assets/s01.mp4`. Inclua esse arquivo no filme principal como `<video id="s01" class="clip" src="assets/s01.mp4" data-start="0" data-duration="4" data-track-index="0" muted playsinline></video>`. Renderize depois a composição principal inteira; o trecho isolado não substitui esse passo.
 2. **Composição editável aninhada:** o contrato oficial usa host `<div class="clip" data-composition-id="s01" data-composition-src="compositions/s01.html" data-start="0" data-duration="4" data-track-index="0"></div>`; o arquivo externo envolve conteúdo em `<template>`, usa tempos locais e registra timeline sob `s01`. Não aponte esse host diretamente ao HTML completo gerado: adapte wrapper, IDs, seletores, assets e registro `__timelines.main` para evitar colisões. Faça lint/check e inspecione cada cena montada.
 
-O gerador também escreve `data-track-kind="graphics"` e `window.__hf.buildReady`. Eles existem no código local, mas não foram confirmados como contrato público dessa versão nas páginas consultadas. **Confirmar com `npx hyperframes --help`** e com o contrato/source de runtime 0.9.40 antes de depender desses detalhes numa composição aninhada. A rota de pré-render permite testar a cena isolada; falha de readiness deve bloquear o render, não ser anunciada como integração validada.
+O gerador também escreve `data-track-kind="graphics"` e `window.__hf.buildReady`. Eles existem no código local, mas não foram confirmados como contrato público dessa versão nas páginas consultadas. **Confirme com `"<node-root>/node_modules/.bin/hyperframes" --help`** e com o contrato/source de runtime 0.9.40 antes de depender desses detalhes numa composição aninhada. A rota de pré-render permite testar a cena isolada; falha de readiness deve bloquear o render, não ser anunciada como integração validada.
 
 ## Voz, legendas e ativos
 
@@ -70,7 +85,19 @@ Use o executável **já instalado** pelo lockfile de `assets/node`, evitando `np
 
 Se o pacote fixado estiver resolvível localmente, o equivalente na pasta da composição é `npx --no-install hyperframes render --output "<projeto>/render/master.mp4" --fps 30`; confirme `--version` = 0.9.40. `render`, `--output`, `--fps`, `lint`, `check` e `preview` foram conferidos no código da tag. Preview não comprova render, e check não comprova escuta humana. O runtime pode precisar de browser/FFmpeg: qualquer instalação/download de sistema requer o consentimento descrito em [setup](setup.md); um comando que tenta baixar dependência deve ser interrompido até essa confirmação.
 
-Confira arquivo não vazio, dimensão, fps e duração com `ffprobe`; examine quadros decodificados e transições. Preserve o render anterior em vez de sobrescrever evidência já revisada. Atualize o manifesto/tool_plan antes de entregar e revisar.
+### Reserva por screenshot
+
+Se a captura padrão falhar com o Chrome existente (incluindo o caso observado com Chrome 157), preserve o log e tente o mesmo compositor com **Page.captureScreenshot**, sem atualizar/baixar browser. As variáveis abaixo são lidas pelo engine distribuído no HyperFrames 0.9.40; não são flags novas da skill:
+
+```sh
+PRODUCER_FORCE_SCREENSHOT=true PRODUCER_EXPERIMENTAL_FAST_CAPTURE=false \
+  "<node-root>/node_modules/.bin/hyperframes" render "<projeto>/composition" \
+  --output "<projeto>/render/master-screenshot.mp4" --fps 30
+```
+
+Use o browser/cache previamente definidos conforme [setup](setup.md#browser-cache-e-execução-sem-rede). Registre a reserva e o motivo em tool_plan; confirme no log o caminho screenshot e inspecione os quadros do arquivo novo. Se ainda falhar, PARE com o diagnóstico; não declare render a partir de preview nem substitua silenciosamente por slideshow FFmpeg. Essa reserva muda a captura, não dispensa o render HyperFrames integral nem a revisão.
+
+Confira arquivo não vazio, dimensão, fps e duração com `ffprobe`; examine quadros decodificados e transições. Preserve o render anterior em vez de sobrescrever evidência já revisada. Atualize o manifesto/tool_plan antes de entregar e revisar. Se usou a reserva, selecione `render/master-screenshot.mp4` em `--video` na entrega.
 
 ```sh
 python "<skill-dir>/scripts/captions.py" ass "<projeto>"

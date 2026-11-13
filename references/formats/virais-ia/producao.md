@@ -11,7 +11,7 @@ export VIDEO_VIRAL_NO_INSTALL=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 python scripts/new_project.py piloto --title "Título original" --format storytelling --aspect 9:16 --seconds 36 --dir "<pai>"
 ```
 
-O script acrescenta o slug à pasta pai. Use o Python/venv existente apropriado quando necessário. Se dependência, peso, browser, serviço ComfyUI ou voz não estiver disponível, **não instalar/iniciar implicitamente**: usar ativos fornecidos, composição 2D/3D disponível ou declarar etapa bloqueada. Os exemplos de workflow dependem do grafo real do usuário, não de um modelo hipotético.
+O script acrescenta o slug à pasta pai. Use o Python/venv existente apropriado quando necessário. **Essas variáveis não impediam a CLI HyperFrames de baixar Chrome/fontes**; configure `HYPERFRAMES_BROWSER_PATH`, `HYPERFRAMES_CACHE_DIR` e fontes locais antes de chamar a CLI, conforme [setup](../../setup.md#browser-cache-e-execução-sem-rede). Cache não é modo offline. Se dependência, peso, browser, serviço ComfyUI ou voz não estiver disponível, **não instale/inicie implicitamente**. Confira a seção “Requisitos e limite local” da receita: se faltar um requisito essencial, PARE e avise que 2D/tipografia seria animatic, não o formato pedido; só prossiga nessa alternativa com escopo aceito. Os exemplos de workflow dependem do grafo real do usuário, não de um modelo hipotético.
 
 ## 1. Roteiro, bíblia e manifesto
 
@@ -162,11 +162,11 @@ Criar `<P>/edit/sound.json`; exemplo válido de spec (12 s, trocar pela duraçã
 node scripts/sound.mjs "<P>" --spec edit/sound.json --node-root "<N>"
 ```
 
-Tipos reais: `whoosh`, `impact`, `pop`, `riser`, `pulse`. Eventos precisam terminar dentro da duração. As receitas dão eventos específicos de piloto, não descrição do som da referência. Esse gerador **não sintetiza automaticamente chuva, fogo, sala ou material realista**. Planejar e gravar/obter ambientes licenciados, registrar em assets e montá-los no compositor ou numa faixa de efeitos acabada. `--sfx audio/ambiente-e-efeitos.wav` em deliver seleciona essa faixa em vez da padrão; combinar os sinais Tone.js nela antes, não duplicá-los. Conferir perspectiva, sincronia e inteligibilidade por escuta humana. Sem escuta, marcar como não verificado.
+Tipos reais: `whoosh`, `impact`, `pop`, `riser`, `pulse`. Eventos precisam terminar dentro da duração. As receitas dão acentos de piloto, **não uma cama completa nem o som real da referência**. Grave/obtenha ambientes licenciados ou aplique a [reserva sintetizada com parâmetros concretos](../../modules.md#reserva-de-ambiente-e-foley-sintetizados), registrando `kind:"sfx"` como ensinado ali. Não prometa chuva, sala ou materiais realistas: o módulo atual usa osciladores. `--sfx audio/ambiente-e-efeitos.wav` em deliver seleciona uma faixa acabada em vez da padrão; combine os sinais nela antes, sem duplicar. Confira perspectiva, sincronia e inteligibilidade por escuta humana. Sem escuta, marque como não verificado.
 
 ## 4. Composição, entrega e revisão (portões iguais)
 
-Criar `<P>/composition/index.html`, recursos locais e `<P>/render/`. Seguir o [HTML completo e contrato](../../composition.md): raiz `main`, dimensões/fps/duração reais, `window.__timelines.main` pausada; animações determinísticas, sem timers/relógio aleatório. Testar seek **2 → 0 → 2**; adaptar o teste à duração real. Não usar a demo como acabamento.
+Crie `<P>/composition/index.html`, recursos locais e `<P>/render/`. Siga o [HTML, contrato e regras de acabamento](../../composition.md): raiz `main`, dimensões/fps/duração reais, `window.__timelines.main` pausada; animações determinísticas, sem timers/relógio aleatório. Execute os [quadros de estilo e seek 2 → 0 → 2](../../composition-check.md), adaptando tempos à duração real. Se a captura padrão falhar, use a [reserva por screenshot](../../composition.md#reserva-por-screenshot). Não use a demo como acabamento.
 
 ```sh
 "<N>/node_modules/.bin/hyperframes" --version
