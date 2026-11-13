@@ -1,7 +1,7 @@
 ---
 name: video-viral
 metadata:
-  version: "2.0.0"
+  version: "2.0.1"
 description: Direção, produção e edição audiovisual profissional com IA para vídeos curtos e longos, TikTok, Reels, Shorts, YouTube e Kwai. Use para pesquisar nichos, planejar marketing e ganchos, roteirizar, editar gravações, produzir vídeos de produtos/serviços, UGC, avatares, canais dark, animação e música. Entrega arquivos revisados e material de publicação. Para apenas converter arquivo ou extrair áudio, use FFmpeg diretamente.
 ---
 
@@ -60,7 +60,11 @@ O padrão é edição rica e intencional: composição e hierarquia, enquadramen
 
 `python scripts/deliver.py <projeto> --video render/master.mp4` exporta, mede áudio e formato, confere licenças e grava `out/report.md` e `out/delivery.json`. Trilha e legenda usam as opções do formato; legendas já compostas pedem `--no-captions`.
 
-Depois, `python scripts/review.py <projeto>` gera métricas, imagens e `assessment.json`. Faça a revisão [visual, temporal e de áudio](references/review.md), registre método e intervalos realmente inspecionados e preencha notas com evidências. Grades de quadros não provam reprodução, escuta ou fluidez. Uma análise instrumentada deve declarar seu alcance e limitações.
+Antes de delegar a revisão, confira as modalidades reais do revisor com `review.py --check-reviewer <capacidades.json> --producer-id <id-do-autor>`. Registre ferramenta/método e evidência da capacidade; não inferir vídeo/áudio apenas pelo nome do modelo. Um revisor limitado a quadros pode avaliar aspectos visuais, mas não aprovar movimento e som.
+
+Depois, `python scripts/review.py <projeto> --producer-id <id-do-autor>` gera métricas, imagens, `assessment.json` e um pacote `review/rNN/input/` com vídeo, briefing, referências e critérios, sem o relatório de notas do autor. Use um revisor distinto (subagente quando disponível e autorizado, ou pessoa independente), com contexto próprio e acesso somente ao pacote e às referências pertinentes. Não enviar notas/conclusões do autor; o principal continua responsável por conferir a entrega. O revisor registra identidade, capacidades, método, intervalos e suas próprias notas. Se não houver revisão independente possível, registre autoverificação e mantenha a aprovação independente pendente.
+
+Siga a [revisão visual, temporal e de áudio](references/review.md). Aprovação completa exige observação registrada e cobertura de todas as modalidades aplicáveis; métricas instrumentadas, quadros isolados ou inspeção parcial não a substituem. Não simular reprodução/escuta nem preencher capacidades inexistentes para aprovar.
 
 `python scripts/review.py <projeto> --verdict` exige o mesmo vídeo/manifesto, artefatos consistentes, entrega técnica publicável e avaliação registrada. A nota estética continua sendo julgamento, não medição de viralidade.
 

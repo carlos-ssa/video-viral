@@ -69,14 +69,25 @@ def main():
         (proj / "video.json").write_text(json.dumps(m, ensure_ascii=False), encoding="utf-8")
     run("deliver", [py, scripts / "deliver.py", proj, "--video", "render/final.mp4"])
     # review may find a real blocker in the fixture; allow it and inspect its recorded metrics.
-    result = subprocess.run([py, str(scripts / "review.py"), str(proj)], cwd=ROOT, env=env,
+    result = subprocess.run([py, str(scripts / "review.py"), str(proj), '--producer-id', 'smoke:producer'], cwd=ROOT, env=env,
                             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180)
     (output / "review.log").write_text(result.stdout + result.stderr, encoding="utf-8")
     if result.returncode not in (0, 1):
         raise RuntimeError("Análise do vídeo falhou; veja review.log")
     metrics = json.loads((proj / "review/r01/metrics.json").read_text(encoding="utf-8"))
+    review_input = proj / 'review/r01/input'
+    assert {p.name for p in review_input.iterdir()} == {'video.mp4', 'hook.jpg', 'grid.jpg', 'request.json'}
+    request = json.loads((review_input / 'request.json').read_text(encoding='utf-8'))
+    assert request['producer_id'] == 'smoke:producer'
+    assert request['video_sha256'] == metrics['video_sha256']
     results.append({"step": "review", "exit_code": result.returncode, "blockers": metrics["blockers"]})
     run("pending_evidence_rejected", [py, scripts / "review.py", proj, "--verdict"], expected=2)
+    capabilities = output / 'reviewer-fixture.json'
+    capabilities.write_text(json.dumps({'schema': 1, 'reviewer_id': 'smoke:reviewer', 'author_scores_exposed': False,
+        'channels': {name: {'available': name == 'visual', 'method': 'synthetic test fixture',
+                           'evidence': 'policy test only'} for name in ('visual', 'motion', 'audio')}}), encoding='utf-8')
+    run('frame_only_preflight_partial', [py, scripts / 'review.py', '--check-reviewer', capabilities,
+                                       '--producer-id', 'smoke:producer'], expected=1)
     receipt = json.loads((proj / "out/delivery.json").read_text(encoding="utf-8"))
     assert receipt["approved"] is True and receipt["draft"] is False
     assert receipt["video_sha256"] == metrics["video_sha256"]
