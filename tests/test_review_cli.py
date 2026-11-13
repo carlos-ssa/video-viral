@@ -114,6 +114,20 @@ class RenderGateTests(unittest.TestCase):
         self.assertTrue(any('Silêncio no meio' in w for w in warn), warn)
         self.assertAlmostEqual(activity['audible_fraction'], 0.7, delta=0.05)
 
+    def test_uniform_band_warns_only_for_persistent_large_region(self):
+        self.render(['testsrc2=s=180x180:r=10:d=4'], ['-vf', 'pad=180:320:0:0:color=blue'])
+        band = review.uniform_band('ffmpeg', self.video, 4)
+        self.assertIsNotNone(band)
+        self.assertGreater(band['height_fraction'], 0.3)
+        self.assertGreater(band['top_fraction'], 0.5)
+        self.render(['testsrc2=s=180x180:r=10:d=4'],
+                    ['-vf', 'pad=180:320:0:0:color=blue,drawbox=x=50:y=260:w=80:h=2:color=white:t=fill'])
+        self.assertIsNotNone(review.uniform_band('ffmpeg', self.video, 4))
+        self.render(['testsrc2=s=180x180:r=10:d=4'],
+                    ['-vf', "pad=180:320:0:0:color=blue,drawbox=x=0:y=180:w=180:h=140:color=red:t=fill:enable='gte(t,2)'"])
+        self.assertIsNone(review.uniform_band('ffmpeg', self.video, 4))
+        self.render(['testsrc2=s=180x320:r=10:d=4'])
+        self.assertIsNone(review.uniform_band('ffmpeg', self.video, 4))
 
 
 if __name__ == '__main__':

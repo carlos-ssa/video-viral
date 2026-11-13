@@ -20,6 +20,7 @@ Sai com código 1 se houver alerta bloqueante. Só biblioteca padrão e FFmpeg.
 import argparse
 import json
 import math
+import subprocess
 import re
 import shutil
 import statistics
@@ -37,6 +38,7 @@ FREEZE_MIN_SECONDS = 0.4
 SHORT_FREEZE_WARN_SECONDS, LONG_FREEZE_WARN_SECONDS = 1.5, 6.0
 DEAD_TAIL_ENERGY_REFERENCE_FPS = 10
 DEAD_TAIL_MAX_MEAN_ENERGY, DEAD_TAIL_MAX_FRAME_ENERGY = 0.5, 1.5
+UNIFORM_PIXEL_FRACTION = 0.9
 SHORT_FREEZE_ERROR_SECONDS, LONG_FREEZE_ERROR_SECONDS = 2.5, 12.0
 SHORT_SHOT_SECONDS, LONG_SHOT_SECONDS = 3.5, 15.0
 SHORT_EVENT_GAP_SECONDS, LONG_EVENT_GAP_SECONDS = 3.0, 8.0
@@ -47,6 +49,11 @@ SILENCE_MIN_SECONDS = 0.15
 SHORT_MIDDLE_SILENCE_SECONDS, LONG_MIDDLE_SILENCE_SECONDS = 0.7, 2.0
 MIN_AUDIBLE_FRACTION = 0.5
 TIMING_TOLERANCE_SECONDS = 0.05
+OCCUPANCY_WIDTH, OCCUPANCY_HEIGHT = 90, 160
+OCCUPANCY_MAX_SAMPLES = 48
+UNIFORM_COLOR_DELTA = 10
+UNIFORM_PERSISTENCE = 0.9
+UNIFORM_BAND_FRACTION = 0.3
 
 BARS = "▁▂▃▄▅▆▇█"
 RUBRIC = [
@@ -309,6 +316,48 @@ def audio_checks(m, dur, long_, activity, freezes, captions, energy=()):
             else:
                 block.append(message)
     return block, warn
+
+
+def uniform_band(ff, video, dur):
+    """Amostra RGB: mesma faixa contígua, quase uniforme espacial e temporalmente."""
+    w, h = OCCUPANCY_WIDTH, OCCUPANCY_HEIGHT
+    every = max(1.0, dur / OCCUPANCY_MAX_SAMPLES)
+    result = subprocess.run([ff, "-v", "error", "-i", str(video), "-an", "-vf",
+                             f"fps=1/{every},scale={w}:{h}", "-pix_fmt", "rgb24", "-f", "rawvideo", "-"],
+                            capture_output=True, check=True)
+    frame_size = w * h * 3
+    samples = len(result.stdout) // frame_size
+    if not samples:
+        return None
+    colors, coverage = [[] for _ in range(h)], [[] for _ in range(h)]
+    for offset in range(0, samples * frame_size, frame_size):
+        for y in range(h):
+            row = result.stdout[offset + y * w * 3:offset + (y + 1) * w * 3]
+            color = [statistics.median(row[c::3]) for c in range(3)]
+            colors[y].append(color)
+            coverage[y].append(sum(all(abs(row[x * 3 + c] - color[c]) <= UNIFORM_COLOR_DELTA
+                                       for c in range(3)) for x in range(w)) / w)
+    # Um rodapé/legenda pequeno não divide artificialmente uma grande região vazia.
+    # Exigimos 90% dos pixels da faixa da mesma cor em pelo menos 90% das amostras.
+    stable = [[statistics.median(v[c] for v in values) for c in range(3)] for values in colors]
+    best = (0, 0)
+    for start, color in enumerate(stable):
+        totals = [0.0] * samples
+        for stop in range(start, h):
+            if any(abs(stable[stop][c] - color[c]) > UNIFORM_COLOR_DELTA for c in range(3)):
+                break
+            for i in range(samples):
+                if all(abs(colors[stop][i][c] - color[c]) <= UNIFORM_COLOR_DELTA for c in range(3)):
+                    totals[i] += coverage[stop][i]
+            height = stop - start + 1
+            persistent = sum(total / height >= UNIFORM_PIXEL_FRACTION for total in totals) / samples
+            if persistent >= UNIFORM_PERSISTENCE and height > best[1] - best[0]:
+                best = (start, stop + 1)
+    fraction = (best[1] - best[0]) / h
+    if fraction <= UNIFORM_BAND_FRACTION:
+        return None
+    return {"top_fraction": best[0] / h, "bottom_fraction": best[1] / h,
+            "height_fraction": fraction, "start": 0.0, "end": dur, "samples": samples}
 
 
 def per_second(energy, dur):
@@ -809,6 +858,7 @@ def main():
               if expects_speech(m) and (voice.exists() or has_audio) else None)
     activity = audio_activity(ff, video, dur, has_audio)
     captions = caption_ranges(proj, m)
+    band = uniform_band(ff, video, dur)
 
     secs = per_second(energy, dur)
     events = visual_events(cuts, energy)
@@ -827,6 +877,11 @@ def main():
     audio_block, audio_warn = audio_checks(m, dur, long_, activity, freezes, captions, energy)
     block += freeze_block + audio_block
     warn += freeze_warn + audio_warn
+    if band:
+        warn.append(f"Ocupação do quadro em 0.0–{dur:.1f} s: faixa quase uniforme de "
+                    f"{band['top_fraction']:.0%} a {band['bottom_fraction']:.0%} da altura "
+                    f"({band['height_fraction']:.0%} do quadro, persistência ≥{UNIFORM_PERSISTENCE:.0%}). "
+                    "Confira o render e amplie/reposicione o assunto se esse vazio não for intencional.")
     speech_limit = LONG_SPEECH_START_SECONDS if long_ else SHORT_SPEECH_START_SECONDS
     if expects_speech(m):
         if speech is None:
@@ -854,7 +909,7 @@ def main():
         "events_per_10s": round(len(events) / dur * 10, 1) if dur else 0,
         "energy_per_second": [round(v, 2) for v in secs],
         "freezes": freezes, "first_frame_luma": luma0, "speech_start_s": speech,
-        "audio_activity": activity, "caption_timing_known": captions is not None,
+        "audio_activity": activity, "uniform_band": band, "caption_timing_known": captions is not None,
         "blockers": block, "warnings": warn, "format": m.get("format", "narrado"), "long": long_,
         "rubric": [k for k, _ in rubric],
     }
@@ -879,6 +934,7 @@ def main():
         f"| Plano médio / mais longo | {metrics['mean_shot_s']} s / {metrics['longest_shot_s']} s |",
         f"| Início da fala | {'—' if speech is None else f'{speech:.2f} s'} |",
         f"| Tempo audível (silêncio <{SILENCE_DB} dB) | {activity['audible_fraction']:.1%} |",
+        f"| Faixa uniforme persistente | {band['height_fraction']:.0%} da altura |" if band else "| Faixa uniforme persistente | não detectada |",
         f"| Luma do quadro 0 | {'—' if luma0 is None else f'{luma0:.0f}'} |", "",
         "Movimento por segundo:", "", "```", sparkline(secs),
         "".join(str(i % 10) for i in range(len(secs))), "```", "",
