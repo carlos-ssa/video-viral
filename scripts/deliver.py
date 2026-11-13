@@ -28,6 +28,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _common import PLATFORMS, ffprobe_json, load_manifest, need, project_dir, run, safe_area  # noqa: E402
 
 TARGET_LUFS, LUFS_TOL, MAX_TP = -14.0, 1.0, -1.0
+THUMBNAIL_SIZE = (1280, 720)
+THUMBNAIL_CODECS = {"png", "mjpeg", "webp", "bmp", "tiff"}
+THUMBNAIL_FORMATS = {"image2", "png_pipe", "jpeg_pipe", "webp_pipe", "bmp_pipe", "tiff_pipe"}
 NONCOMMERCIAL = re.compile(r"\bNC\b|non-?commercial|não comercial|nao comercial", re.I)
 UNVERIFIED = re.compile(r"n[ãa]o verificad|unverified|unknown|desconhecid|a confirmar|\?", re.I)
 
@@ -130,6 +133,27 @@ def last_json(text):
             return json.loads(b)
         except json.JSONDecodeError:
             continue
+    return None
+
+
+def thumbnail_problem(path):
+    """Decodifica a imagem com ffprobe; extensão e existência não bastam."""
+    result = run([need("ffprobe"), "-v", "error", "-count_frames", "-show_streams", "-show_format",
+                  "-of", "json", str(path)], check=False)
+    try:
+        info = json.loads(result.stdout)
+        video = stream(info, "video")
+        formats = set(info.get("format", {}).get("format_name", "").split(","))
+        if (result.returncode or result.stderr.strip() or not video
+                or video.get("codec_name") not in THUMBNAIL_CODECS
+                or not formats.intersection(THUMBNAIL_FORMATS)
+                or video.get("nb_read_frames") != "1"):
+            return "não é imagem estática decodificável; substitua por PNG/JPEG/WebP 1280x720"
+        size = (video.get("width"), video.get("height"))
+        if size != THUMBNAIL_SIZE:
+            return f"dimensões {size[0]}x{size[1]}; exporte a miniatura em 1280x720"
+    except (ValueError, KeyError, TypeError):
+        return "imagem ilegível; substitua por PNG/JPEG/WebP 1280x720"
     return None
 
 
@@ -300,8 +324,11 @@ def main():
             probs = chapter_problems(chaps, dur) if chaps else ["sem capítulos em publish.chapters"]
             chk(not probs, "Capítulos do YouTube" + (f": {'; '.join(probs)}" if probs else " válidos"), "aviso")
         thumb = rel(proj, pub["thumbnail"]) if pub.get("thumbnail") else None
-        chk(thumb is not None and thumb.exists(), "Miniatura 1280x720 em publish.thumbnail"
-            + ("" if thumb and thumb.exists() else " (ausente)"), "aviso")
+        if thumb is None or not thumb.is_file():
+            chk(False, "Miniatura ausente: exporte imagem 1280x720 e registre em publish.thumbnail", "aviso")
+        else:
+            problem = thumbnail_problem(thumb)
+            chk(problem is None, "Miniatura 1280x720 em publish.thumbnail" + (f": {problem}" if problem else " válida"))
     if m.get("format") in ("produto", "ugc") or pub.get("ad_disclosure"):
         chk(bool(pub.get("ad_disclosure")), "Publicidade sinalizada (publish.ad_disclosure)", "aviso")
     unl = [x.get("path") for x in m.get("assets", []) if not x.get("license")]

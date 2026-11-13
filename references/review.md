@@ -88,7 +88,7 @@ Para uma capacidade disponível, `method` descreve ferramenta/modalidade e `evid
 
 ## Entrada do revisor e devolutiva
 
-O pacote input/ contém somente vídeo, hook.jpg, grid.jpg e request.json com briefing/direção/referências, critérios e dados técnicos. Ele não copia report.md, assessment.json nem notas/conclusões do autor. O vídeo usa hard link quando possível ou cópia; o hash é conferido. Mantenha input/ imutável e não acrescente o relatório do autor.
+O pacote input/ contém somente vídeo, hook.jpg, grid.jpg e request.json com briefing/direção/referências, critérios e dados técnicos. Ele não copia report.md, assessment.json nem notas/conclusões do autor. O vídeo é uma cópia independente (nunca hard link); o hash é conferido na cópia e no veredito. Sobrescrever a entrega não altera a evidência das rodadas antigas, mas invalida a aprovação correspondente. Mantenha input/ imutável e não acrescente o relatório do autor.
 
 Dê esse pacote ao revisor em contexto próprio e somente leitura, conforme o isolamento que o runtime realmente suportar. Sem suporte técnico, isso é um contrato de escopo, não uma barreira de segurança; informe a limitação. O revisor deve devolver sua avaliação sem consultar o restante do projeto ou a autocrítica do autor.
 

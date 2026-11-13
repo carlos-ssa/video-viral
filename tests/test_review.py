@@ -91,6 +91,17 @@ class VerdictTests(unittest.TestCase):
         self.video.write_bytes(b"different render")
         self.assertEqual(self.verdict(), 2)
 
+    def test_round_video_is_independent_of_in_place_rerender(self):
+        evidence = self.round / 'input/video.mp4'
+        original = evidence.read_bytes()
+        self.video.write_bytes(b'rerender overwrote delivery in place')
+        self.assertEqual(evidence.read_bytes(), original)
+        self.assertEqual(self.verdict(), 2)
+
+    def test_modified_round_video_invalidates_scores(self):
+        (self.round / 'input/video.mp4').write_bytes(b'tampered evidence')
+        self.assertEqual(self.verdict(), 2)
+
     def test_missing_or_changed_frames_invalidate_scores(self):
         (self.round / "hook.jpg").write_bytes(b"different frames")
         self.assertEqual(self.verdict(), 2)

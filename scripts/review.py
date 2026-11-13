@@ -295,10 +295,9 @@ def prepare_review_input(out_dir, video, manifest, metrics, producer_id):
     target = out_dir / "input"
     target.mkdir()
     clip = target / ("video" + video.suffix)
-    try:
-        os.link(video, clip)
-    except OSError:
-        shutil.copyfile(video, clip)
+    shutil.copyfile(video, clip)
+    if file_sha256(clip) != metrics["video_sha256"]:
+        raise ValueError("o vídeo mudou ao copiar a evidência; refaça a rodada")
     for name in ("hook.jpg", "grid.jpg"):
         shutil.copyfile(out_dir / name, target / name)
     direction = manifest.get("direction") or {}
