@@ -1,7 +1,7 @@
 ---
 name: video-viral
 metadata:
-  version: "2.2.0"
+  version: "2.3.0"
 description: Direção, produção e edição audiovisual profissional com IA para vídeos curtos e longos, TikTok, Reels, Shorts, YouTube e Kwai. Use para pesquisar nichos, planejar marketing e ganchos, roteirizar, editar gravações, produzir vídeos de produtos/serviços, UGC, avatares, canais dark, animação e música. Entrega arquivos revisados e material de publicação. Para apenas converter arquivo ou extrair áudio, use FFmpeg diretamente.
 ---
 
@@ -49,10 +49,11 @@ Preserve conteúdo/direção fora de correções pontuais. Na produção complet
 
 Use exclusivamente `assets/stack.json` conforme [stack](references/stack.md). `stack.py list`/`doctor` detectam, sem validar resultado. Registre `tool_plan` com etapa, contribuição, entrada/saída e IDs/status reais do contrato de [módulos](references/modules.md); compositor `hyperframes`.
 
-- **Composição obrigatória:** HyperFrames + GSAP. Siga [composição → render/master.mp4](references/composition.md) para HTML, cenas, preview, checagem e render. FFmpeg prepara/mixa/exporta; base/demo não é acabamento aprovado. Determinismo por tempo/quadro: [motion](references/motion.md).
+- **Composição obrigatória:** HyperFrames + GSAP. CLI só por `python scripts/stack.py hyperframes [--node-root <pasta>] [--screenshot] -- <comando>`; `VIDEO_VIRAL_NO_INSTALL` bloqueia a CLI, não os adaptadores Puppeteer locais. Siga [composição → render/master.mp4](references/composition.md) para HTML, cenas, preview, checagem e render. FFmpeg prepara/mixa/exporta; base/demo não é acabamento aprovado. Determinismo por tempo/quadro: [motion](references/motion.md).
 - **Gravação:** importar → transcrever/SRT → selecionar/reordenar EDL → enquadrar → compor → entregar. `footage.py render` gera A-roll/base; preserve palavras/sentido e siga o acabamento do guia.
 - **Narração:** roteiro → voz medida → tempos conferidos → cenas → composição → som → entrega. Kokoro é o único TTS; WAVs externos são entrada oficial. faster-whisper transcreve/temporiza com conferência. Reservas sem outro motor/alinhador: [pipeline](references/pipeline.md).
 - **Acabamento:** hierarquia, enquadramento, cortes naturais, continuidade, cor, B-roll e som. Preserve sofisticação; escolha recursos pela função, não quantidade. Legendas sincronizadas fora do rosto/UI; confira capa, CTA, recorte e [área segura](references/platforms.md) por destino.
+- **Música de reserva:** `python scripts/music.py <projeto> --backend procedural --duration 30 --seed 7`, sem endpoint/prompt; cama instrumental simples com `fallback:true`, nunca geração ACE-Step equivalente.
 - **Recursos:** um modelo pesado de GPU por vez no perfil de 8 GB. Preserve projetos/caches; [setup](references/setup.md) orienta reservas concretas sem repetir operações idênticas.
 
 ## Entrega e revisão

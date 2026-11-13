@@ -1,4 +1,4 @@
-# Vídeo viral — 2.2.0
+# Vídeo viral — 2.3.0
 
 Skill em português para direção, produção e edição audiovisual com IA, marketing, ganchos, retenção e conversão. Produz vídeos curtos/longos, gravações editadas, demonstrações de produto, UGC, animações e peças musicais com planejamento e revisão. Não promete viralização nem valida estética apenas porque o render passou.
 
@@ -57,7 +57,7 @@ Sem reprodução/escuta no runtime, o resultado esperado é **entrega técnica a
 | sound.mjs | Tone.js offline → WAV e receipt; mix por deliver.py |
 | gltf.mjs | Otimização GLB, preservando fonte |
 | comfy.py / images.py | Workflow ComfyUI API → imagem, com proveniência |
-| music.py | Cliente REST ACE-Step 1.5 → WAV, sem instalar/iniciar o serviço |
+| music.py | Cliente REST ACE-Step 1.5 ou cama instrumental de reserva `--backend procedural` → WAV |
 | deliver.py / review.py | Mix, exportação e revisão vinculada por hashes e evidências |
 | trends.py | URL/CSV oficial do Google Trends, com filtros e índices preservados |
 
@@ -86,6 +86,10 @@ O caso `composicao-hyperframes` exige evidência do render da composição princ
 A entrega monetizada exige licenças/ativos confirmados; --draft gera rascunho identificado. `out/delivery.json`, métricas, imagens e assessment.json ligam revisão ao mesmo render/manifesto. Código 3 é limite com deficiências, não aprovação. Não publicar ou acessar contas sem pedido explícito.
 
 Distribuição da skill: MIT. Ferramentas, pesos e ativos têm termos próprios; registre os reais. Sem provas, datas, preços ou analytics fornecidos, não inventar informação para passar num teste.
+
+## Correções dos testes reais — 2.3.0
+
+Legendas segmentadas por frases/pausas e limites de leitura, com `--script-text` para grafia/numerais; wrapper HyperFrames que bloqueia a CLI sob `VIDEO_VIRAL_NO_INSTALL`, mantendo adaptadores locais e perfis curtos sem `subst`; música instrumental de reserva por `--backend procedural`, identificada com `fallback:true`. O review reconhece efeitos sem exigir `kind:sfx` e mede silêncio interior, proporção audível, cauda morta, cama sonora com dispensa `music.bed_waiver` e ocupação do quadro. Colisão de textos e aprovação perceptual continuam exigindo revisão independente. Inclui correções de cortes, entrada de gravações e duração/mix da entrega, sem mudar o stack 2.0.0.
 
 ## Referências e roteiros com IA — 2.2.0
 
