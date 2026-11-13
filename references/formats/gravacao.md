@@ -10,11 +10,14 @@ python scripts/footage.py import <projeto> gravacao.mp4 [--from 0:12 --to 3:40] 
 python scripts/captions.py transcribe <projeto>          # ou: captions.py import <projeto> --file legenda.srt
 python scripts/footage.py cut <projeto>                  # silêncios + vícios -> edit/edl.json e edit/transcript.md
 python scripts/footage.py frames <projeto>               # edit/frames.jpg para conferir o enquadramento
-python scripts/footage.py render <projeto>               # render/master.mp4 e captions/words.json na linha nova
+python scripts/footage.py render <projeto>               # base A-roll em render/master.mp4
+# Componha o acabamento em HyperFrames/Remotion/FFmpeg, conforme tool_plan, em render/final.mp4
 python scripts/captions.py ass <projeto>
-python scripts/deliver.py <projeto> --video render/master.mp4
+python scripts/deliver.py <projeto> --video render/final.mp4
 python scripts/review.py <projeto>
 ```
+
+O A-roll renderizado é uma base, não uma prova automática de acabamento. Use direção, B-roll, composição, animação e som conforme a peça; não é necessário misturar motores redundantes. Para um pedido pontual, preserve o resto da edição. Se as legendas já estiverem na composição, entregue com `--no-captions`.
 
 `--from/--to` no import serve para gravações com sobra no começo e no fim. A gravação não é copiada; o projeto guarda o caminho, então não mova o arquivo até entregar. `--third-party` registra que a gravação não é do usuário (e o `deliver.py` passa a exigir a licença).
 
@@ -28,14 +31,14 @@ Leia `edit/transcript.md` inteiro antes de mexer. Cada trecho tem `id`, `in`/`ou
 2. **Gancho primeiro.** Os 2 primeiros segundos decidem a retenção. Se a frase mais forte (promessa, número, conflito, pergunta) foi dita no meio, mova o trecho dela para o topo de `segments`; a ordem da lista é a ordem do vídeo. Não invente frase: só reordene o que foi dito, e só se o sentido continuar certo.
 3. **Duração.** Vertical: mire 20–45 s, corte o que repete ou explica demais. Longo: veja [vídeo longo](longo.md).
 4. **Enquadramento.** Rode `frames`, olhe `edit/frames.jpg` e ajuste `x` (0 a 1, centro do rosto) em cada trecho; as linhas brancas marcam cada 10% da largura e o retângulo vermelho é o recorte atual. Rosto no terço superior; se a cabeça for cortada, baixe `y` ou o `zoom`. Rode `frames` de novo até todos os quadros estarem certos.
-5. **Zoom.** `cut` alterna 1,0 e 1,15 entre trechos para esconder o jump cut. Em fala emocional ou revelação, use 1,25–1,35 no trecho; não passe de 1,15 se a fonte for 720p em vertical (a imagem já é ampliada ~2,7×).
+5. **Zoom.** `cut` sugere 1,0/1,15; revise esses valores no EDL, evitando alternância mecânica. Use punch-in com intenção ou B-roll para disfarçar a emenda. Em fala emocional ou revelação, use 1,25–1,35 no trecho; não passe de 1,15 se a fonte for 720p em vertical (a imagem já é ampliada ~2,7×).
 
 `cut` de novo (com outros `--min-silence`, `--pad`, `--fillers tipo,né`) refaz os trechos e leva `x`, `y` e os descartes para o trecho novo que mais se sobrepõe; `--reset` descarta tudo isso e as inserções.
 
 ## Ritmo e cortes
 
 - Pausa natural de respiração fica (0,12 s de folga de cada lado é o padrão de `--pad`); silêncio de pensar sai. Fala corrida demais (acima de ~3,3 palavras/s) cansa: aumente `--pad` para 0,18.
-- Vertical precisa de um evento visual a cada 1,5–3 s. Numa gravação isso vem de corte com zoom alternado, texto na tela, B-roll ou print. Se um trecho passa de 4 s sem nada, quebre com zoom ou inserção.
+- Em vertical dinâmico, 1,5–3 s pode orientar a cadência, mas ajuste ao conteúdo e à intenção. Numa gravação isso vem de corte com zoom alternado, texto na tela, B-roll ou print. Se um trecho passa de 4 s sem nada, quebre com zoom ou inserção.
 - `--fillers tipo,né,assim` corta palavras extras quando isoladas; confira no transcript se não sumiu alguma que dava sentido.
 
 ## B-roll, prints e imagens

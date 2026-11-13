@@ -1,0 +1,7 @@
+---
+type: llm
+focus: trace
+weight: 1
+---
+
+Creates a coherent story/hook/payoff, character/reference continuity and per-shot tool plan. Does not treat a repeated seed as proof of identity continuity. Obeys planning-only scope and defines temporal/visual verification.

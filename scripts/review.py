@@ -26,7 +26,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _common import ffprobe_json, load_manifest, need, project_dir, run, save_manifest  # noqa: E402
+from _common import file_sha256, manifest_sha256, ffprobe_json, load_manifest, need, project_dir, run, save_manifest  # noqa: E402
 
 BARS = "▁▂▃▄▅▆▇█"
 RUBRIC = [
@@ -60,6 +60,15 @@ def rubric_for(m, dur):
         drop = {"Direção de arte", "Motion", "Fala e imagem"}
         r = [c for c in r if c[0] not in drop]
         r[2:2] = RECORDED_RUBRIC
+    if m.get("format") == "musica":
+        r = [("Sincronismo musical", "Cortes, texto e movimento acompanham as batidas e a estrutura musical")
+             if k == "Fala e imagem" else (k, v) for k, v in r]
+    if m.get("format") == "avatar":
+        r.append(("Sincronia labial", "Boca e voz alinhadas; identidade, olhar e performance consistentes"))
+    if m.get("format") == "storytelling":
+        r.append(("Continuidade", "Personagens, cenário e ação mantêm identidade e continuidade entre planos"))
+    if m.get("brief", {}).get("objective") == "conversao":
+        r.append(("Mensagem e CTA", "Público, benefício, prova e ação estão claros; a promessa é cumprida"))
     if is_long(m, dur):
         r.insert(2, LONG_RUBRIC[0])
         r = [(k, "Entrega a promessa do título; CTA sem anunciar o fim antes da hora") if k == "Payoff" else (k, v)
@@ -254,15 +263,57 @@ def verdict(proj):
     n = int(last.name[1:])
     report = (last / "report.md").read_text(encoding="utf-8") if (last / "report.md").exists() else ""
     mpath = last / "metrics.json"
-    met = json.loads(mpath.read_text(encoding="utf-8")) if mpath.exists() else {}
-    keys = met.get("rubric") or [k for k, _ in RUBRIC]
+    try:
+        met = json.loads(mpath.read_text(encoding="utf-8"))
+        if met["schema"] != 2:
+            raise ValueError("métricas antigas; gere uma nova revisão")
+        video = Path(met["video"])
+        if not video.is_absolute():
+            video = proj / video
+        digest = file_sha256(video)
+        if digest != met["video_sha256"]:
+            raise ValueError("o vídeo mudou depois da revisão")
+        manifest = load_manifest(proj)
+        if manifest_sha256(manifest) != met["manifest_sha256"]:
+            raise ValueError("o manifesto mudou depois da revisão")
+        keys = [k for k, _ in rubric_for(manifest, met["duration"])]
+        if keys != met["rubric"] or not isinstance(met["blockers"], list):
+            raise ValueError("métricas ou critérios inconsistentes")
+        for name in ("hook.jpg", "grid.jpg"):
+            if file_sha256(last / name) != met["frame_sha256"][name]:
+                raise ValueError(f"{name} mudou depois da análise")
+        receipt = json.loads((proj / "out" / "delivery.json").read_text(encoding="utf-8"))
+        if receipt["schema"] != 1 or receipt["manifest_sha256"] != met["manifest_sha256"]:
+            raise ValueError("a entrega técnica pertence a outro manifesto; rode deliver.py novamente")
+        if receipt["video_sha256"] != digest or Path(receipt["video"]).resolve() != video.resolve():
+            raise ValueError("a entrega técnica pertence a outro vídeo")
+        assessment = json.loads((last / "assessment.json").read_text(encoding="utf-8"))
+        if assessment["video_sha256"] != digest:
+            raise ValueError("a avaliação pertence a outro vídeo")
+        unverified = []
+        for channel in ("visual", "motion", "audio"):
+            item = assessment[channel]
+            status = item["status"]
+            if status == "not_applicable" and channel == "audio" and not met["has_audio"]:
+                continue
+            if status == "unverified":
+                unverified.append(f"{channel}: não verificado")
+                continue
+            if status not in ("observed", "instrumented") or not str(item["method"]).strip():
+                raise ValueError(f"registre como {channel} foi inspecionado em assessment.json")
+            ranges = item["ranges"]
+            if not ranges or any(len(r) != 2 or not 0 <= r[0] < r[1] <= met["duration"] + 0.05 for r in ranges):
+                raise ValueError(f"registre os intervalos inspecionados de {channel}")
+    except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
+        print(f"REVISÃO INCOMPLETA OU DESATUALIZADA: {exc}. Rode deliver/review e registre a evidência.")
+        return 2
     names = {k.lower(): k for k in keys}
     scores = {}
     for line in report.splitlines():
         cells = [c.strip().strip("*") for c in line.strip().strip("|").split("|")]
         if len(cells) < 2 or cells[0].lower() not in names:
             continue
-        nota = next((c for c in cells[1:] if re.fullmatch(r"[1-5]([.,]\d)?", c)), None)
+        nota = next((c for c in cells[1:] if re.fullmatch(r"(?:[1-4]([.,]\d)?|5([.,]0)?)", c)), None)
         if nota:
             scores[names[cells[0].lower()]] = float(nota.replace(",", "."))
     missing = [k for k in keys if k not in scores]
@@ -270,7 +321,9 @@ def verdict(proj):
         print(f"{last.name}: preencha a nota (1 a 5) de {', '.join(missing)} em {last.name}/report.md "
               "depois de olhar hook.jpg e grid.jpg.")
         return 2
-    block = met.get("blockers", [])
+    block = list(met["blockers"]) + unverified
+    if receipt.get("approved") is not True or receipt.get("draft") is not False:
+        block.append("entrega técnica reprovada ou rascunho; não publicar")
     low = [f"{k}={scores[k]:g}" for k in keys if scores[k] < 4]
     print(f"{last.name} (rodada {n} de {MAX_ROUNDS}): " + ", ".join(f"{k}={v:g}" for k, v in scores.items()))
     if not low and not block:
@@ -313,6 +366,7 @@ def main():
     if not video or not video.exists():
         sys.exit("Vídeo não encontrado. Rode deliver.py antes ou passe --video.")
     video = video.resolve()
+    digest = file_sha256(video)
 
     info = ffprobe_json(video)
     vs = next(s for s in info["streams"] if s["codec_type"] == "video")
@@ -353,7 +407,9 @@ def main():
             block.append(f"Imagem congelada em {s:.1f} s por {d_txt}.")
         else:
             warn.append(f"Imagem quase parada em {s:.1f} s por {d_txt}.")
-    if speech is None:
+    if m.get("format") == "musica":
+        pass  # Music/lyric videos need musical timing, not immediate speech.
+    elif speech is None:
         warn.append("Não achei fala no áudio.")
     elif speech > 0.7:
         block.append(f"A fala começa em {speech:.2f} s: comece em até 0,5 s.")
@@ -364,7 +420,13 @@ def main():
         warn.append(f"{g1 - g0:.1f} s sem evento visual ({g0:.1f}–{g1:.1f} s).")
     warn += manifest_checks(proj, m, long_)
 
+    if file_sha256(video) != digest:
+        sys.exit("O vídeo mudou durante a análise; refaça a revisão do render final.")
+
     metrics = {
+        "schema": 2, "video_sha256": digest, "manifest_sha256": manifest_sha256(m),
+        "has_audio": has_audio,
+        "frame_sha256": {name: file_sha256(out_dir / name) for name in ("hook.jpg", "grid.jpg")},
         "round": out_dir.name, "video": str(video), "duration": round(dur, 2), "fps": fps,
         "cuts": [round(c, 2) for c in cuts], "visual_events": events,
         "mean_shot_s": round(statistics.fmean(shot_lens), 2) if shot_lens else None,
@@ -376,6 +438,11 @@ def main():
         "rubric": [k for k, _ in rubric],
     }
     (out_dir / "metrics.json").write_text(json.dumps(metrics, ensure_ascii=False, indent=1), encoding="utf-8")
+    assessment = {"video_sha256": digest}
+    for channel in ("visual", "motion", "audio"):
+        assessment[channel] = {"status": "not_applicable" if channel == "audio" and not has_audio else "pending",
+                               "method": "", "ranges": []}
+    (out_dir / "assessment.json").write_text(json.dumps(assessment, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     rel = out_dir.relative_to(proj).as_posix()
     lines = [
@@ -399,8 +466,10 @@ def main():
     lines += [f"| {k} | {v} |  |  |" for k, v in rubric]
     lines += ["", "Passa com todas as notas 4 ou mais e nenhum bloqueante. Senão, aplique as 3 correções de "
               "maior efeito, renderize de novo e rode outra rodada (máximo 3). Depois de preencher, rode "
-              "`python scripts/review.py <projeto> --verdict`; só declare pronto se ele sair com 0 "
-              "(ou 3, relatando o que ficou abaixo de 4)."]
+              "`python scripts/review.py <projeto> --verdict`; só declare pronto se ele sair com 0. "
+              "Código 3 entrega apenas o melhor resultado com limitações, nunca aprovação. "
+              "Preencha assessment.json com método e intervalos reais de inspeção visual, temporal e de áudio; "
+              "não descreva uma grade de imagens como reprodução ou escuta do vídeo."]
     (out_dir / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     m.setdefault("review", []).append({"round": out_dir.name, "video": video.name,

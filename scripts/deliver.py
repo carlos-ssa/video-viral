@@ -43,7 +43,7 @@ def license_blockers(m):
     bad = []
     for a in m.get("assets", []):
         lic = str(a.get("license", ""))
-        if a.get("commercial_ok") is not True or NONCOMMERCIAL.search(lic) or UNVERIFIED.search(lic):
+        if not lic.strip() or a.get("commercial_ok") is not True or NONCOMMERCIAL.search(lic) or UNVERIFIED.search(lic):
             bad.append(a)
     return bad
 
@@ -158,6 +158,8 @@ def main():
     out_dir.mkdir(exist_ok=True)
 
     blockers = license_blockers(m)
+    if a.allow_noncommercial and m.get("monetized", True):
+        ap.error("--allow-noncommercial só é permitido em projeto com monetized: false; use --draft para prévia.")
     draft = a.draft and m.get("monetized", True) and bool(blockers)
     if m.get("monetized", True) and blockers and not (a.allow_noncommercial or a.draft):
         print("Entrega bloqueada: vídeo monetizado com ativos sem licença comercial confirmada:")
@@ -344,6 +346,16 @@ def main():
             else:
                 lines.append(f"    {c}")
     (out_dir / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    from _common import file_sha256, manifest_sha256
+    receipt = {"schema": 1, "video": str(out.resolve()), "video_sha256": file_sha256(out),
+               "manifest_sha256": manifest_sha256(m),
+               "approved": not fails and not draft, "draft": draft, "duration": dur,
+               "lufs": lufs, "true_peak_dbtp": peak,
+               "checks": [{"ok": ok, "level": level, "message": text} for ok, level, text in checks]}
+    receipt_path = out_dir / "delivery.json"
+    temporary = receipt_path.with_suffix(".json.tmp")
+    temporary.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    temporary.replace(receipt_path)
 
     for ok, level, text in checks:
         print(f"[{'ok' if ok else level}] {text}")

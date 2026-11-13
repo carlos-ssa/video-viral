@@ -15,9 +15,9 @@ Grave o resultado em `direction` no `video.json` e o raciocínio em `research/di
 
 ## 1. Referências
 
-Com a pesquisa da etapa Encontrar ([pipeline](pipeline.md#1-encontrar)), separe os 3 a 5 vídeos do nicho, no mesmo formato e tamanho, com mais visualizações por dia de vida. Para cada um, anote em `research/direcao.md`: primeira frase, primeiro texto na tela, duração, palavras por segundo (legenda ÷ duração), número de batidas, como fecha. O que se repete entre os melhores vira regra deste vídeo; o que todos fazem igual é onde dá para se destacar.
+Use o recorte de [pesquisa](research.md): nicho, plataforma, objetivo, duração, período e fontes. Examine exemplos recorrentes e seu contexto; visualizações por dia são apenas um sinal. Registre abertura visual/verbal, promessa, ritmo, enquadramento, payoff e CTA. Google Trends ajuda a escolher tema e sazonalidade, sem comprovar retenção ou conversão.
 
-Sem pesquisa possível (sem rede ou pedido muito específico), siga sem ela e diga no relatório.
+Sem pesquisa disponível, avance com hipóteses identificadas.
 
 ## 2. Estilo
 
@@ -51,7 +51,7 @@ Fontes: use famílias com licença aberta (SIL OFL, como as do Google Fonts), co
 
 ## 3. Gancho
 
-Escreva 5 ganchos de tipos diferentes ([roteiro](writing.md#ganchos-que-funcionam)) e dê nota de 1 a 5 em cada critério:
+Use os cinco candidatos multimodais de [marketing e ganchos](marketing.md), ligando público, promessa e payoff. Complete a avaliação audiovisual abaixo sem duplicar a pesquisa:
 
 | Critério | Pergunta |
 |---|---|
@@ -61,11 +61,11 @@ Escreva 5 ganchos de tipos diferentes ([roteiro](writing.md#ganchos-que-funciona
 | Velocidade | Cabe em até 2 s falado e até 6 palavras na tela? |
 | Cumprimento | O vídeo entrega exatamente o que o gancho promete? |
 
-Use o de maior soma (empate: maior Imagem no quadro 0). Registre os 5 e as notas em `research/direcao.md`; os outros servem de variação para teste A/B ou para a série.
+Escolha pela adequação ao objetivo, pelo cumprimento da promessa e pela qualidade da execução visual. Registre candidatos e justificativas em `hook_candidates`; preserve alternativas para testes controlados.
 
 ## 4. Roteiro de planos
 
-Cada cena vira uma lista de planos em `scenes[].visual.shots`. Um plano novo, ou uma mudança visual clara dentro dele, a cada 1,5 a 3 s: uma cena de 6 s tem de 2 a 4 planos. Ancore cada plano numa palavra da narração para que imagem e fala cheguem juntas.
+Cada cena vira uma lista de planos em `scenes[].visual.shots`. Em vertical dinâmico, mudanças a cada 1,5–3 s são uma referência inicial, não uma obrigação universal. Planeje contraste, respiros e evolução conforme o conteúdo. Ancore cada plano numa palavra da narração para que imagem e fala cheguem juntas.
 
 ```json
 "visual": {

@@ -484,7 +484,7 @@ def cmd_render(proj, m, a):
         tl.append(f"| {s['id']} | {o:.2f}–{o + s['_dur']:.2f} | {s['in']:.2f}–{s['out']:.2f} | {s.get('text') or '-'} |")
     (proj / "edit" / "timeline.md").write_text("\n".join(tl) + "\n", encoding="utf-8")
     print(f"render/master.mp4: {total:.1f} s, {len(segs)} trechos, {len(ovs)} inserção(ões); edit/timeline.md")
-    print("Próximo: captions.py ass, deliver.py --video render/master.mp4, review.py.")
+    print("Próximo: revisar a base, compor acabamento conforme direção (references/formats/gravacao.md), captions.py ass, deliver.py e review.py.")
 
 
 def main():

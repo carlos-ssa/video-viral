@@ -48,7 +48,7 @@ Ao refazer uma etapa, refaça também as que dependem dela: mudou a narração, 
 
 ## 1. Encontrar
 
-Tendência com o Exa MCP (se configurado): procure o que publicaram no nicho nos últimos 7 dias, com títulos e links. Sem Exa, use a busca web.
+Siga [pesquisa](research.md): recorte por nicho, plataforma, objetivo e período. Use busca web/Exa e Google Trends com proveniência; os dados públicos não comprovam retenção ou vendas. Preencha o [brief de marketing](marketing.md) quando pertinente.
 
 Estude os shorts que performam sem baixar vídeo:
 
@@ -68,7 +68,7 @@ Siga [direction.md](direction.md): referências dos melhores shorts do nicho, um
 
 ## 3. Escrever
 
-Siga [writing.md](writing.md) com o gancho vencedor da direção. Preencha `hook`, `title`, `cta`, `publish` e as cenas. Cada cena tem uma ideia, uma frase falada (ou duas curtas) e um `visual.brief` e a lista `visual.shots` do [roteiro de planos](direction.md#4-roteiro-de-planos), com um evento visual a cada 1,5–3 s. Escolha `visual.engine` por cena: `hyperframes` (padrão), `blender`, `comfyui` (imagem animada no HyperFrames), `footage` (gravação do usuário).
+Siga [writing.md](writing.md) com o gancho vencedor da direção. Preencha `hook`, `title`, `cta`, `publish` e as cenas. Cada cena tem uma ideia, uma frase falada (ou duas curtas) e um `visual.brief` e a lista `visual.shots` do [roteiro de planos](direction.md#4-roteiro-de-planos), com a cadência escolhida pela direção (1,5–3 s é referência de vertical dinâmico, não cota universal). Escolha `visual.engine` por cena: `hyperframes` (padrão), `blender`, `comfyui` (imagem animada no HyperFrames), `footage` (gravação do usuário).
 
 Releia o roteiro antes de gerar voz e visual: refazer roteiro custa pouco, refazer render custa muito. Só pare para o usuário aprovar se ele pediu para ver o roteiro antes.
 
@@ -169,7 +169,7 @@ python scripts/review.py <projeto> --video render/master.mp4 --every 0.5
 python scripts/review.py <projeto> --verdict               # depois de preencher as notas
 ```
 
-Siga [review.md](review.md): olhe `review/rNN/hook.jpg` e `grid.jpg`, preencha as notas do `report.md` e rode `--verdict`. Código 1: corrija e faça outra rodada; 0: pronto; 3: terceira rodada sem aprovar, relate o que ficou abaixo de 4. Cada rodada fica em `review/` para comparar.
+Siga [review.md](review.md): inspecione visual, movimento e áudio do arquivo final, registre método/intervalos em `assessment.json`, preencha notas com evidências e rode `--verdict`. Código 0 aprova; 1 pede correções; 2 aponta evidência ausente/desatualizada; 3 entrega somente um resultado com limitações, sem aprovação. Cada rodada se vincula ao hash do render e do manifesto.
 
 ## Série de shorts
 

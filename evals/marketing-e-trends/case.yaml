@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: marketing-e-trends
+expected_outcome: |
+  Produces brief with real offer/audience/objective and contextual CTA; five multimodal hook candidates; separates public search interest from retention/conversion; uses a Trends URL/official CSV if available, or declares unavailable data. No fabricated metrics, false proof, installs or publication.

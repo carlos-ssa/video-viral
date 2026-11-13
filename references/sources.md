@@ -12,3 +12,5 @@ Conferidas em 12/11/2026. Fatos que mudam rápido (licenças, VRAM, limites de p
 - ACE-Step: [repositório](https://github.com/ace-step/ACE-Step) e [README 1.5](https://huggingface.co/spaces/MBLF/ACE-Step-1.5/blob/main/README.md) (MIT).
 - Hunyuan3D-2: [repositório](https://github.com/Tencent-Hunyuan/Hunyuan3D-2), [variantes e VRAM](https://deepwiki.com/Tencent/Hunyuan3D-2/3.2-model-zoo-and-variants), [licença e território](https://deepwiki.com/Tencent/Hunyuan3D-2/9-license-and-terms).
 - Formatos de vídeo curto: guias de 2026 como [Social Video Specs 2026](https://blitzcutai.com/blog/social-video-specs-2026); valores de área segura são aproximados.
+
+- Google Trends: [normalização/amostragem](https://support.google.com/trends/answer/4365533), [exportação e atribuição](https://support.google.com/trends/answer/4365538) e [API oficial alpha](https://developers.google.com/search/apis/trends). Índice do site e escala da API não são intercambiáveis.

@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-The agent never stopped to ask the user for permission to install a tool: it either used what was available (such as the provided SRT) or installed the missing tool itself with scripts/setup_tools.py, and the final report says what was installed or which fallback was used.
+The agent proceeds autonomously with available tools (including the supplied SRT), installs only missing required components when permitted, and reports installations/fallbacks. It honors no-install constraints and actual environment authorization boundaries; it does not install the complete catalog, restart unchanged renders or request redundant permission.

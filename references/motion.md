@@ -12,7 +12,7 @@ Movimento é o que separa um vídeo de uma apresentação de slides. Este guia d
 
 ## Princípios
 
-Valores em quadros a 30 qps; em 60 qps, dobre.
+Receitas para edição expressiva: escolha conforme direção, conteúdo e plataforma, sem aplicar todos os efeitos em toda peça. Valores em quadros a 30 qps; em 60 qps, dobre.
 
 | Princípio | Como aplicar |
 |---|---|
@@ -21,7 +21,7 @@ Valores em quadros a 30 qps; em 60 qps, dobre.
 | Escalonamento | Letras 1–2 quadros entre si, palavras 3–4, itens de lista 4–6. Nada de tudo entrando junto |
 | Antecipação e sobra | Um recuo de 3–5% antes do movimento grande; mola com pouca sobra (`back.out(1.4)`, `elastic` só em humor). Sobra exagerada em tudo parece template |
 | Um foco por vez | Um elemento principal se move; o resto respira (escala 1–2%) ou fica parado. Dois movimentos fortes ao mesmo tempo disputam o olhar |
-| Nunca parado | Câmera virtual sempre derivando: aproximação de 2–8% por plano, paralaxe ou partículas lentas. Quadro sem nenhum movimento por mais de 1,5 s parece travado |
+| Movimento intencional | Aproximação, paralaxe e partículas podem sustentar a atenção; pausas e câmera estática também precisam de função narrativa. Investigue trechos sem evolução em vez de adicionar movimento mecânico |
 | Profundidade | Três camadas: fundo lento e desfocado (blur 4–12 px), meio, frente rápida. A diferença de velocidade cria o 3D sem 3D |
 | Desfoque de movimento | Em movimentos rápidos (whip pan, entrada grande), aplique blur direcional proporcional à velocidade no meio do movimento; sem ele o movimento rápido parece engasgado |
 | Textura e cor | Grão 4–8% por cima de tudo (ruído com semente, mudando por quadro), vinheta, leve aberração cromática só em impactos. Gradação de cor por camada de ajuste (CSS `filter` ou shader), igual em todas as cenas |
@@ -82,7 +82,7 @@ Física (Matter.js, Rapier): simule o trecho inteiro uma vez no carregamento, co
 
 ## Qual biblioteca
 
-Use a menor que resolve. Cada uma a mais é peso na página e mais um ponto onde o render pode diferir da prévia.
+Selecione e combine as bibliotecas que concretizam a direção. Registre o papel de cada uma em tool_plan; evite motores redundantes e valide a composição final. Qualidade profissional depende da execução, não da contagem de ferramentas.
 
 | Precisa de | Use |
 |---|---|

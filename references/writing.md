@@ -2,7 +2,9 @@
 
 O vídeo compete com o próximo do feed. Cada segundo precisa dar um motivo para ver o seguinte.
 
-## Estrutura de 40 segundos
+Antes do roteiro, use o brief e os candidatos de [marketing e ganchos](marketing.md). Escolha a progressão pelo público e objetivo; para longo, veja [longo](formats/longo.md).
+
+## Exemplo de estrutura de 40 segundos
 
 | Tempo | Batida | O que fazer |
 |---|---|---|
@@ -24,7 +26,7 @@ Evite gancho que o vídeo não cumpre; a queda logo após o gancho derruba a dis
 
 ## Visual que segura
 
-- Mudança visual a cada 2–4 s: corte, zoom, texto novo, objeto entrando.
+- Mudanças visuais com função narrativa: corte, zoom, texto, objeto ou mudança de performance; a cadência depende do formato, não de uma cota de efeitos.
 - Texto na tela curto e diferente da legenda: a legenda transcreve, o texto destaca.
 - Um ponto de foco por vez, perto do centro.
 
