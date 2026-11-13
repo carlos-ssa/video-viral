@@ -46,6 +46,24 @@ A ingestão valida campos, hashes, separação autor/revisor e cobertura; grava 
 
 Uma prancha serve à composição, não ao canal temporal. Loudness e alinhamento de palavras ajudam a avaliar áudio, mas não provam naturalidade de voz. Se falta evidência para uma qualidade perceptual, registrar o limite em vez de atribuir nota alta por conveniência.
 
+## Gates instrumentados e limites
+
+Os limiares ficam em constantes nomeadas em `scripts/review.py`. Os tempos e a correção sugerida aparecem nos alertas; são medições do render, não prova de qualidade perceptual.
+
+- **Congelamento:** amostragem a 5 fps; pixels com diferença de luma >8 contam como mudança, mesmo localizada (≥0,02% do quadro reduzido). Aviso a partir de 1,5 s / bloqueante a partir de 2,5 s em curtos; 6 s / 12 s em longos. Um trecho até o fim usa sua duração real, com o mesmo limiar do meio. Legendas com intervalos de exibição sobrepostos tornam o trecho um aviso de leitura, não erro automático. Assistir continua obrigatório para julgar movimento significativo.
+- **Longo:** 16:9 ou duração >180 s; aviso de plano >15 s e lacuna visual >8 s, em vez de 3,5 s / 3 s dos curtos. Entrada da fala até 3 s, em vez de 0,7 s. Longo não precisa imitar a cadência de um short.
+- **Fala:** `voice.engine: "none"`, formato música/ASMR ou cenas com `narration` explicitamente vazia dispensam o gate de início de fala. Áudio de gravação/corte/UGC continua sendo tratado como fala. Um estalo ou pulso não é ASR nem evidência de fala atrasada.
+- **Silêncio:** `silencedetect` no áudio final, −45 dB, intervalos ≥0,15 s; o relatório registra os intervalos e a proporção audível. Silêncio interior ≥0,7 s avisa nos curtos (≥2 s nos longos). Vídeo sem fala com menos de 50% do tempo audível bloqueia: o gate de LUFS sozinho ignora os vazios e não aprova um ASMR quase mudo.
+- **Cauda morta:** silêncio + imagem parada/quase parada + ausência de legenda por >1 s no curto (>3 s no longo; tolerância de 0,05 s) bloqueia. Além do congelamento estrito, mede energia residual de luma (média ≤0,5 e nenhum quadro >1,5, normalizada para 10 fps), para não aceitar um fim vazio só porque há uma oscilação mínima. O limiar residual é usado somente em conjunto com silêncio e ausência de legenda, não para acusar congelamento de animação localizada.
+- **Tempos de legenda:** lê `captions/captions.ass` ou os grupos `{start,end,text}` de `captions/captions.json`. `words.json` contém palavras ASR, não intervalos de exibição. Se o HTML/áudio embutido não tem tempos confiáveis, uma possível cauda só avisa; o revisor precisa confirmar o fim no render. Sem fala ou com `captions.enabled: false`, na ausência desses arquivos considera-se que não há legenda de fala. Mantenha esses metadados consistentes com o render, inclusive quando usar `--no-captions`.
+- **Cama sonora:** narrados, gravações e cortes avisam quando não há música/ambiente registrado. Dispensa editorial explícita: `"music": {"bed_waiver": "Demonstração só com voz, sem cama por intenção editorial"}`. Uma justificativa não dispensa os gates de silêncio/cauda. Arquivos `audio/music.wav`, `ambient.wav`, `ambience.wav`, `ambiente.wav`, `bed.wav` ou `trilha.wav`, ou ativos com esses nomes/kinds/roles, são aceitos. O registro não prova que a cama foi mixada ou ouvida; confira o render.
+- **Efeitos:** não exige `kind: "sfx"`. Aceita a saída real `audio/sound-design.wav`, conteúdo em `audio/sfx/`, ativos com nome `sound-design`/`sfx`/`foley`/`effects`/`efeitos`, ou `kind`/`role` de efeito (`sfx`, `sound-design`, `foley`, `effect`, `efeito`). Exemplo válido: `{"path":"audio/sound-design.wav","kind":"audio"}`; para nome personalizado use `{"path":"audio/transicoes.wav","kind":"audio","role":"sfx"}`. Declarações em prosa de efeitos planejados não comprovam um ativo.
+- **Ocupação:** aviso quando uma faixa horizontal contígua >30% da altura tem ≥90% dos pixels quase da mesma cor RGB (tolerância 10/255), em ≥90% das amostras, até 48 amostras a 90×160. Um rodapé fino não deve mascarar uma região vazia; textura/movimento significativo e mudança de cor não devem ser confundidos com preenchimento uniforme. O alerta diz a faixa e o período amostrado; espaço negativo intencional exige julgamento, não bloqueio automático.
+
+### Sobreposição de textos no render (obrigatório ao revisor)
+
+O review atual não recebe caixas do DOM sincronizadas com o MP4, e ASS/tempos ASR não dizem onde ficam títulos, rótulos e rodapés no render. Não há gate automático confiável de colisão; lint HTML não substitui esta inspeção. **Em Legibilidade, verificar e registrar os instantes de maior ocupação**, incluindo entrada/saída, legenda de duas linhas, título/rótulo fixo, fonte/crédito, CTA/cartão final e rodapé. Confirmar ausência de interseção, corte da caixa ou vazamento fora da área segura no arquivo final. Se houver colisão, mover/redimensionar uma zona e rever o trecho. Não dar nota ≥4 sem essa checagem; grade amostrada pode perder uma colisão transitória. Automação futura exige caixas reais por instante e vínculo com o hash do render, não uma heurística de OCR/contagem de palavras.
+
 ## Critérios
 
 O relatório adapta a rubrica: gravação/corte/UGC priorizam Corte de fala e Enquadramento; avatar acrescenta Sincronia labial; storytelling acrescenta Continuidade; música troca Fala e imagem por Sincronismo musical; objetivo de conversão acrescenta Mensagem e CTA. Longo também avalia Retenção por blocos.
@@ -93,6 +111,23 @@ O pacote input/ contém somente vídeo, hook.jpg, grid.jpg e request.json com br
 Dê esse pacote ao revisor em contexto próprio e somente leitura, conforme o isolamento que o runtime realmente suportar. Sem suporte técnico, isso é um contrato de escopo, não uma barreira de segurança; informe a limitação. O revisor deve devolver sua avaliação sem consultar o restante do projeto ou a autocrítica do autor.
 
 Transfira o preflight para assessment.json.reviewer_preflight. O revisor registra observed/instrumented/unverified por canal, método e intervalos efetivamente inspecionados e escreve suas próprias notas em report.md. Um revisor humano também pode cumprir esse papel, com identidade distinta e evidências honestas. O autor não substitui essa aprovação preenchendo a própria ficha. Sem revisor independente disponível, registre autoverificação como tal e mantenha a aprovação independente pendente.
+
+### Exemplo de autoverificação sem revisor independente
+
+Preserve `reviewer_preflight` vazio e os canais principais `pending` gerados pelo script. Acrescente **somente** um campo `self_check` ao `assessment.json` da rodada (exemplo parcial para vídeo de 18 s; ajuste método/intervalos ao que realmente fez):
+
+```json
+"self_check": {
+  "producer_id": "autor-da-rodada",
+  "independent": false,
+  "visual": {"status": "instrumented", "method": "Inspeção de hook.jpg e grid.jpg; não reproduzi o vídeo", "ranges": [[0, 18]]},
+  "motion": {"status": "instrumented", "method": "Cortes e energia de movimento medidos por FFmpeg", "ranges": [[0, 18]]},
+  "audio": {"status": "instrumented", "method": "silencedetect e LUFS; sem escuta perceptual", "ranges": [[0, 18]]},
+  "limitations": "Autoverificação do autor; revisão audiovisual independente pendente"
+}
+```
+
+Os intervalos instrumentados descrevem o material coberto pelas métricas, não reprodução/escuta integral. Se não mediu uma modalidade, use `unverified` com método/limite honesto e `ranges: []`. Registre autocrítica em seção própria do report.md, sem preencher a ficha humana nem as notas do revisor; não envie essa seção no pacote input/. O veredito permanece **2 (independente pendente)** com o preflight e canais principais ainda vazios; `self_check` nunca concede aprovação. Se a entrega técnica falhou, relate também os bloqueantes, sem dizer “entrega técnica aprovada”.
 
 A aprovação completa exige que a união dos intervalos observados cubra a duração em cada modalidade aplicável; amostragem permanece parcial, inclusive em vídeo longo. Áudio só pode ser not_applicable se a análise técnica registrar ausência de fluxo de áudio. Um limite de modalidade ou de cobertura deve aparecer no relatório, não virar nota alta. Revisões legadas sem input/ e identidades ficam incompletas até nova análise.
 
