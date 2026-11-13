@@ -27,9 +27,11 @@ Dirija e edite com estratégia: ideia relevante, gancho cumprido, progressão e 
 | Divulgação de produto ou serviço | `produto` | [Marketing](references/marketing.md) + [produto/UGC](references/formats/outros.md) |
 | UGC real ou avatar apresentador | `ugc`, `avatar` | [Avatares/UGC](references/formats/avatares.md) + gravação |
 | Animação/storytelling | `storytelling` | [Animação](references/formats/animacao.md) + pipeline |
-| POV, criaturas, ASMR ou séries com IA | `storytelling`, `narrado` | [Catálogo e limites](references/formats/virais-ia.md) |
+| POV, criaturas, ASMR ou séries com IA | `storytelling`, `narrado` | [Guia de produção e limites](references/formats/virais-ia.md) |
 | Música, lyric video ou visualizer | `musica` | [Música](references/formats/musica.md) |
 | YouTube longo | formato de origem, `--aspect 16:9` | Acrescentar [longo](references/formats/longo.md) |
+
+O guia de virais com IA ensina a produzir pelas rotas do stack ou de clipes externos fornecidos.
 
 Preserve conteúdo/direção fora de correções pontuais. Na produção completa, siga o fluxo; leia referências pertinentes, composição antes de produzir e revisão antes de avaliar.
 

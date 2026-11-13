@@ -89,7 +89,7 @@ Distribuição da skill: MIT. Ferramentas, pesos e ativos têm termos próprios;
 
 ## Referências e roteiros com IA — 2.2.0
 
-Ficha de pesquisa por plano, ganchos e [catálogo de formatos](references/formats/virais-ia.md), com pilotos editoriais, fontes datadas e regras de plataforma. Pesquisa não assistida e números de terceiros, sem garantia de alcance. Atualização apenas documental e de versão: nenhum motor, instalação ou mudança no stack.
+Ficha de pesquisa por plano, ganchos e [guia de como produzir oito formatos](references/formats/virais-ia.md): roteiros originais, continuidade, prompts por plano, duas rotas executáveis (stack atual ou clipes externos fornecidos), som, legendas e portões de entrega/revisão. Inclui [exemplo local medido e inspecionado por quadros](references/formats/virais-ia/exemplo-planos.md), sem escuta nem reprodução audiovisual integral; referências públicas continuam documentais, com números de terceiros. Incorpora técnicas relatadas por Theo com atribuição e limites, não testadas aqui. Sem garantia de alcance, motor novo, instalação ou mudança no stack.
 
 ## Composição e revisão humana — 2.1.0
 
