@@ -10,6 +10,48 @@ from plan import plan_problems
 
 
 class StackTests(unittest.TestCase):
+    def test_hyperframes_no_install_blocks_before_launch(self):
+        import os
+        from unittest.mock import patch
+        from stack import hyperframes_command
+        with patch.dict(os.environ, {'VIDEO_VIRAL_NO_INSTALL': '1', 'HYPERFRAMES_BROWSER_PATH': 'local-chrome'}):
+            with self.assertRaisesRegex(ValueError, 'download.*fontes'):
+                hyperframes_command(ROOT, ['render'])
+
+    def test_hyperframes_screenshot_and_cache_are_forwarded(self):
+        import os
+        import tempfile
+        from unittest.mock import patch
+        from stack import hyperframes_command
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            cli = root / 'node_modules/hyperframes/bin/hyperframes.mjs'
+            cli.parent.mkdir(parents=True)
+            cli.write_text('// stub', encoding='utf-8')
+            with patch.dict(os.environ, {'HYPERFRAMES_CACHE_DIR': 'chosen-cache', 'HYPERFRAMES_BROWSER_PATH': 'chosen-chrome'}, clear=True):
+                command, env = hyperframes_command(root, ['render', '-o', 'out.mp4'], True)
+            self.assertEqual(command[1:], [str(cli), 'render', '-o', 'out.mp4'])
+            self.assertEqual(env['PRODUCER_FORCE_SCREENSHOT'], 'true')
+            self.assertEqual(env['PRODUCER_EXPERIMENTAL_FAST_CAPTURE'], 'false')
+            self.assertEqual(env['HYPERFRAMES_CACHE_DIR'], 'chosen-cache')
+            self.assertEqual(env['HYPERFRAMES_BROWSER_PATH'], 'chosen-chrome')
+            self.assertEqual(env['HYPERFRAMES_NO_AUTO_INSTALL'], '1')
+
+    def test_plan_supports_isolated_python(self):
+        import subprocess
+        import sys
+        result = subprocess.run([sys.executable, '-I', str(ROOT / 'scripts/plan.py'), '--help'], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_check_env_probes_python_in_isolation(self):
+        from unittest.mock import patch
+        from types import SimpleNamespace
+        import check_env
+        with patch('check_env.subprocess.run', return_value=SimpleNamespace(stdout='{}')) as run:
+            check_env.pythons(None)
+        self.assertTrue(run.call_args_list)
+        self.assertTrue(all(call.args[0][1:3] == ['-I', '-c'] for call in run.call_args_list))
+
     def test_catalog_matches_chosen_stack(self):
         data = json.loads((ROOT / 'assets/stack.json').read_text(encoding='utf-8'))
         self.assertEqual(data['version'], '2.0.0')

@@ -5,6 +5,8 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { generate } from '../../scripts/visual_scene.mjs';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { launchBrowser, nodeRootFrom } from '../../scripts/_node.mjs';
 
 const nodeRoot = nodeRootFrom(process.env.VIDEO_VIRAL_NODE_ROOT);
@@ -17,6 +19,11 @@ test('visual scenes seek deterministically in a browser and preserve output', as
     await t.test(name, async () => {
       const output = path.join(temp, name);
       await generate({ module: name, output, 'node-root': nodeRoot, width: 240, height: 160, duration: 4, seed: 17 });
+      // lint é estático: não lança Chrome, não localiza fontes nem baixa dependências.
+      const { stdout } = await promisify(execFile)(process.execPath,
+        [path.join(nodeRoot, 'node_modules/hyperframes/bin/hyperframes.mjs'), 'lint', output, '--json'],
+        { env: { ...process.env, DO_NOT_TRACK: '1', HYPERFRAMES_NO_UPDATE_CHECK: '1', HYPERFRAMES_NO_AUTO_INSTALL: '1' } });
+      assert.equal(JSON.parse(stdout).errorCount, 0, stdout);
       const page = await browser.newPage();
       try {
         await page.setViewport({ width: 240, height: 160, deviceScaleFactor: 1 });
