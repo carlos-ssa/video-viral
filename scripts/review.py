@@ -20,7 +20,7 @@ Sai com código 1 se houver alerta bloqueante. Só biblioteca padrão e FFmpeg.
 import argparse
 import json
 import math
-import os
+import subprocess
 import re
 import shutil
 import statistics
@@ -29,6 +29,31 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _common import file_sha256, manifest_sha256, ffprobe_json, load_manifest, need, project_dir, run, save_manifest  # noqa: E402
+
+# Segundos, proporções e níveis são separados por tipo de vídeo (references/review.md).
+FREEZE_SAMPLE_FPS = 5
+FREEZE_PIXEL_DELTA = 8
+FREEZE_CHANGED_FRACTION = 0.0002
+FREEZE_MIN_SECONDS = 0.4
+SHORT_FREEZE_WARN_SECONDS, LONG_FREEZE_WARN_SECONDS = 1.5, 6.0
+DEAD_TAIL_ENERGY_REFERENCE_FPS = 10
+DEAD_TAIL_MAX_MEAN_ENERGY, DEAD_TAIL_MAX_FRAME_ENERGY = 0.5, 1.5
+UNIFORM_PIXEL_FRACTION = 0.9
+SHORT_FREEZE_ERROR_SECONDS, LONG_FREEZE_ERROR_SECONDS = 2.5, 12.0
+SHORT_SHOT_SECONDS, LONG_SHOT_SECONDS = 3.5, 15.0
+SHORT_EVENT_GAP_SECONDS, LONG_EVENT_GAP_SECONDS = 3.0, 8.0
+SHORT_SPEECH_START_SECONDS, LONG_SPEECH_START_SECONDS = 0.7, 3.0
+SHORT_DEAD_TAIL_SECONDS, LONG_DEAD_TAIL_SECONDS = 1.0, 3.0
+SILENCE_DB = -45
+SILENCE_MIN_SECONDS = 0.15
+SHORT_MIDDLE_SILENCE_SECONDS, LONG_MIDDLE_SILENCE_SECONDS = 0.7, 2.0
+MIN_AUDIBLE_FRACTION = 0.5
+TIMING_TOLERANCE_SECONDS = 0.05
+OCCUPANCY_WIDTH, OCCUPANCY_HEIGHT = 90, 160
+OCCUPANCY_MAX_SAMPLES = 48
+UNIFORM_COLOR_DELTA = 10
+UNIFORM_PERSISTENCE = 0.9
+UNIFORM_BAND_FRACTION = 0.3
 
 BARS = "▁▂▃▄▅▆▇█"
 RUBRIC = [
@@ -71,7 +96,14 @@ def rubric_for(m, dur):
         r.append(("Continuidade", "Personagens, cenário e ação mantêm identidade e continuidade entre planos"))
     if m.get("brief", {}).get("objective") == "conversao":
         r.append(("Mensagem e CTA", "Público, benefício, prova e ação estão claros; a promessa é cumprida"))
+    if not expects_speech(m):
+        r = [(k, "Quadro 0 legível e intrigante; imagem e som apresentam a ação, sem exigir fala")
+             if k == "Gancho" else (k, v) for k, v in r]
     if is_long(m, dur):
+        r = [(k, "Quadro 0 forte e promessa clara; em vídeo narrado, fala em até 3 s")
+             if k == "Gancho" else (k, v) for k, v in r]
+        r = [(k, "Progressão visual adequada ao assunto; investigar pausas acima de 8 s e planos acima de 15 s")
+             if k == "Ritmo" else (k, v) for k, v in r]
         r.insert(2, LONG_RUBRIC[0])
         r = [(k, "Entrega a promessa do título; CTA sem anunciar o fim antes da hora") if k == "Payoff" else (k, v)
              for k, v in r]
@@ -109,24 +141,36 @@ def frames(ff, video, out_dir, dur, fps, every, tw, th):
 
 
 def analyze(ff, video, out_dir, fps, tw, th):
-    """Cortes (scdet), congelamentos (freezedetect) e energia de movimento por quadro (tblend)."""
+    """Cortes, energia e pixels que mudam: movimento local não se dilui na média do quadro."""
     graph = (f"[0:v]scale={tw}:{th},fps={fps},split=3[a][b][c];"
              "[a]scdet=threshold=10,metadata=select:key=lavfi.scd.time,"
              "metadata=print:key=lavfi.scd.time:file=cuts.txt,nullsink;"
-             "[b]freezedetect=n=-50dB:d=1.5,nullsink;"
+             f"[b]fps={FREEZE_SAMPLE_FPS},tblend=all_mode=difference,"
+             f"lut=y='if(gt(val,{FREEZE_PIXEL_DELTA}),255,0)',signalstats,"
+             "metadata=print:key=lavfi.signalstats.YAVG:file=changed.txt,nullsink;"
              "[c]tblend=all_mode=difference,signalstats,"
              "metadata=print:key=lavfi.signalstats.YAVG:file=energy.txt[out]")
-    r = run([ff, "-hide_banner", "-nostats", "-i", str(video), "-filter_complex", graph, "-map", "[out]",
-             "-f", "null", "-"], cwd=out_dir)
+    run([ff, "-hide_banner", "-nostats", "-i", str(video), "-filter_complex", graph, "-map", "[out]",
+         "-f", "null", "-"], cwd=out_dir)
     cuts = [float(x) for x in re.findall(r"lavfi\.scd\.time=([\d.]+)", (out_dir / "cuts.txt").read_text())]
     energy = [(float(t), float(v)) for t, v in re.findall(
         r"pts_time:([\d.]+)\s*\n\s*lavfi\.signalstats\.YAVG=([\d.]+)", (out_dir / "energy.txt").read_text())]
-    starts = [float(x) for x in re.findall(r"freeze_start: ([\d.]+)", r.stderr)]
-    durs = [float(x) for x in re.findall(r"freeze_duration: ([\d.]+)", r.stderr)]
-    freezes = [(s, d) for s, d in zip(starts, durs)]
-    if len(starts) > len(durs):  # congelado até o fim
-        freezes.append((starts[-1], None))
-    for f in ("cuts.txt", "energy.txt"):
+    changed = [(float(t), float(v) / 255) for t, v in re.findall(
+        r"pts_time:([\d.]+)\s*\n\s*lavfi\.signalstats\.YAVG=([\d.]+)", (out_dir / "changed.txt").read_text())]
+    freezes, start = [], None
+    step = 1 / FREEZE_SAMPLE_FPS
+    for t, fraction in changed:
+        if fraction < FREEZE_CHANGED_FRACTION:
+            if start is None:
+                start = max(0.0, t - step)
+        elif start is not None:
+            duration = max(0.0, t - step - start)
+            if duration >= FREEZE_MIN_SECONDS:
+                freezes.append((start, duration))
+            start = None
+    if start is not None and changed[-1][0] + step - start >= FREEZE_MIN_SECONDS:
+        freezes.append((start, None))
+    for f in ("cuts.txt", "energy.txt", "changed.txt"):
         (out_dir / f).unlink(missing_ok=True)
     return cuts, energy, freezes
 
@@ -146,6 +190,174 @@ def speech_start(ff, audio):
     if starts and starts[0] <= 0.05:
         return ends[0] if ends else None
     return 0.0
+
+
+def expects_speech(m):
+    """Não confundir qualquer som com voz. Gravações mantêm fala do áudio original."""
+    if m.get("format") in RECORDED:
+        return True
+    if m.get("format") in {"musica", "asmr", "asmr-impossivel"} or (m.get("voice") or {}).get("engine") == "none":
+        return False
+    scenes = m.get("scenes") or []
+    if scenes and all("narration" in scene for scene in scenes):
+        return any(str(scene.get("narration") or "").strip() for scene in scenes)
+    return True
+
+
+def audio_activity(ff, video, dur, has_audio=True):
+    """Mede silêncio absoluto no render, inclusive o que o gate de LUFS ignora."""
+    if not has_audio:
+        return {"silences": [(0.0, dur)], "audible_fraction": 0.0}
+    result = run([ff, "-hide_banner", "-nostats", "-i", str(video), "-vn", "-af",
+                  f"silencedetect=n={SILENCE_DB}dB:d={SILENCE_MIN_SECONDS}", "-f", "null", "-"])
+    silences, start = [], None
+    for kind, value in re.findall(r"silence_(start|end): (-?[\d.]+)", result.stderr):
+        t = max(0.0, min(dur, float(value)))
+        if kind == "start":
+            start = t
+        elif start is not None:
+            silences.append((start, t))
+            start = None
+    if start is not None:
+        silences.append((start, dur))
+    return {"silences": silences, "audible_fraction": max(0.0, 1 - covered_seconds(silences) / dur)}
+
+
+def caption_ranges(proj, m):
+    """ASS ou grupos JSON são intervalos de exibição; palavras ASR não são caixas de legenda."""
+    ass = proj / "captions" / "captions.ass"
+    if ass.exists():
+        ranges = []
+        for line in ass.read_text(encoding="utf-8-sig").splitlines():
+            if line.startswith("Dialogue:"):
+                fields = line.split(",", 9)
+                if len(fields) != 10:
+                    return None
+                def seconds(value):
+                    h, minute, sec = value.strip().split(":")
+                    return int(h) * 3600 + int(minute) * 60 + float(sec)
+                try:
+                    if fields[9].strip():
+                        ranges.append((seconds(fields[1]), seconds(fields[2])))
+                except ValueError:
+                    return None
+        return ranges
+    groups = proj / "captions" / "captions.json"
+    if groups.exists():
+        try:
+            return [(float(g["start"]), float(g["end"])) for g in json.loads(groups.read_text(encoding="utf-8"))]
+        except (ValueError, KeyError, TypeError):
+            return None
+    if (m.get("captions") or {}).get("enabled") is False or not expects_speech(m):
+        return []
+    return None  # HTML/legenda embutida sem tempos de exibição: não presumir ausência.
+
+
+def freeze_checks(freezes, dur, long_, captions):
+    block, warn = [], []
+    limit = LONG_FREEZE_ERROR_SECONDS if long_ else SHORT_FREEZE_ERROR_SECONDS
+    for start, duration in freezes:
+        stop = dur if duration is None else min(dur, start + duration)
+        span = stop - start
+        if span < (LONG_FREEZE_WARN_SECONDS if long_ else SHORT_FREEZE_WARN_SECONDS):
+            continue
+        reading = captions is not None and any(a < stop and b > start for a, b in captions)
+        message = (f"Imagem quase parada em {start:.1f}–{stop:.1f} s ({span:.1f} s): "
+                   "confira a reprodução; encurte a pausa ou mantenha movimento significativo.")
+        # Um None significa somente fim do arquivo, não duração infinita nem falha mais grave.
+        (block if span >= limit and not reading else warn).append(message)
+    return block, warn
+
+
+def low_motion_tail(energy, dur):
+    """Cauda sem progressão: tolera só movimento residual, não substitui o gate de congelamento."""
+    if len(energy) < 2:
+        return None
+    step = (energy[-1][0] - energy[0][0]) / (len(energy) - 1)
+    if step <= 0:
+        return None
+    scale = 1 / (step * DEAD_TAIL_ENERGY_REFERENCE_FPS)
+    tail = []
+    for time, value in reversed(energy):
+        if value * scale > DEAD_TAIL_MAX_FRAME_ENERGY:
+            break
+        tail.append((time, value * scale))
+    if not tail or statistics.fmean(value for _, value in tail) > DEAD_TAIL_MAX_MEAN_ENERGY:
+        return None
+    return max(0.0, tail[-1][0] - step)
+
+
+def audio_checks(m, dur, long_, activity, freezes, captions, energy=()):
+    block, warn = [], []
+    fraction = activity["audible_fraction"]
+    if not expects_speech(m) and fraction < MIN_AUDIBLE_FRACTION:
+        block.append(f"Áudio audível em apenas {fraction:.0%} de 0.0–{dur:.1f} s "
+                     f"(mínimo {MIN_AUDIBLE_FRACTION:.0%}, silêncio abaixo de {SILENCE_DB} dB): "
+                     "preencha a ação com Foley/ambiente/música pertinente; normalizar LUFS não remove silêncio.")
+    middle_limit = LONG_MIDDLE_SILENCE_SECONDS if long_ else SHORT_MIDDLE_SILENCE_SECONDS
+    for start, stop in activity["silences"]:
+        if start > TIMING_TOLERANCE_SECONDS and stop < dur - TIMING_TOLERANCE_SECONDS and stop - start >= middle_limit:
+            warn.append(f"Silêncio no meio em {start:.1f}–{stop:.1f} s ({stop - start:.1f} s, "
+                        f"abaixo de {SILENCE_DB} dB): encurte a pausa ou acrescente cama sonora pertinente.")
+    tail_limit = LONG_DEAD_TAIL_SECONDS if long_ else SHORT_DEAD_TAIL_SECONDS
+    silent_tail = next((s for s, e in activity["silences"] if e >= dur - TIMING_TOLERANCE_SECONDS), None)
+    frozen_tail = next((s for s, d in freezes if d is None or s + d >= dur - TIMING_TOLERANCE_SECONDS), None)
+    if frozen_tail is None:
+        frozen_tail = low_motion_tail(energy, dur)
+    if silent_tail is not None and frozen_tail is not None:
+        start = max(silent_tail, frozen_tail)
+        if captions is not None:
+            start = max([start] + [min(dur, b) for a, b in captions if b > start and a < dur])
+        if dur - start > tail_limit + TIMING_TOLERANCE_SECONDS:
+            message = (f"Cauda {'morta' if captions is not None else 'possivelmente morta'} em {start:.1f}–{dur:.1f} s "
+                       f"({dur - start:.1f} s): corte o fim ou sustente ação, som ou legenda útil.")
+            if captions is None:
+                warn.append(message + " Confirme as legendas HTML/embutidas; faltam tempos de exibição confiáveis.")
+            else:
+                block.append(message)
+    return block, warn
+
+
+def uniform_band(ff, video, dur):
+    """Amostra RGB: mesma faixa contígua, quase uniforme espacial e temporalmente."""
+    w, h = OCCUPANCY_WIDTH, OCCUPANCY_HEIGHT
+    every = max(1.0, dur / OCCUPANCY_MAX_SAMPLES)
+    result = subprocess.run([ff, "-v", "error", "-i", str(video), "-an", "-vf",
+                             f"fps=1/{every},scale={w}:{h}", "-pix_fmt", "rgb24", "-f", "rawvideo", "-"],
+                            capture_output=True, check=True)
+    frame_size = w * h * 3
+    samples = len(result.stdout) // frame_size
+    if not samples:
+        return None
+    colors, coverage = [[] for _ in range(h)], [[] for _ in range(h)]
+    for offset in range(0, samples * frame_size, frame_size):
+        for y in range(h):
+            row = result.stdout[offset + y * w * 3:offset + (y + 1) * w * 3]
+            color = [statistics.median(row[c::3]) for c in range(3)]
+            colors[y].append(color)
+            coverage[y].append(sum(all(abs(row[x * 3 + c] - color[c]) <= UNIFORM_COLOR_DELTA
+                                       for c in range(3)) for x in range(w)) / w)
+    # Um rodapé/legenda pequeno não divide artificialmente uma grande região vazia.
+    # Exigimos 90% dos pixels da faixa da mesma cor em pelo menos 90% das amostras.
+    stable = [[statistics.median(v[c] for v in values) for c in range(3)] for values in colors]
+    best = (0, 0)
+    for start, color in enumerate(stable):
+        totals = [0.0] * samples
+        for stop in range(start, h):
+            if any(abs(stable[stop][c] - color[c]) > UNIFORM_COLOR_DELTA for c in range(3)):
+                break
+            for i in range(samples):
+                if all(abs(colors[stop][i][c] - color[c]) <= UNIFORM_COLOR_DELTA for c in range(3)):
+                    totals[i] += coverage[stop][i]
+            height = stop - start + 1
+            persistent = sum(total / height >= UNIFORM_PIXEL_FRACTION for total in totals) / samples
+            if persistent >= UNIFORM_PERSISTENCE and height > best[1] - best[0]:
+                best = (start, stop + 1)
+    fraction = (best[1] - best[0]) / h
+    if fraction <= UNIFORM_BAND_FRACTION:
+        return None
+    return {"top_fraction": best[0] / h, "bottom_fraction": best[1] / h,
+            "height_fraction": fraction, "start": 0.0, "end": dur, "samples": samples}
 
 
 def per_second(energy, dur):
@@ -184,8 +396,31 @@ def sparkline(vals):
     return "".join(BARS[min(len(BARS) - 1, int(v / top * (len(BARS) - 1) + 0.5))] for v in vals)
 
 
-def manifest_checks(proj, m, long_):
+def has_audio_role(proj, m, role):
+    kinds = {"sfx", "sound-design", "foley", "effect", "efeito"} if role == "sfx" else {
+        "music", "ambience", "ambient", "ambiente", "bed", "trilha"}
+    names = {"sound-design", "sfx", "foley", "effects", "efeitos"} if role == "sfx" else {
+        "music", "ambience", "ambient", "ambiente", "bed", "trilha"}
+    if any((proj / "audio" / f"{name}.wav").is_file() for name in names):
+        return True
+    if role == "sfx" and (proj / "audio/sfx").is_dir() and any((proj / "audio/sfx").iterdir()):
+        return True
+    for asset in m.get("assets", []):
+        path = Path(str(asset.get("path", "")).replace("\\", "/"))
+        tokens = set(re.split(r"[^\w-]+|_", path.stem.lower()))
+        if asset.get("kind") in kinds or asset.get("role") in kinds or tokens.intersection(names):
+            return True
+    return False
+
+
+def manifest_checks(proj, m, long_, duration=None):
     warn = []
+    waiver = (m.get("music") or {}).get("bed_waiver")
+    if (expects_speech(m) and not has_audio_role(proj, m, "bed")
+            and not (isinstance(waiver, str) and waiver.strip())):
+        interval = f"em 0.0–{duration:.1f} s" if duration is not None else "durante a fala"
+        warn.append(f"Sem cama sonora declarada {interval}: acrescente música/ambiente ou registre "
+                    "a justificativa editorial em music.bed_waiver; confira as pausas nos tempos de silêncio.")
     if m.get("format") in RECORDED:
         edl = proj / "edit" / "edl.json"
         if not edl.exists():
@@ -220,20 +455,20 @@ def manifest_checks(proj, m, long_):
     for s in m.get("scenes", []):
         dur = s.get("duration") or 0
         shots = len((s.get("visual") or {}).get("shots") or [])
-        if shots and dur / shots > 3.5:
-            warn.append(f"{s['id']}: {shots} plano(s) em {dur:.1f} s, mais de 3,5 s por plano.")
+        shot_limit = LONG_SHOT_SECONDS if long_ else SHORT_SHOT_SECONDS
+        if shots and dur / shots > shot_limit:
+            start = float(s.get("start") or 0)
+            warn.append(f"{s['id']}: {shots} plano(s) em {start:.1f}–{start + dur:.1f} s, "
+                        f"mais de {shot_limit:g} s por plano; varie o enquadramento ou encurte a cena.")
     if m.get("scenes"):
         os0 = (m["scenes"][0].get("on_screen") or "").split()
         if not os0:
             warn.append("Primeira cena sem texto na tela para o gancho.")
         elif len(os0) > 6:
             warn.append(f"Texto do gancho na tela com {len(os0)} palavras (máximo 6).")
-    kinds = {a.get("kind") for a in m.get("assets", [])}
-    sfx_dir = proj / "audio" / "sfx"
-    if "sfx" not in kinds and not (sfx_dir.is_dir() and any(sfx_dir.iterdir())):
-        warn.append("Nenhum efeito sonoro registrado: transições e revelações ficam mudas.")
-    if not (proj / "audio" / "music.wav").exists() and "music" not in kinds:
-        warn.append("Sem trilha musical.")
+    if not has_audio_role(proj, m, "sfx"):
+        warn.append("Nenhum efeito sonoro registrado: confira transições/revelações e registre "
+                    "a faixa de efeitos (audio/sound-design.wav ou ativo com role=sfx).")
     return warn + pace_checks(proj, long_)
 
 
@@ -295,10 +530,9 @@ def prepare_review_input(out_dir, video, manifest, metrics, producer_id):
     target = out_dir / "input"
     target.mkdir()
     clip = target / ("video" + video.suffix)
-    try:
-        os.link(video, clip)
-    except OSError:
-        shutil.copyfile(video, clip)
+    shutil.copyfile(video, clip)
+    if file_sha256(clip) != metrics["video_sha256"]:
+        raise ValueError("o vídeo mudou ao copiar a evidência; refaça a rodada")
     for name in ("hook.jpg", "grid.jpg"):
         shutil.copyfile(out_dir / name, target / name)
     direction = manifest.get("direction") or {}
@@ -620,11 +854,15 @@ def main():
     cuts, energy, freezes = analyze(ff, video, out_dir, afps, tw, th)
     luma0 = first_luma(ff, video)
     voice = proj / "audio" / "voice.wav"
-    speech = speech_start(ff, voice if voice.exists() else video) if (voice.exists() or has_audio) else None
+    speech = (speech_start(ff, voice if voice.exists() else video)
+              if expects_speech(m) and (voice.exists() or has_audio) else None)
+    activity = audio_activity(ff, video, dur, has_audio)
+    captions = caption_ranges(proj, m)
+    band = uniform_band(ff, video, dur)
 
     secs = per_second(energy, dur)
     events = visual_events(cuts, energy)
-    gap_max = 8.0 if long_ else 3.0
+    gap_max = LONG_EVENT_GAP_SECONDS if long_ else SHORT_EVENT_GAP_SECONDS
     gaps, prev = [], 0.0
     for t in events + [dur]:
         if t - prev > gap_max:
@@ -635,24 +873,27 @@ def main():
     block, warn = [], []
     if luma0 is not None and luma0 < 20:
         block.append(f"Primeiro quadro quase preto (luma {luma0:.0f}): o gancho precisa aparecer no quadro 0.")
-    for s, d in freezes:
-        d_txt = f"{d:.1f} s" if d else "até o fim"
-        if d is None or d >= 2.5:
-            block.append(f"Imagem congelada em {s:.1f} s por {d_txt}.")
-        else:
-            warn.append(f"Imagem quase parada em {s:.1f} s por {d_txt}.")
-    if m.get("format") == "musica":
-        pass  # Music/lyric videos need musical timing, not immediate speech.
-    elif speech is None:
-        warn.append("Não achei fala no áudio.")
-    elif speech > 0.7:
-        block.append(f"A fala começa em {speech:.2f} s: comece em até 0,5 s.")
+    freeze_block, freeze_warn = freeze_checks(freezes, dur, long_, captions)
+    audio_block, audio_warn = audio_checks(m, dur, long_, activity, freezes, captions, energy)
+    block += freeze_block + audio_block
+    warn += freeze_warn + audio_warn
+    if band:
+        warn.append(f"Ocupação do quadro em 0.0–{dur:.1f} s: faixa quase uniforme de "
+                    f"{band['top_fraction']:.0%} a {band['bottom_fraction']:.0%} da altura "
+                    f"({band['height_fraction']:.0%} do quadro, persistência ≥{UNIFORM_PERSISTENCE:.0%}). "
+                    "Confira o render e amplie/reposicione o assunto se esse vazio não for intencional.")
+    speech_limit = LONG_SPEECH_START_SECONDS if long_ else SHORT_SPEECH_START_SECONDS
+    if expects_speech(m):
+        if speech is None:
+            warn.append(f"Não achei fala em 0.0–{dur:.1f} s; confira a faixa de voz ou declare voice.engine=none se não há fala.")
+        elif speech > speech_limit:
+            block.append(f"A fala começa em {speech:.2f} s: antecipe a entrada para até {speech_limit:g} s.")
     first_event = next((t for t in events if t > 0.05), None)
     if first_event is None or first_event > 2.0:
         warn.append("Nenhuma mudança visual forte nos 2 primeiros segundos.")
     for g0, g1 in gaps:
         warn.append(f"{g1 - g0:.1f} s sem evento visual ({g0:.1f}–{g1:.1f} s).")
-    warn += manifest_checks(proj, m, long_)
+    warn += manifest_checks(proj, m, long_, dur)
 
     if file_sha256(video) != digest:
         sys.exit("O vídeo mudou durante a análise; refaça a revisão do render final.")
@@ -668,6 +909,7 @@ def main():
         "events_per_10s": round(len(events) / dur * 10, 1) if dur else 0,
         "energy_per_second": [round(v, 2) for v in secs],
         "freezes": freezes, "first_frame_luma": luma0, "speech_start_s": speech,
+        "audio_activity": activity, "uniform_band": band, "caption_timing_known": captions is not None,
         "blockers": block, "warnings": warn, "format": m.get("format", "narrado"), "long": long_,
         "rubric": [k for k, _ in rubric],
     }
@@ -691,6 +933,8 @@ def main():
         f"| Eventos visuais | {len(events)} ({metrics['events_per_10s']} a cada 10 s; alvo {'1–3' if long_ else '4–7'}) |",
         f"| Plano médio / mais longo | {metrics['mean_shot_s']} s / {metrics['longest_shot_s']} s |",
         f"| Início da fala | {'—' if speech is None else f'{speech:.2f} s'} |",
+        f"| Tempo audível (silêncio <{SILENCE_DB} dB) | {activity['audible_fraction']:.1%} |",
+        f"| Faixa uniforme persistente | {band['height_fraction']:.0%} da altura |" if band else "| Faixa uniforme persistente | não detectada |",
         f"| Luma do quadro 0 | {'—' if luma0 is None else f'{luma0:.0f}'} |", "",
         "Movimento por segundo:", "", "```", sparkline(secs),
         "".join(str(i % 10) for i in range(len(secs))), "```", "",

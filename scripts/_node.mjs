@@ -1,5 +1,6 @@
 import { createRequire } from 'node:module';
 import { existsSync, mkdirSync } from 'node:fs';
+import { mkdtemp, rm } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -21,7 +22,12 @@ export async function bundle(entry, outFile, nodeRoot) {
 }
 
 export function browserPath() {
-  const candidates = [process.env.VIDEO_VIRAL_BROWSER_PATH,
+  const explicit = process.env.VIDEO_VIRAL_BROWSER_PATH || process.env.HYPERFRAMES_BROWSER_PATH;
+  if (explicit) {
+    if (!existsSync(explicit)) throw new Error('Browser configurado não existe; confira VIDEO_VIRAL_BROWSER_PATH/HYPERFRAMES_BROWSER_PATH.');
+    return explicit;
+  }
+  const candidates = [
     path.join(process.env.ProgramFiles || '', 'Google', 'Chrome', 'Application', 'chrome.exe'),
     path.join(process.env['ProgramFiles(x86)'] || '', 'Microsoft', 'Edge', 'Application', 'msedge.exe')];
   for (const candidate of candidates) if (candidate && existsSync(candidate)) return candidate;
@@ -35,6 +41,18 @@ export function browserPath() {
 export async function launchBrowser(nodeRoot) {
   const imported = await import(pathToFileURL(packageEntry('puppeteer-core', nodeRoot)).href);
   const puppeteer = imported.default || imported;
-  return puppeteer.launch({ executablePath: browserPath(), headless: true,
-    args: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required'] });
+  // Não herda TEMP/TMP de workspaces profundos: o perfil do Chrome pode exceder MAX_PATH.
+  const base = path.resolve(process.env.VIDEO_VIRAL_BROWSER_TEMP_DIR || path.join(homedir(), '.video-viral', 'tmp'));
+  mkdirSync(base, { recursive: true });
+  const profile = await mkdtemp(path.join(base, 'vv-'));
+  const cleanup = () => rm(profile, { recursive: true, force: true, maxRetries: 3 });
+  try {
+    const browser = await puppeteer.launch({ executablePath: browserPath(), headless: true,
+      userDataDir: profile, env: { ...process.env, TEMP: profile, TMP: profile, TMPDIR: profile },
+      args: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required', `--disk-cache-dir=${path.join(profile, 'cache')}`] });
+    const close = browser.close.bind(browser);
+    browser.close = async () => { try { await close(); } finally { await cleanup(); } };
+    browser.once('disconnected', () => { cleanup().catch(() => {}); });
+    return browser;
+  } catch (error) { await cleanup(); throw error; }
 }

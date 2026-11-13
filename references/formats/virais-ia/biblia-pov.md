@@ -6,6 +6,14 @@
 
 Para aproximar uma passagem de quem acompanha relatos pessoais. Abrir já diante de uma decisão; a perspectiva cria proximidade, mas nunca transforma invenção de roteiro em fala bíblica literal.
 
+## Requisitos e limite local
+
+- **Obrigatório:** testemunha presente/identificável, perspectiva pessoal, decisão com gesto legível e continuidade de rua/roupa; ambiente sob o relato. Para selfie falante, performance e boca/voz precisam funcionar, não apenas o enquadramento.
+- **Local possível:** recortes/rig próprios ou imagens autorizadas, paralaxe e voz off declarada. Sem ComfyUI/modelos, construa ilustração própria; isso não gera pessoa realista nem selfie falante.
+- **PARE:** se o pedido exigir selfie realista e não houver gerador de imagem/vídeo validado ou clipes adequados, avise que a rota vetorial será **animatic**, não o formato viral pedido. Só produza essa alternativa com escopo aceito; sem fala síncrona, não a anuncie.
+
+Aplique as [regras comuns de composição](../../composition.md#regras-de-acabamento-obrigatórias). Mantenha a testemunha nos planos de relato; não deixe o começo sem personagem enquanto a fala apresenta o POV.
+
 ## Roteiro preenchível — alvo 28 s
 
 Escolha uma abertura; crie mais duas para os cinco candidatos do portão:
@@ -68,7 +76,7 @@ Ambiente de rua discreto gravado/licenciado, sem vozes identificáveis não auto
 [{"type":"pop","at":9.5,"duration":0.15,"gainDb":-28},{"type":"pulse","at":17,"duration":0.5,"gainDb":-30}]
 ```
 
-Esses sinais não substituem o ruído de pedra/rua, obtido à parte. Legenda de 2–3 palavras por grupo, sem serifa pesada licenciada, fora da cesta/rosto; mostrar “adaptação ilustrativa” e referência da passagem como texto editorial, separado da fala.
+Sem rua/pedra autorizadas, aplique a [reserva ambiente/Foley](../../modules.md#reserva-de-ambiente-e-foley-sintetizados) com **D=28 s**, **seed=41**, preset sob fala e contatos nas pedras; troque D e os contatos após medir. Identifique textura sintética, não rua real, e registre `kind:"sfx"`. Revise legenda por sentido conforme composição, fora da cesta/rosto; mostre “adaptação ilustrativa” e **“Neemias 2:17–18”** em texto editorial separado. Separe as duas frases finais na performance; não tente corrigir fala emendada só na legenda.
 
 ## Checklist específico
 

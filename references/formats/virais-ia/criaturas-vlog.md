@@ -6,6 +6,14 @@
 
 Humor de personalidade para uma criatura original: o extraordinário trata um problema banal com seriedade. A tentativa deve piorar ou transformar o problema; aparência engraçada sozinha não sustenta a série.
 
+## Requisitos e limite local
+
+- **Obrigatório:** personalidade em performance, criatura estável, tentativa e reversão visíveis; ambiente e contato do vaso/tecido sincronizados. Se o alvo for vlog realista, textura e gesto precisam sustentar essa linguagem.
+- **Local possível:** rig/recortes próprios com inclinação, olhar e sombra; voz off assumida. Animação 2D acabada pode cumprir uma direção cartoon aceita, mas uma pose com zoom não é performance de vlog.
+- **PARE:** sem gerador de imagem/vídeo, clipes autorizados ou rig próprio com atuação suficiente, avise que o resultado será **animatic**, não o vlog viral pedido. Só siga com esse escopo aceito; não venda “musgo realista” a partir de formas vetoriais.
+
+Aplique as [regras comuns de composição](../../composition.md#regras-de-acabamento-obrigatórias).
+
 ## Roteiro preenchível — alvo 24 s
 
 Ganchos (acrescentar dois candidatos para o portão):
@@ -68,7 +76,7 @@ Ambiente doméstico discreto licenciado/gravado; contato do vaso com piso e teci
 [{"type":"pop","at":0.3,"duration":0.15,"gainDb":-25},{"type":"whoosh","at":8.2,"duration":0.3,"gainDb":-29},{"type":"pop","at":21.2,"duration":0.15,"gainDb":-26}]
 ```
 
-Ajustar ao contato visual medido; Tone.js não produz “musgo real”. Legendas curtas na faixa livre inferior, sem cobrir vaso/sombra; texto de escolha separado da transcrição. Evitar excesso de efeitos que mascare a reversão verbal.
+Sem sala/vaso/tecido autorizados, aplique a [reserva ambiente/Foley](../../modules.md#reserva-de-ambiente-e-foley-sintetizados) com **D=24 s**, **seed=107**, preset sob fala e `pop` no assentamento do vaso. Ajuste D/contatos ao render medido, registre `kind:"sfx"` e identifique a textura sintética: Tone.js não produz “musgo real”. Legendas por sentido na faixa exclusiva, sem cobrir vaso/sombra; texto de escolha separado da transcrição. Evite efeitos que mascarem a reversão verbal.
 
 ## Checklist específico
 

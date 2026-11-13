@@ -4,7 +4,15 @@ import { mkdtemp, mkdir, readFile, rm, writeFile, symlink } from 'node:fs/promis
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
-import { generate } from '../../scripts/sound.mjs';
+import { generate, validateSamples } from '../../scripts/sound.mjs';
+
+test('fractional durations accept one sample of rounding, not corrupt audio', () => {
+  const duration = 1.2345, frames = Math.ceil(duration * 44100);
+  assert.doesNotThrow(() => validateSamples(new Array(frames - 1).fill(.1), duration));
+  assert.throws(() => validateSamples(new Array(frames - 2).fill(.1), duration), /duration/);
+  assert.throws(() => validateSamples(new Array(frames).fill(NaN), duration), /samples/);
+  assert.throws(() => validateSamples(new Array(frames).fill(1.01), duration), /amplitude/);
+});
 
 const root = process.env.VIDEO_VIRAL_NODE_ROOT || 'C:/Users/igcar/.codex/reviews/video-viral-integration-2026-11-12/node';
 test('renders deterministic PCM and protects outputs on errors', async t => {
@@ -21,6 +29,10 @@ test('renders deterministic PCM and protects outputs on errors', async t => {
   assert.ok(audio.subarray(44).some(n => n !== 0)); assert.equal(receipt.toneVersion, '15.1.22'); assert.deepEqual(receipt.spec, spec);
   assert.equal(receipt.wavSha256, createHash('sha256').update(audio).digest('hex'));
   const b = await generate(project, { ...opts, output: 'audio/repeat.wav' }); assert.deepEqual(await readFile(b.output), audio);
+  await writeFile(specPath, JSON.stringify({ ...spec, duration: 1.2345 }));
+  const fractional = await generate(project, { ...opts, output: 'audio/fractional.wav' });
+  const rounded = JSON.parse(await readFile(fractional.receipt, 'utf8'));
+  assert.ok(Math.abs(rounded.frames - 1.2345 * 44100) <= 1);
   await assert.rejects(generate(project, opts), /already exists/); assert.deepEqual(await readFile(a.output), audio);
   await writeFile(specPath, JSON.stringify({ ...spec, events: [{ ...spec.events[0], duration: 2 }] }));
   await assert.rejects(generate(project, { ...opts, output: 'audio/invalid.wav' }), /Invalid event/);

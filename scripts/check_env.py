@@ -83,7 +83,7 @@ def pythons(extra):
             continue
         seen.add(k)
         try:
-            r = subprocess.run([str(c), "-c", PROBE], capture_output=True, text=True, timeout=180, errors="replace")
+            r = subprocess.run([str(c), "-I", "-c", PROBE], capture_output=True, text=True, timeout=180, errors="replace")
             info = json.loads(r.stdout.strip().splitlines()[-1])
         except Exception as e:
             info = {"error": str(e)[:200]}

@@ -6,6 +6,14 @@
 
 Peça sensorial curta para uma transformação de material imaginário. A antecipação do contato e sua consequência sincronizada seguram a atenção; música ou corte não devem esconder que a ação não aconteceu.
 
+## Requisitos e limite local
+
+- **Obrigatório:** transformação tátil completa, contato/sombra/volume coerentes e som contínuo/denso ligado à ação, escutado em fones. Quatro estalos sobre imagens paradas não são ASMR.
+- **Local possível:** geometria própria Three.js/Blender com duas metades, lâmina e filamentos animados; Foley autorizado ou textura sintética de reserva. Isso exige construir e revisar a cena, não só executar a demo visual.
+- **PARE:** sem 3D equivalente construído ou gerador de imagem/vídeo validado para a ação, avise que cartões/zoom serão **animatic**, não ASMR impossível. Se o áudio sintetizado não sustentar a sensação, pare também: só ofereça demonstração sintética identificada com escopo aceito, não o formato pronto.
+
+Aplique as [regras comuns de composição e densidade sonora](../../composition.md#regras-de-acabamento-obrigatórias).
+
 ## Roteiro preenchível — alvo 12 s
 
 Ganchos **visuais**, não narração (completar mais dois candidatos no portão):
@@ -59,7 +67,7 @@ Gravar ambiente de sala muito discreto e contato seguro com objetos inofensivos,
 [{"type":"pulse","at":1.6,"duration":0.25,"gainDb":-34},{"type":"impact","at":2.2,"duration":0.12,"gainDb":-28},{"type":"whoosh","at":4.7,"duration":0.5,"gainDb":-32},{"type":"pop","at":8.4,"duration":0.12,"gainDb":-30}]
 ```
 
-Reancorar ao contato do render escolhido; o som não precisa ocupar todos os frames. Sem narração e, por padrão, sem música; não usar loudness como prova de relaxamento. Escutar em fones/alto-falante e evitar agudos/picos desagradáveis; se não puder ouvir, revisão sensorial pendente.
+Os quatro sinais acima são **acentos, não faixa ASMR completa**. Sem sala/Foley autorizados, acrescente a [reserva ambiente/Foley](../../modules.md#reserva-de-ambiente-e-foley-sintetizados) com **D=12 s**, **seed=131** e preset sem fala; sobreponha a textura durante a travessia/vibração e reancore os contatos ao render escolhido. Registre `kind:"sfx"` e identifique a síntese. Cumpra a densidade/limites de silêncio da composição; não use loudness como prova de relaxamento. Se os osciladores soarem ásperos/tonais em vez de táteis, PARE e peça Foley adequado. Sem narração e, por padrão, sem música. Escute em fones/alto-falante e evite agudos/picos desagradáveis; sem escuta, a revisão sensorial fica pendente.
 
 ## Checklist específico
 

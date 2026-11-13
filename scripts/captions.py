@@ -201,27 +201,131 @@ def cmd_estimate(proj, m, a):
     return out
 
 
-def group_words(words, n):
-    groups, cur = [], []
-    for w in words:
-        if cur and w.get("jump"):  # corte que junta frases distantes da gravação: começa outro grupo
-            groups.append(cur)
+def script_spelling(words, text):
+    """Fonte explícita de grafia; conserva tempos reconhecidos, não é alinhamento forçado."""
+    from difflib import SequenceMatcher
+    tokens = text.split()
+    key = lambda s: re.sub(r"\W", "", s).casefold()
+    matcher = SequenceMatcher(None, [key(w["w"]) for w in words], [key(t) for t in tokens], autojunk=False)
+    out = []
+    for tag, i, j, a, b in matcher.get_opcodes():
+        if tag == "equal":
+            out.extend({**w, "w": t} for w, t in zip(words[i:j], tokens[a:b]))
+        elif (tag == "replace" and j - i <= 12 and b - a <= 4
+              and all(re.fullmatch(r"[\d:.,–—/\-]+", t) for t in tokens[a:b])
+              and any(re.search(r"\d", t) for t in tokens[a:b])
+              and not any(w.get("jump") for w in words[i + 1:j])):
+            # Somente numerais entre âncoras textuais: não inventa palavras omitidas pelo ASR.
+            if (i == 0 or key(words[i - 1]["w"]) == key(tokens[a - 1])) and (j == len(words) or (b < len(tokens) and key(words[j]["w"]) == key(tokens[b]))):
+                start, end = words[i]["start"], words[j - 1]["end"]
+                for k, token in enumerate(tokens[a:b]):
+                    out.append({**words[i], "w": token, "start": start + (end - start) * k / (b - a),
+                                "end": start + (end - start) * (k + 1) / (b - a), "script_spelling": True})
+            else:
+                out.extend(words[i:j])
+        else:
+            out.extend(words[i:j])
+    return out
+
+
+def caption_lines(words, max_chars=32, max_lines=2):
+    """Quebra equilibrada sem linha de uma palavra quando há outra distribuição possível."""
+    tokens = [w["w"] for w in words]
+    if len(" ".join(tokens)) <= max_chars:
+        return [" ".join(tokens)]
+    if max_lines == 1:
+        return None
+    choices = []
+    for k in range(1, len(tokens)):
+        left, right = " ".join(tokens[:k]), " ".join(tokens[k:])
+        if max(len(left), len(right)) <= max_chars:
+            penalty = (1000 if min(k, len(tokens) - k) == 1 and len(tokens) > 3 else 0)
+            choices.append((penalty + abs(len(left) - len(right)), [left, right]))
+    return min(choices, key=lambda x: x[0])[1] if choices else None
+
+
+# Evita separar palavras funcionais do complemento; pontuação pode fechar o trecho legitimamente.
+FUNCTION_WORDS = set("o a os as um uma uns umas de do da dos das em no na nos nas por pelo pela pelos pelas "
+                     "para com sem sob sobre entre até e ou mas que se só seu sua seus suas meu minha meus minhas "
+                     "teu tua teus tuas nosso nossa nossos nossas vosso vossa vossos vossas "
+                     "me te lhe lhes vos lo la los las ao aos à às num numa nuns numas dum duma".split())
+
+
+def functional_tail(word):
+    return not re.search(r'[,;:.!?…]["”\')]*$', word) and word.casefold() in FUNCTION_WORDS
+
+
+def group_words(words, n, max_chars=32, max_lines=2, min_duration=0.6, max_cps=24, pause=0.45):
+    if n < 1 or max_chars < 1 or max_lines not in (1, 2) or min_duration <= 0 or max_cps <= 0 or pause <= 0:
+        raise ValueError("Limites de legenda inválidos (linhas: 1 ou 2).")
+    # Frases e cortes são fronteiras duras; palavras por grupo são uma meta, não uma guilhotina.
+    phrases, cur = [], []
+    sentence_end = lambda w: bool(re.search(r'[.!?…]["”\')]*$', w["w"]))
+    # Não altera as palavras/tempos de entrada; só normaliza a grafia usada na legenda.
+    words = [dict(w) for w in words]
+    new_sentence = True
+    for index, w in enumerate(words):
+        if new_sentence:
+            w["w"] = re.sub(r'^(\W*)([^\W\d_])', lambda match: match[1] + match[2].upper(), w["w"], count=1)
+        new_sentence = sentence_end(w)
+        # Uma pausa é fronteira preferida, mas não isola a última palavra da frase.
+        pause_break = (cur and len(cur) > 1 and not functional_tail(cur[-1]["w"])
+                       and w["start"] - cur[-1]["end"] >= pause
+                       and not sentence_end(w) and index + 1 < len(words)
+                       and not words[index + 1].get("jump")
+                       and words[index + 1]["start"] - w["end"] < pause)
+        if cur and (w.get("jump") or pause_break):
+            phrases.append(cur)
             cur = []
         cur.append(w)
-        if len(cur) >= n or re.search(r"[.!?;:]$", w["w"]):
-            groups.append(cur)
+        if sentence_end(w):
+            phrases.append(cur)
             cur = []
     if cur:
-        groups.append(cur)
+        phrases.append(cur)
+    groups = []
+    for phrase_index, phrase in enumerate(phrases):
+        count = len(phrase)
+        phrase_end = phrases[phrase_index + 1][0]["start"] if phrase_index + 1 < len(phrases) else float('inf')
+        best = {count: ((0, 0, 0, 0), [])}
+        for i in range(count - 1, -1, -1):
+            candidates = []
+            for j in range(i + 1, count + 1):
+                lines = caption_lines(phrase[i:j], max_chars, max_lines)
+                if lines is None:
+                    break
+                if j not in best:
+                    continue
+                start = 0.0 if phrase_index == 0 and i == 0 and phrase[i]["start"] < 0.6 else phrase[i]["start"]
+                limit = phrase[j]["start"] if j < count else phrase_end
+                required = max(min_duration, len(" ".join(w["w"] for w in phrase[i:j])) / max_cps)
+                if limit - start + 0.001 < required:
+                    continue
+                # Entre soluções legíveis: evita órfãs, depois caudas funcionais e vírgulas internas.
+                # O custo por bloco evita dividir unidades curtas como "passa uma caixa por vez".
+                cost = (int(j - i == 1 and count > 1),
+                        int(j < count and functional_tail(phrase[j - 1]["w"])),
+                        sum(bool(re.search(r'[,;:]["”\')]*$', w["w"])) for w in phrase[i:j - 1]),
+                        4 + (j - i - n) ** 2)
+                total = tuple(a + b for a, b in zip(cost, best[j][0]))
+                candidates.append((total, [phrase[i:j]] + best[j][1]))
+            if candidates:
+                best[i] = min(candidates, key=lambda x: x[0])
+        if 0 not in best:
+            raise ValueError(f"Legenda rápida ou limite de caracteres em {phrase[0]['start']:.2f}s; revise tempos/texto ou limites de leitura e max_chars_per_line.")
+        groups.extend(best[0][1])
     out = []
     for i, g in enumerate(groups):
-        start = 0.0 if i == 0 and g[0]["start"] < 0.6 else g[0]["start"]  # texto já no quadro 0 (gancho)
-        end = g[-1]["end"] + 0.15
+        start = 0.0 if i == 0 and g[0]["start"] < 0.6 else g[0]["start"]
+        text = " ".join(w["w"] for w in g)
+        required = max(min_duration, len(text) / max_cps)
+        end = max(g[-1]["end"] + 0.15, start + required)
         if i + 1 < len(groups):
-            nxt = groups[i + 1][0]["start"]
-            end = nxt if nxt - g[-1]["end"] < 0.6 else min(end, nxt)
-        out.append({"start": round(start, 3), "end": round(max(end, start + 0.2), 3),
-                    "text": " ".join(w["w"] for w in g), "words": g})
+            end = min(end, groups[i + 1][0]["start"])
+        if end - start + 0.001 < required:
+            raise ValueError(f"Legenda rápida em {start:.2f}s: precisa {required:.2f}s de leitura; revise os tempos/texto ou os limites de leitura.")
+        out.append({"start": round(start, 3), "end": round(end, 3), "text": text,
+                    "lines": caption_lines(g, max_chars, max_lines), "words": g})
     return out
 
 
@@ -265,7 +369,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             k = max(1, int(round((nxt - wd["start"]) * 100)))
             txt = ass_escape(wd["w"].upper() if up else wd["w"])
             parts.append(f"{{\\k{k}}}{txt}")
-        lines.append(f"Dialogue: 0,{ts(g['start'])},{ts(g['end'])},Short,,0,0,0,,{' '.join(parts)}")
+        split_at = len(g.get("lines", [g["text"]])[0].split())
+        body = "".join(("\\N" if i == split_at and split_at < len(ws) else " " if i else "") + part
+                       for i, part in enumerate(parts))
+        lines.append(f"Dialogue: 0,{ts(g['start'])},{ts(g['end'])},Short,,0,0,0,,{body}")
     path.write_text(head + "\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -280,7 +387,9 @@ def main():
                     "em projeto com gravação)")
     ap.add_argument("--final", action="store_true", help="transcribe/import: tempos já no vídeo editado")
     ap.add_argument("--words", type=int, help="ass: palavras por grupo (padrão do video.json)")
+    ap.add_argument("--script-text", help="TXT UTF-8: fonte explícita de grafia/pontuação e numerais (não alinha áudio)")
     a = ap.parse_args()
+    script = Path(a.script_text).read_text(encoding="utf-8-sig") if a.script_text else None
 
     proj = project_dir(a.project)
     m = load_manifest(proj)
@@ -291,6 +400,8 @@ def main():
     if a.cmd in ("align", "transcribe", "import", "estimate"):
         fn = {"align": cmd_align, "transcribe": cmd_transcribe, "import": cmd_import, "estimate": cmd_estimate}
         words = fn[a.cmd](proj, m, a)
+        if script:
+            words = script_spelling(words, script)
         if not words:
             sys.exit("Nenhuma palavra reconhecida. Confira o áudio (ou a legenda) e o idioma do video.json.")
         to_source = a.cmd in ("transcribe", "import") and source_timeline(m, a)
@@ -312,7 +423,15 @@ def main():
         sys.exit("Falta captions/words.json. Rode 'align', 'transcribe' ou 'estimate' antes.")
     words = fill_missing(json.loads(words_path.read_text(encoding="utf-8")))
     cfg = m.get("captions", {})
-    groups = group_words(words, a.words or int(cfg.get("words_per_group", 3)))
+    if script:
+        words = script_spelling(words, script)
+    try:
+        groups = group_words(words, a.words if a.words is not None else int(cfg.get("words_per_group", 3)),
+                             int(cfg.get("max_chars_per_line", 32)), int(cfg.get("max_lines", 2)),
+                             float(cfg.get("min_duration", 0.6)), float(cfg.get("max_cps", 24)),
+                             float(cfg.get("pause_threshold", 0.45)))
+    except ValueError as exc:
+        sys.exit(str(exc))
     size = tuple(m.get("size", [1080, 1920]))
     write_ass(groups, cap_dir / "captions.ass", cfg, size)
     (cap_dir / "captions.json").write_text(json.dumps(groups, ensure_ascii=False, indent=1), encoding="utf-8")

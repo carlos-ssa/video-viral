@@ -21,11 +21,13 @@ Vale para gravação própria e para vídeo narrado do zero com mais de 3 minuto
 
 Em gravação, `footage.py cut` tira os silêncios; em vídeo longo use `--min-silence 0.6` e `--pad 0.15` para não ficar atropelado.
 
+Aplique as [regras de acabamento](../composition.md#regras-de-acabamento-obrigatórias), inclusive tamanho mínimo da legenda horizontal e títulos equilibrados. Na virada de assunto, faça **troca real de cena**: outro enquadramento, ambiente, demonstração ou B-roll com informação nova. Trocar só o título sobre o mesmo palco durante todo o longo não cumpre a mudança de cena; compare início/meio/fim de cada seção antes de entregar.
+
 ## Capítulos
 
 Em `publish.chapters`, uma lista `[{"start": "00:00", "title": "Introdução"}, ...]`. O YouTube exige: primeiro em 00:00, pelo menos 3, cada um com 10 s ou mais, em ordem. `deliver.py` confere e escreve o bloco pronto para colar na descrição. Marque capítulo onde muda o assunto e escreva títulos que prometem ("Por que a poupança perde"), não rótulos ("Parte 2").
 
-Os tempos são do vídeo final: depois do `render`, use `edit/timeline.md` para achar onde cada trecho caiu.
+Use tempos do vídeo final. Em gravação, `footage.py render` gera `edit/timeline.md` com o mapa dos trechos; atualize-o editorialmente se a composição posterior mudar a montagem. Na rota narrada, não há esse arquivo automático: use `scenes[].start/duration` medidos, tempos da composição e `captions/words.json`, conferindo os capítulos no MP4 final. Não peça uma timeline inexistente.
 
 ## Miniatura
 
@@ -37,4 +39,6 @@ Título com até ~60 caracteres visíveis, promessa ou curiosidade clara, sem ca
 
 ## Cortes derivados
 
-Todo longo rende cortes verticais: depois de entregar, rode `clips.py suggest` no projeto do longo e ofereça os 3 melhores ao usuário ([cortes](cortes.md)).
+Em longo de **gravação importada**, rode `clips.py suggest` e ofereça os três melhores ao usuário ([cortes](cortes.md)); ele exige `source.footage` e `captions/source_words.json` no tempo da fonte. A transcrição narrada/final gera `captions/words.json`, não esse arquivo. Não renomeie palavras finais como se fossem da fonte bruta.
+
+Para longo narrado, depois da entrega importe o **MP4 final** em um novo projeto `gravacao`, preserve a proveniência/licenças e o rótulo IA dos ativos originais, e transcreva/importe a legenda contra essa fonte. Use então o fluxo de cortes. Isso cria `source_words.json` no relógio correto; o projeto narrado e seus arquivos permanecem intactos.

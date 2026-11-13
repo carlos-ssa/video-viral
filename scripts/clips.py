@@ -171,7 +171,8 @@ def cmd_make(proj, m, a):
     if r.returncode:
         sys.exit(r.stderr or r.stdout)
     child = parent / a.slug
-    own = next((x.get("commercial_ok") for x in m.get("assets", []) if x.get("path") == src["footage"]), True)
+    origin_asset = next((x for x in m.get("assets", []) if x.get("path") == src["footage"]), None)
+    own = origin_asset.get("commercial_ok") if origin_asset else None
     r = subprocess.run([py, str(HERE / "footage.py"), "import", str(child), src["footage"],
                         "--from", f"{off + t0:.3f}", "--to", f"{off + t1:.3f}"]
                        + ([] if src.get("cleaned", True) else ["--no-clean"])
@@ -189,6 +190,15 @@ def cmd_make(proj, m, a):
                                                               encoding="utf-8")
     cm = load_manifest(child)
     cm["source"]["parent"] = str(proj)
+    # Importar mídia não transforma conteúdo sintético/de terceiro em gravação própria.
+    if origin_asset:
+        cm["assets"] = [dict(origin_asset) if x.get("path") == cm["source"]["footage"] else x
+                        for x in cm.get("assets", [])]
+    for key in ("provenance", "ai_generated", "ai_label"):
+        if key in src:
+            cm["source"][key] = src[key]
+    if "ai_label" in (m.get("publish") or {}):
+        cm.setdefault("publish", {})["ai_label"] = m["publish"]["ai_label"]
     if m.get("direction", {}).get("style"):
         cm["direction"] = m["direction"]
     save_manifest(child, cm)

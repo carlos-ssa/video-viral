@@ -1,4 +1,4 @@
-"""Cliente REST ACE-Step 1.5; não inicia serviços nem instala modelos."""
+"""ACE-Step 1.5 ou --backend procedural (cama instrumental simples de reserva, sem modelo/prompt)."""
 import argparse
 import json
 import math
@@ -11,6 +11,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _common import add_asset, load_manifest, project_dir, save_manifest
 
 MAX_DOWNLOAD = 100 * 1024 * 1024
@@ -36,19 +37,50 @@ def origin(url):
         raise MusicError('Porta inválida') from exc
 
 
+def procedural_audio(duration, seed):
+    """Cama tonal simples de reserva, sem voz/modelo nem interpretação do prompt."""
+    import array
+    import io
+    import wave
+    rate = 22050
+    frames = round(duration * rate)
+    root = 45 + seed % 7
+    samples = array.array('h')
+    chords = [[440 * 2 ** ((root + chord + interval - 69) / 12) for interval in (0, 12, 15, 19)]
+              for chord in (0, 5, 3, 7)]
+    for i in range(frames):
+        t = i / rate
+        freqs = chords[int(t / 4) % 4]
+        envelope = min(t / 0.3, (duration - t) / 0.5, 1) * (0.8 + 0.2 * math.cos(2 * math.pi * t / 2))
+        # Transição suave entre acordes; pico sempre abaixo de -12 dBFS.
+        envelope *= min((t % 4) / 0.08, (4 - t % 4) / 0.08, 1)
+        value = sum(math.sin(2 * math.pi * f * t) for f in freqs) * 0.055 * envelope
+        samples.append(round(32767 * value))
+    if sys.byteorder != 'little':
+        samples.byteswap()
+    stream = io.BytesIO()
+    with wave.open(stream, 'wb') as wav:
+        wav.setparams((1, 2, rate, 0, 'NONE', 'not compressed'))
+        wav.writeframes(samples.tobytes())
+    return stream.getvalue()
+
+
 def run(args):
-    base = args.endpoint.rstrip('/')
+    backend = getattr(args, 'backend', 'ace-step')
+    if backend == 'ace-step' and not args.endpoint:
+        raise MusicError('Sem ACE-Step: use --backend procedural para uma cama instrumental simples de reserva (não interpreta o prompt).')
+    base = (args.endpoint or 'http://127.0.0.1').rstrip('/')
     parsed = urllib.parse.urlsplit(base)
     base_origin = origin(base)
     if parsed.path not in ('', '/') or parsed.query or parsed.fragment:
         raise MusicError('Endpoint deve conter apenas a origem')
-    if not args.prompt.strip() or not math.isfinite(args.duration) or not 10 <= args.duration <= 600:
-        raise MusicError('Prompt obrigatório e duração deve estar entre 10 e 600 segundos')
+    if (backend == 'ace-step' and not args.prompt.strip()) or not math.isfinite(args.duration) or not 10 <= args.duration <= 600:
+        raise MusicError('Prompt obrigatório para ACE-Step; duração deve estar entre 10 e 600 segundos')
     if not 0 <= args.seed <= 2**32 - 1:
         raise MusicError('Seed deve estar entre 0 e 4294967295')
     if not math.isfinite(args.timeout) or not 0 < args.timeout <= 3600:
         raise MusicError('Timeout deve estar entre 0 e 3600 segundos')
-    if args.commercial_ok and not args.license.strip():
+    if backend == 'ace-step' and args.commercial_ok and not args.license.strip():
         raise MusicError('Uso comercial exige licença informada')
     proj = project_dir(args.projeto)
     rel = Path(args.output)
@@ -62,6 +94,15 @@ def run(args):
         raise MusicError('Manifesto inválido')
     asset_path = out.relative_to(proj).as_posix()
     add_asset(m, asset_path, 'audio', 'ACE-Step 1.5 API (gerado; serviço informado pelo usuário)', args.license.strip() or 'não informada', bool(args.commercial_ok))
+    if backend == 'procedural':
+        asset = next(x for x in m['assets'] if x['path'] == asset_path)
+        asset.update(source='síntese procedural simples (reserva; não é ACE-Step)',
+                     license='síntese original sem samples externos', commercial_ok=True,
+                     fallback=True, backend='procedural', seed=args.seed, duration=args.duration,
+                     note='Cama instrumental tonal; prompt não interpretado; sem aprovação estética.')
+        publish_audio(out, proj, m, procedural_audio(args.duration, args.seed))
+        print('RESERVA procedural: cama instrumental simples; não interpreta o prompt e não substitui música dirigida.')
+        return
     opener = urllib.request.build_opener(NoRedirect())
     headers = {'Accept': 'application/json'}
     key = os.environ.get('ACE_STEP_API_KEY')
@@ -146,6 +187,10 @@ def run(args):
     audio = request(url, limit=MAX_DOWNLOAD)
     if len(audio) < 12 or audio[:4] != b'RIFF' or audio[8:12] != b'WAVE':
         raise MusicError('Download não é WAV válido')
+    publish_audio(out, proj, m, audio)
+
+
+def publish_audio(out, proj, m, audio):
     out.parent.mkdir(parents=True, exist_ok=True)
     tmp = None
     previous = out.read_bytes() if out.exists() else None
@@ -172,8 +217,10 @@ def run(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('projeto')
-    parser.add_argument('--endpoint', required=True)
-    parser.add_argument('--prompt', required=True)
+    parser.add_argument('--backend', choices=['ace-step', 'procedural'], default='ace-step',
+                        help='procedural: cama instrumental simples de reserva, sem interpretar prompt')
+    parser.add_argument('--endpoint', help='Origem da API ACE-Step; dispensada com --backend procedural')
+    parser.add_argument('--prompt', default='', help='Direção musical para ACE-Step; não interpretada pela reserva procedural')
     parser.add_argument('--duration', required=True, type=float)
     parser.add_argument('--seed', required=True, type=int)
     parser.add_argument('--output', default='audio/music.wav')

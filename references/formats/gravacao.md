@@ -20,7 +20,17 @@ python scripts/review.py <projeto> --producer-id <id-do-autor>
 
 ## Camada de acabamento
 
-Siga [composição HyperFrames](../composition.md): preserve a base A-roll, copie-a para `composition/assets/aroll.mp4`, inclua como clip de vídeo com tempos/duração reais e acrescente hierarquia, textos, cenas e transições GSAP. Execute lint/check/preview e renderize o filme inteiro para `render/master.mp4` antes de `deliver.py`. FFmpeg continua preparação/mix/exportação, não substituto do compositor.
+Siga [composição HyperFrames e regras de acabamento](../composition.md): preserve a base A-roll, copie-a para `composition/assets/aroll.mp4` e inclua como clip com tempos/duração reais. Para manter a fala original na extração de áudio do runtime, declare **`data-has-audio="true"`**:
+
+```html
+<video id="aroll" class="clip" src="assets/aroll.mp4"
+  data-start="0" data-duration="18.1" data-track-index="0"
+  data-has-audio="true" playsinline></video>
+```
+
+Troque 18.1 pela duração medida. Preserve essa fala como fonte única; não mixe uma cópia externa nem descarte com `--mute-video-audio` nessa rota. Acrescente hierarquia, textos, cenas e transições GSAP. Execute lint/check/preview, escute um render curto para confirmar a extração e renderize o filme inteiro para `render/master.mp4` antes de `deliver.py`. FFmpeg continua preparação/mix/exportação, não substituto do compositor.
+
+Mostre a **imagem real da gravação** no A-roll: barras cinza e gráficos substitutos não satisfazem edição de gravação. Se o arquivo faltar ou não decodificar, PARE e peça a fonte; só ofereça animatic identificado com escopo aceito. Varie recorte/moldura e título por mudança de assunto (referência de cadência em “Ritmo e cortes”), sem manter um único cartão idêntico por todo o vídeo.
 
 O A-roll renderizado é uma base, não uma prova automática de acabamento. Use direção, B-roll, composição, animação e som conforme a peça; não é necessário misturar motores redundantes. Para um pedido pontual, preserve o resto da edição. Se as legendas já estiverem na composição, entregue com `--no-captions`.
 
