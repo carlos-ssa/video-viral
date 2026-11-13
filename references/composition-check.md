@@ -1,13 +1,13 @@
 # Quadros de estilo e teste de seek — HyperFrames 0.9.40
 
-Execute a partir da pasta da skill, com browser/cache/fontes locais preparados conforme [setup](setup.md#browser-cache-e-execução-sem-rede). Não instale dependências para este teste. Use diretórios novos por rodada: `snapshot --output` limpa os stills anteriores daquela pasta.
+Execute a partir da pasta da skill, com browser/cache/fontes locais preparados conforme [setup](setup.md#browser-cache-e-execução-sem-rede). Use somente `stack.py hyperframes --node-root <pasta> -- <comando>`. Com `VIDEO_VIRAL_NO_INSTALL` não vazio, a CLI fica bloqueada (inclusive snapshot/screenshot); não contorne a proibição. Os adaptadores Puppeteer locais continuam disponíveis, mas não substituem os testes do runtime completo descritos aqui. Não instale dependências para este teste. Use diretórios novos por rodada: `snapshot --output` limpa os stills anteriores daquela pasta.
 
 ## Aprovar três quadros antes do filme inteiro
 
 Escolha início com gancho, maior carga de texto/ação e payoff. No exemplo de 12 s, capture 0, 5 e 10 s; substitua pelos tempos reais, sempre menores que a duração:
 
 ```sh
-"<node-root>/node_modules/.bin/hyperframes" snapshot "<projeto>/composition" \
+python scripts/stack.py hyperframes --node-root "<node-root>" -- snapshot "<projeto>/composition" \
   --at 0,5,10 --no-end --output "<projeto>/research/style-r01"
 ```
 
@@ -18,7 +18,7 @@ Abra os três PNGs e a prancha gerada. Compare com referências autorizadas do f
 A implementação de `snapshot` 0.9.40 preserva a ordem e as repetições de `--at`. Não use `--keep`: ele não aceita instantes repetidos. `--no-end` impede acrescentar outro tempo. Para filme com menos de 2 s, use um instante interno nas duas posições correspondentes e ajuste os nomes abaixo.
 
 ```sh
-"<node-root>/node_modules/.bin/hyperframes" snapshot "<projeto>/composition" \
+python scripts/stack.py hyperframes --node-root "<node-root>" -- snapshot "<projeto>/composition" \
   --at 2,0,2 --no-end --output "<projeto>/research/seek-r01"
 ```
 

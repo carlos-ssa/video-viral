@@ -1,6 +1,6 @@
 # Instalação seletiva do stack v2
 
-Execute comandos com caminhos absolutos ou a partir da pasta desta skill. `VIDEO_VIRAL_NO_INSTALL=1` bloqueia instalações pelos scripts da skill, **não os downloads da CLI HyperFrames**. Não reative skills arquivadas ou instale motores fora de `assets/stack.json`.
+Execute comandos com caminhos absolutos ou a partir da pasta desta skill. `VIDEO_VIRAL_NO_INSTALL=1` bloqueia instalações pelos scripts da skill e **bloqueia a execução da CLI HyperFrames pelo wrapper**, pois a CLI não oferece trava geral para downloads de Chrome/fontes. Os adaptadores Puppeteer locais continuam disponíveis, sem baixar browser. Não reative skills arquivadas ou instale motores fora de `assets/stack.json`.
 
 ## Consentimento antes da instalação
 
@@ -25,11 +25,14 @@ Exemplo, somente **após** consentimento da lista: `python scripts/setup_tools.p
 
 ### Browser, cache e execução sem rede
 
-- `VIDEO_VIRAL_BROWSER_PATH`: Chrome/Edge existente usado pelos adaptadores da skill; eles não baixam browser.
-- `HYPERFRAMES_BROWSER_PATH`: caminho absoluto do executável usado pela **CLI HyperFrames**. A CLI não lê `VIDEO_VIRAL_BROWSER_PATH`; defina as duas quando usar ambas as rotas.
+- `VIDEO_VIRAL_BROWSER_PATH`: Chrome/Edge existente usado pelos adaptadores da skill; eles não baixam browser. Tem precedência sobre `HYPERFRAMES_BROWSER_PATH`.
+- `HYPERFRAMES_BROWSER_PATH`: caminho absoluto do executável da **CLI HyperFrames**; também é aceito como reserva pelos adaptadores locais. A CLI não lê `VIDEO_VIRAL_BROWSER_PATH`; defina as duas quando usar ambas as rotas.
+- `VIDEO_VIRAL_BROWSER_TEMP_DIR`: raiz curta e gravável dos perfis temporários dos adaptadores (padrão `~/.video-viral/tmp`). Cada execução isola perfil/cache e TEMP/TMP/TMPDIR e limpa ao fechar; não precisa de alias `subst` para workspaces profundos. Não configura o cache da CLI.
 - `HYPERFRAMES_CACHE_DIR`: raiz de cache da CLI, incluindo fontes, histórico e lock de render. Use pasta curta, gravável e exclusiva do trabalho; não compartilhe lock/cache entre testes sem intenção. Isso **não desativa downloads**.
 
-No HyperFrames 0.9.40 instalado, a CLI pode baixar Chrome e fontes mesmo com `VIDEO_VIRAL_NO_INSTALL=1`, `HF_HUB_OFFLINE=1` e `TRANSFORMERS_OFFLINE=1`. Essas variáveis não são um bloqueio de rede da CLI. Antes de lint/check/preview/render, selecione o browser existente e forneça cada fonte com `@font-face` e arquivo local (sem Google Fonts/CDN). Em Git Bash/POSIX, com caminhos reais:
+Execute a CLI somente por `python scripts/stack.py hyperframes [--node-root <pasta>] [--screenshot] -- <comando>`, nunca por `npx hyperframes` ou diretamente. O wrapper usa o pacote local e desativa verificações de atualização/auto-instalação conhecidas. Como o HyperFrames 0.9.40 não oferece trava geral de downloads de fontes/Chrome, **qualquer `VIDEO_VIRAL_NO_INSTALL` não vazio bloqueia a CLI inteira antes do subprocesso**, inclusive `--help`, `--version` e `--screenshot`. Os adaptadores Puppeteer locais de som/cenas continuam funcionando com browser/pacotes existentes. Não remova a proibição para contorná-la: se o render principal depender da CLI, relate a etapa bloqueada.
+
+Sem essa proibição e com execução permitida, selecione o browser existente e forneça cada fonte com `@font-face` e arquivo local (sem Google Fonts/CDN) antes de lint/check/preview/render. `HF_HUB_OFFLINE` e `TRANSFORMERS_OFFLINE` não bloqueiam a rede da CLI. Em Git Bash/POSIX, com caminhos reais:
 
 ```sh
 export VIDEO_VIRAL_BROWSER_PATH="<Chrome-ou-Edge-existente>"
@@ -48,7 +51,7 @@ Diagnóstico: `python scripts/check_env.py` e `python scripts/stack.py doctor --
 Se a voz pt-BR do Kokoro não atender, a rota oficial é fornecer narração gravada ou gerada fora em `audio/scenes/<id>.wav` e executar `voice.py <projeto> --from-wavs`. Registre origem/licença/consentimento; isso importa áudio, sem adicionar TTS ao catálogo.
 No narrado sem ComfyUI configurado, tente na ordem: ativos fornecidos → cenas 2D/tipografia/3D do stack → relatar a etapa bloqueada se a necessidade essencial continuar. Preserve a direção sem inventar disponibilidade de imagem.
 
-Legendas: importe SRT/VTT ou use estimate com tempos declarados aproximados. Sem HyperFrames, pode haver base/rascunho FFmpeg, nunca acabamento profissional aprovado. Sem API musical, aceite somente reserva procedural **identificada como reserva**, quando disponível e adequada ao pedido, ou falha com orientação para configurar ACE-Step/fornecer faixa autorizada; veja [música](formats/musica.md). Não anuncie geração ACE-Step nem música equivalente ao pedido sem ela. Não baixe modelos repetidamente para tentar mudar a nota.
+Legendas: importe SRT/VTT ou use estimate com tempos declarados aproximados. Sem HyperFrames, pode haver base/rascunho FFmpeg, nunca acabamento profissional aprovado. Sem API musical, use `python scripts/music.py <projeto> --backend procedural --duration 30 --seed 7` para cama instrumental simples **identificada como reserva** (`fallback:true` no ativo), sem `--endpoint`/`--prompt`, somente quando adequada ao pedido; senão, falha com orientação para configurar ACE-Step/fornecer faixa autorizada. Veja [música](formats/musica.md). Não anuncie geração ACE-Step nem música equivalente ao pedido sem ela. Não baixe modelos repetidamente para tentar mudar a nota.
 
 Com VIDEO_VIRAL_NO_INSTALL, voz/transcrição usam somente pesos já em cache. Para CPU explícita em narração: voice.py <projeto> --device cpu. Isso não troca o motor de voz.
 

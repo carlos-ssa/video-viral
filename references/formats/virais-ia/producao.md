@@ -4,14 +4,14 @@ Parte integrante do [guia](../virais-ia.md). Execute a sequência comum e as dec
 
 ## 0. Preparar sem instalar
 
-Comandos relativos à pasta da skill; `<pai>` é pasta absoluta, `<P>` é `<pai>/<slug>`, `<N>` é a raiz npm **já instalada**. Substitua os marcadores; não cole `<...>` literalmente no shell. No Windows use o shim `hyperframes.cmd`. Não use setup nem `npx` com download. No ambiente do processo defina `VIDEO_VIRAL_NO_INSTALL=1`; para ferramentas de modelos, também `HF_HUB_OFFLINE=1` e `TRANSFORMERS_OFFLINE=1`. Em Git Bash/POSIX:
+Comandos relativos à pasta da skill; `<pai>` é pasta absoluta, `<P>` é `<pai>/<slug>`, `<N>` é a raiz npm **já instalada**. Substitua os marcadores; não cole `<...>` literalmente no shell. Use sempre o wrapper `python scripts/stack.py hyperframes [--node-root <pasta>] [--screenshot] -- <comando>`; ele resolve o pacote local também no Windows. Não use setup, `npx hyperframes` nem a CLI diretamente. No ambiente do processo defina `VIDEO_VIRAL_NO_INSTALL=1`; para ferramentas de modelos, também `HF_HUB_OFFLINE=1` e `TRANSFORMERS_OFFLINE=1`. Em Git Bash/POSIX:
 
 ```sh
 export VIDEO_VIRAL_NO_INSTALL=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 python scripts/new_project.py piloto --title "Título original" --format storytelling --aspect 9:16 --seconds 36 --dir "<pai>"
 ```
 
-O script acrescenta o slug à pasta pai. Use o Python/venv existente apropriado quando necessário. **Essas variáveis não impediam a CLI HyperFrames de baixar Chrome/fontes**; configure `HYPERFRAMES_BROWSER_PATH`, `HYPERFRAMES_CACHE_DIR` e fontes locais antes de chamar a CLI, conforme [setup](../../setup.md#browser-cache-e-execução-sem-rede). Cache não é modo offline. Se dependência, peso, browser, serviço ComfyUI ou voz não estiver disponível, **não instale/inicie implicitamente**. Confira a seção “Requisitos e limite local” da receita: se faltar um requisito essencial, PARE e avise que 2D/tipografia seria animatic, não o formato pedido; só prossiga nessa alternativa com escopo aceito. Os exemplos de workflow dependem do grafo real do usuário, não de um modelo hipotético.
+O script acrescenta o slug à pasta pai. Use o Python/venv existente apropriado quando necessário. **Com `VIDEO_VIRAL_NO_INSTALL` não vazio, o wrapper BLOQUEIA a CLI HyperFrames inteira**, inclusive help/version e screenshot, porque browser/cache/fontes locais não eliminam downloads internos possíveis. Os adaptadores Puppeteer locais continuam disponíveis: aceitam `VIDEO_VIRAL_BROWSER_PATH` ou, na ausência dela, `HYPERFRAMES_BROWSER_PATH`; perfis curtos usam `VIDEO_VIRAL_BROWSER_TEMP_DIR` (padrão `~/.video-viral/tmp`), sem alias `subst`. Não remova a proibição para contorná-la. Os comandos de CLI da seção 4 são condicionais a um ambiente em que sua execução seja permitida; neste modo sem instalação, pare antes deles e relate o render principal bloqueado. Browser/cache/fontes e limites estão em [setup](../../setup.md#browser-cache-e-execução-sem-rede). Cache não é modo offline. Se dependência, peso, browser, serviço ComfyUI ou voz não estiver disponível, **não instale/inicie implicitamente**. Confira a seção “Requisitos e limite local” da receita: se faltar um requisito essencial, PARE e avise que 2D/tipografia seria animatic, não o formato pedido; só prossiga nessa alternativa com escopo aceito. Os exemplos de workflow dependem do grafo real do usuário, não de um modelo hipotético.
 
 ## 1. Roteiro, bíblia e manifesto
 
@@ -85,7 +85,7 @@ node scripts/visual_scene.mjs --module pixi --output "<P>/scenes/p01" --width 10
 node --input-type=module -e "import { bundle } from './scripts/_node.mjs'; await bundle(process.argv[1], process.argv[2], process.argv[3]);" "<P>/scenes/p01/assets/scene-entry.js" "<P>/scenes/p01/assets/scene.js" "<N>"
 ```
 
-Renderizar `<P>/scenes/p01` com o executável HyperFrames já instalado (os mesmos comandos da seção 4, saída própria dentro de `composition/assets/`) e incluir o trecho no filme principal, ou adaptar o wrapper aninhado conforme [composição](../../composition.md). Sem adaptar/reconstruir/renderizar, registrar como planejado, não usado. A mesma disciplina vale para `paper`, `p5` e `gl-transitions`; não usar todos por obrigação.
+Quando a execução da CLI for permitida, renderizar `<P>/scenes/p01` pelo wrapper HyperFrames (os mesmos comandos da seção 4, saída própria dentro de `composition/assets/`) e incluir o trecho no filme principal, ou adaptar o wrapper aninhado conforme [composição](../../composition.md). Sem adaptar/reconstruir/renderizar, registrar como planejado, não usado. A mesma disciplina vale para `paper`, `p5` e `gl-transitions`; não usar todos por obrigação.
 
 ## 2B. Clipes externos dirigidos, selecionados e importados
 
@@ -146,7 +146,7 @@ python scripts/captions.py import "<P>" --file "<P>/captions/final.srt" --final
 python scripts/captions.py ass "<P>"
 ```
 
-`--final` evita deslocar palavras para a fonte bruta quando há `source.footage`; `--audio "<caminho-absoluto>"` seleciona outra faixa final se necessário. Revisar cada palavra, número e tempo; `estimate` seria aproximação, não alinhamento. Definir `captions.font`, `size`, `words_per_group`, `uppercase` existentes; não inventar campo de cor no manifesto. Cor/realce customizado vai no HTML/ASS e requer revisão. Fontes locais licenciadas em `assets/fonts/`; máximo de duas linhas, fora de rosto/UI. Se legenda for HTML, usar `--no-captions` na entrega.
+`--final` evita deslocar palavras para a fonte bruta quando há `source.footage`; `--audio "<caminho-absoluto>"` seleciona outra faixa final se necessário. Revisar cada palavra, número e tempo; `estimate` seria aproximação, não alinhamento. Definir `captions.font`, `size`, `words_per_group`, `uppercase` e os limites reais `max_chars_per_line` (32), `max_lines` (2, aceita 1 ou 2), `min_duration` (0,6 s), `max_cps` (24) e `pause_threshold` (0,45 s). `--words` altera a meta de palavras, não corta rigidamente cada bloco; `--script-text "<P>/research/roteiro.txt"` fornece grafia/pontuação/numerais sem alinhar áudio nem inserir fala omitida, conforme [módulos](../../modules.md#voz-e-legendas). Não inventar campo de cor no manifesto. Cor/realce customizado vai no HTML/ASS e requer revisão. Fontes locais licenciadas em `assets/fonts/`; máximo de duas linhas, fora de rosto/UI. Se legenda for HTML, usar `--no-captions` na entrega.
 
 Criar `<P>/edit/sound.json`; exemplo válido de spec (12 s, trocar pela duração final):
 
@@ -162,18 +162,18 @@ Criar `<P>/edit/sound.json`; exemplo válido de spec (12 s, trocar pela duraçã
 node scripts/sound.mjs "<P>" --spec edit/sound.json --node-root "<N>"
 ```
 
-Tipos reais: `whoosh`, `impact`, `pop`, `riser`, `pulse`. Eventos precisam terminar dentro da duração. As receitas dão acentos de piloto, **não uma cama completa nem o som real da referência**. Grave/obtenha ambientes licenciados ou aplique a [reserva sintetizada com parâmetros concretos](../../modules.md#reserva-de-ambiente-e-foley-sintetizados), registrando `kind:"sfx"` como ensinado ali. Não prometa chuva, sala ou materiais realistas: o módulo atual usa osciladores. `--sfx audio/ambiente-e-efeitos.wav` em deliver seleciona uma faixa acabada em vez da padrão; combine os sinais nela antes, sem duplicar. Confira perspectiva, sincronia e inteligibilidade por escuta humana. Sem escuta, marque como não verificado.
+Tipos reais: `whoosh`, `impact`, `pop`, `riser`, `pulse`. Eventos precisam terminar dentro da duração. As receitas dão acentos de piloto, **não uma cama completa nem o som real da referência**. Grave/obtenha ambientes licenciados ou aplique a [reserva sintetizada com parâmetros concretos](../../modules.md#reserva-de-ambiente-e-foley-sintetizados), registrando origem/licença conforme o contrato real de reconhecimento de efeitos ali (`kind:"sfx"` não é obrigatório). Não prometa chuva, sala ou materiais realistas: o módulo atual usa osciladores. `--sfx audio/ambiente-e-efeitos.wav` em deliver seleciona uma faixa acabada em vez da padrão; combine os sinais nela antes, sem duplicar. Confira perspectiva, sincronia e inteligibilidade por escuta humana. Sem escuta, marque como não verificado.
 
 ## 4. Composição, entrega e revisão (portões iguais)
 
 Crie `<P>/composition/index.html`, recursos locais e `<P>/render/`. Siga o [HTML, contrato e regras de acabamento](../../composition.md): raiz `main`, dimensões/fps/duração reais, `window.__timelines.main` pausada; animações determinísticas, sem timers/relógio aleatório. Execute os [quadros de estilo e seek 2 → 0 → 2](../../composition-check.md), adaptando tempos à duração real. Se a captura padrão falhar, use a [reserva por screenshot](../../composition.md#reserva-por-screenshot). Não use a demo como acabamento.
 
 ```sh
-"<N>/node_modules/.bin/hyperframes" --version
-"<N>/node_modules/.bin/hyperframes" lint "<P>/composition"
-"<N>/node_modules/.bin/hyperframes" check "<P>/composition"
-"<N>/node_modules/.bin/hyperframes" preview "<P>/composition"
-"<N>/node_modules/.bin/hyperframes" render "<P>/composition" --output "<P>/render/master.mp4" --fps 30
+python scripts/stack.py hyperframes --node-root "<N>" -- --version
+python scripts/stack.py hyperframes --node-root "<N>" -- lint "<P>/composition"
+python scripts/stack.py hyperframes --node-root "<N>" -- check "<P>/composition"
+python scripts/stack.py hyperframes --node-root "<N>" -- preview "<P>/composition"
+python scripts/stack.py hyperframes --node-root "<N>" -- render "<P>/composition" --output "<P>/render/master.mp4" --fps 30
 python scripts/deliver.py "<P>" --video render/master.mp4 --mute-video-audio --no-music
 python scripts/review.py "<P>" --producer-id <autor-real>
 python scripts/review.py "<P>" --verdict
