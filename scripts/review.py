@@ -318,6 +318,110 @@ def prepare_review_input(out_dir, video, manifest, metrics, producer_id):
     return file_sha256(path)
 
 
+def empty_preflight():
+    return {"schema": 1, "reviewer_id": "", "author_scores_exposed": None,
+            "channels": {ch: {"available": None, "method": "", "evidence": ""} for ch in CHANNELS}}
+
+
+def human_form(out_dir, metrics):
+    """Ficha sem notas do autor; entregue junto de input/, não do relatório."""
+    lines = ["# Ficha de revisão humana", "",
+             "Preencha pessoalmente após abrir input/video.*. Use SIM apenas para o que fez.",
+             "Informe segundos decimais (ponto); intervalo integral em cada modalidade aplicável.",
+             "Não consulte notas/conclusões do autor. O registro não autentica a identidade.", "",
+             f"Video SHA256: {metrics['video_sha256']}",
+             f"Manifesto SHA256: {metrics['manifest_sha256']}",
+             f"Pacote SHA256: {metrics['review_request_sha256']}",
+             "Revisor: ", "Notas do autor não consultadas: ",
+             "Assisti ao vídeo inteiro: ",
+             "Ouvi o áudio inteiro: " + ("" if metrics['has_audio'] else "NA"),
+             "Início observado: ", "Fim observado: ", "Método e aparelho: ",
+             "Observações gerais: ", "", "| Critério | Nota (1–5) | Observação/trecho |", "|---|---|---|"]
+    lines += [f"| {key} |  |  |" for key in metrics['rubric']]
+    (out_dir / "ficha-humana.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def ingest_human_form(proj, path):
+    """Valida a declaração antes de gravar; o veredito conserva todos os portões."""
+    rounds = sorted((proj / "review").glob("r[0-9][0-9]"))
+    if not rounds:
+        raise ValueError("gere uma rodada antes de preencher a ficha")
+    last = rounds[-1]
+    met = json.loads((last / "metrics.json").read_text(encoding="utf-8"))
+    text = path.read_text(encoding="utf-8")
+
+    def field(label):
+        values = re.findall(r"^" + re.escape(label) + r":[ \t]*(.*)$", text, re.M)
+        if len(values) != 1 or not values[0].strip():
+            raise ValueError(f"preencha uma vez o campo {label}")
+        return values[0].strip()
+
+    for label, key in (("Video SHA256", "video_sha256"), ("Manifesto SHA256", "manifest_sha256"),
+                       ("Pacote SHA256", "review_request_sha256")):
+        if field(label) != met[key]:
+            raise ValueError(f"{label} diverge da rodada")
+    request_path = last / "input" / "request.json"
+    if file_sha256(request_path) != met["review_request_sha256"]:
+        raise ValueError("pacote alterado")
+    request = json.loads(request_path.read_text(encoding="utf-8"))
+    video = Path(met["video"])
+    video = video if video.is_absolute() else proj / video
+    if file_sha256(video) != met["video_sha256"] or manifest_sha256(load_manifest(proj)) != met["manifest_sha256"]:
+        raise ValueError("vídeo/manifesto mudou; regenere a revisão")
+    required = CHANNELS if met["has_audio"] else ("visual", "motion")
+    if field("Assisti ao vídeo inteiro") != "SIM" or field("Notas do autor não consultadas") != "SIM":
+        raise ValueError("confirme observação integral e independência com SIM")
+    if field("Ouvi o áudio inteiro") != ("SIM" if met["has_audio"] else "NA"):
+        raise ValueError("confirme escuta integral com SIM (NA somente sem fluxo de áudio)")
+    start, stop = float(field("Início observado")), float(field("Fim observado"))
+    if (not all(math.isfinite(x) for x in (start, stop)) or not 0 <= start < stop <= met["duration"] + 0.05
+            or covered_seconds([[start, stop]]) < met["duration"] - 0.05):
+        raise ValueError("intervalo observado não cobre a duração integral")
+    method, notes = field("Método e aparelho"), field("Observações gerais")
+    cap = {"schema": 1, "reviewer_id": field("Revisor"), "reviewer_type": "human",
+           "author_scores_exposed": False, "channels": {
+               ch: {"available": ch in required, "method": method,
+                    "evidence": f"Ficha humana {path.name}; declaração de observação integral"} for ch in CHANNELS}}
+    reviewer_preflight(cap, request["producer_id"], required)
+    scores = {}
+    for line in text.splitlines():
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) == 3 and cells[0] in met["rubric"]:
+            key, score, observation = cells
+            if key in scores or not re.fullmatch(r"(?:[1-4](?:[.,]\d)?|5(?:[.,]0)?)", score) or not observation:
+                raise ValueError(f"preencha nota 1–5 e observação única para {key}")
+            scores[key] = (score.replace(",", "."), observation)
+    if set(scores) != set(met["rubric"]):
+        raise ValueError("preencha todos os critérios da ficha")
+    assessment = {"video_sha256": met["video_sha256"], "reviewer_preflight": cap,
+                  "human_form_sha256": file_sha256(path), "human_notes": notes}
+    for ch in CHANNELS:
+        assessment[ch] = {"status": "observed" if ch in required else "not_applicable",
+                          "method": method, "ranges": [[start, stop]] if ch in required else []}
+    # Substitui somente as linhas de notas; preserva métricas/alertas da rodada.
+    report_path = last / "report.md"
+    report = report_path.read_text(encoding="utf-8")
+    definitions = dict(rubric_for(load_manifest(proj), met["duration"]))
+    for key, (score, observation) in scores.items():
+        pattern = r"^\|\s*" + re.escape(key) + r"\s*\|.*$"
+        row = f"| {key} | {definitions[key]} | {score} | {observation} |"
+        report, count = re.subn(pattern, lambda match: row, report, flags=re.M)
+        if count != 1:
+            raise ValueError(f"critério {key} ausente/duplicado no relatório")
+    (last / "assessment.json").write_text(json.dumps(assessment, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    report_path.write_text(report, encoding="utf-8")
+    return verdict(proj)
+
+
+def pending_human(last, met, receipt):
+    if not met["blockers"] and receipt.get("approved") is True and receipt.get("draft") is False:
+        print("ENTREGA TÉCNICA APROVADA, REVISÃO HUMANA PENDENTE.")
+        print(f"Próximo passo: pessoa independente preenche {last / 'ficha-humana.md'}; "
+              "importe com --human-form. A aprovação audiovisual continua pendente.")
+    else:
+        print("Entrega técnica com falhas/rascunho; revisão perceptual também pendente.")
+
+
 def verdict(proj):
     """Lê as notas da última rodada e decide: 0 aprovado, 1 outra rodada, 2 notas faltando, 3 limite atingido."""
     rounds = sorted(p for p in (proj / "review").glob("r[0-9][0-9]") if p.is_dir()) if (proj / "review").is_dir() else []
@@ -375,6 +479,11 @@ def verdict(proj):
                 raise ValueError("imagens do pacote independente foram alteradas")
         required = ("visual", "motion", "audio") if met["has_audio"] else ("visual", "motion")
         capabilities = assessment["reviewer_preflight"]
+        if (capabilities == empty_preflight() and isinstance(request.get("producer_id"), str)
+                and request["producer_id"].strip()
+                and all(assessment[ch] == {"status": "pending", "method": "", "ranges": []} for ch in required)):
+            pending_human(last, met, receipt)
+            return 2
         missing_capabilities = reviewer_preflight(capabilities, request["producer_id"], required)
         unverified = [f"{channel}: revisor sem capacidade verificada" for channel in missing_capabilities]
         for channel in ("visual", "motion", "audio"):
@@ -400,6 +509,7 @@ def verdict(proj):
         print(f"REVISÃO INCOMPLETA OU DESATUALIZADA: {exc}. Rode deliver/review e registre a evidência.")
         return 2
     if unverified:
+        pending_human(last, met, receipt)
         print("REVISÃO AUDIOVISUAL PARCIAL: " + "; ".join(unverified))
         print("Não declare aprovação completa nem invente notas. Complete a inspeção com capacidade adequada; "
               "a ausência de modalidade não exige nova renderização por si só. Confira também as falhas técnicas registradas.")
@@ -441,6 +551,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("project", nargs="?")
     ap.add_argument("--producer-id", help="ID estável do autor; necessário à aprovação independente")
+    ap.add_argument("--human-form", type=Path, help="importa ficha humana preenchida na última rodada e executa o veredito")
     ap.add_argument("--check-reviewer", type=Path, help="confere o preflight antes de delegar; não gera revisão")
     ap.add_argument("--channels", nargs="+", choices=CHANNELS, default=list(CHANNELS),
                     help="escopo solicitado em --check-reviewer; o veredito completo exige todas as modalidades aplicáveis")
@@ -466,6 +577,13 @@ def main():
         ap.error("informe o projeto ou use --check-reviewer")
 
     proj = project_dir(a.project)
+    if a.human_form:
+        try:
+            code = ingest_human_form(proj, a.human_form)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            print(f"FICHA HUMANA INVÁLIDA: {exc}")
+            code = 2
+        sys.exit(code)
     if a.verdict:
         sys.exit(verdict(proj))
     m = load_manifest(proj)
@@ -555,9 +673,8 @@ def main():
     }
     metrics["review_request_sha256"] = prepare_review_input(out_dir, video, m, metrics, a.producer_id)
     (out_dir / "metrics.json").write_text(json.dumps(metrics, ensure_ascii=False, indent=1), encoding="utf-8")
-    assessment = {"video_sha256": digest, "reviewer_preflight": {
-        "schema": 1, "reviewer_id": "", "author_scores_exposed": None,
-        "channels": {channel: {"available": None, "method": "", "evidence": ""} for channel in CHANNELS}}}
+    human_form(out_dir, metrics)
+    assessment = {"video_sha256": digest, "reviewer_preflight": empty_preflight()}
     for channel in ("visual", "motion", "audio"):
         assessment[channel] = {"status": "not_applicable" if channel == "audio" and not has_audio else "pending",
                                "method": "", "ranges": []}
@@ -606,6 +723,9 @@ def main():
         print(f"  alerta: {w}")
     print(f"Pacote para revisor independente: {rel}/input/. Confira capacidades antes de delegar; "
           f"depois registre a avaliação em {rel}/assessment.json, notas em report.md e rode --verdict.")
+    print(f"Rota humana: entregue input/ e {rel}/ficha-humana.md a uma pessoa independente; "
+          "após preenchimento, use --human-form <ficha> (sem gerar nova rodada).")
+    verdict(proj)  # Relata a pendência; o código da geração continua indicando apenas a análise técnica.
     sys.exit(1 if block else 0)
 
 

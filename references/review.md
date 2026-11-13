@@ -12,6 +12,24 @@ Revisar é examinar o arquivo que será entregue. Nota estética não mede viral
 
 Todos os comandos são relativos ao diretório desta skill; use caminhos absolutos ou o workdir correto.
 
+## Rota humana (padrão sem reprodução/escuta no runtime)
+
+Quando a entrega técnica passou e só falta inspeção perceptual, o relato normal é **entrega técnica aprovada, revisão humana pendente**. Isso não é falha que peça três renders iguais, nem aprovação audiovisual: o veredito mantém código 2 para ficha/evidência não preenchida ou 1 para inspeção parcial. Se há bloqueantes técnicos/rascunho, o script relata também essa falha, sem anunciar entrega técnica aprovada.
+
+Cada rodada gera `ficha-humana.md` ao lado de `input/`, com hashes já preenchidos e campos humanos vazios. Entregue **somente input/ e essa ficha** a uma pessoa distinta do autor, em contexto próprio, sem report.md/assessment.json ou autocrítica. O autor não preenche confirmações/notas em nome da pessoa.
+
+1. A pessoa abre o vídeo de `input/`, lê briefing/referências/critérios em `request.json` e assiste ao vídeo inteiro, ouvindo a faixa inteira quando houver áudio.
+2. Preenche `Revisor` com identidade estável distinta do autor; confirma com `SIM` que não consultou notas do autor, que assistiu e que ouviu integralmente (`NA` para áudio só quando o vídeo não tem fluxo de áudio).
+3. Registra início/fim em segundos com ponto decimal, cobrindo a duração de `request.json`, método/aparelho e observações gerais. Preenche cada critério com nota 1–5 e observação/trecho; não altera os hashes. Se não concluiu a observação, devolve a pendência sem confirmar integralidade.
+4. O coordenador importa a ficha preenchida na **mesma rodada**, sem renderizar de novo apenas para ingerir evidência:
+
+```sh
+python scripts/review.py <projeto> --human-form <projeto>/review/r01/ficha-humana.md
+python scripts/review.py <projeto> --verdict
+```
+
+A ingestão valida campos, hashes, separação autor/revisor e cobertura; grava preflight humano e canais `observed` em assessment.json e transfere as notas para report.md. Depois executa o mesmo veredito, incluindo hashes do pacote/imagens, recibo técnico, bloqueantes, rubrica e limite de rodadas. Ficha vazia, cobertura parcial, hash diferente ou autor=revisor não autorizam aprovação. Nota baixa continua reprovando. O registro é uma declaração verificável quanto à consistência, não autenticação nem prova automática de reprodução/escuta.
+
 ## Registro de inspeção
 
 `assessment.json` é gerado com o hash do vídeo e três canais: `visual`, `motion` e `audio`. Cada um registra:
@@ -74,7 +92,7 @@ O pacote input/ contém somente vídeo, hook.jpg, grid.jpg e request.json com br
 
 Dê esse pacote ao revisor em contexto próprio e somente leitura, conforme o isolamento que o runtime realmente suportar. Sem suporte técnico, isso é um contrato de escopo, não uma barreira de segurança; informe a limitação. O revisor deve devolver sua avaliação sem consultar o restante do projeto ou a autocrítica do autor.
 
-Transfira o preflight para assessment.json.reviewer_preflight. O revisor registra observed/instrumented/unverified por canal, método e intervalos efetivamente inspecionados e escreve suas próprias notas em report.md. Um revisor humano também pode cumprir esse papel, com identidade distinta e evidências honestas. O autor não substitui essa aprovação preenchendo a própria ficha.
+Transfira o preflight para assessment.json.reviewer_preflight. O revisor registra observed/instrumented/unverified por canal, método e intervalos efetivamente inspecionados e escreve suas próprias notas em report.md. Um revisor humano também pode cumprir esse papel, com identidade distinta e evidências honestas. O autor não substitui essa aprovação preenchendo a própria ficha. Sem revisor independente disponível, registre autoverificação como tal e mantenha a aprovação independente pendente.
 
 A aprovação completa exige que a união dos intervalos observados cubra a duração em cada modalidade aplicável; amostragem permanece parcial, inclusive em vídeo longo. Áudio só pode ser not_applicable se a análise técnica registrar ausência de fluxo de áudio. Um limite de modalidade ou de cobertura deve aparecer no relatório, não virar nota alta. Revisões legadas sem input/ e identidades ficam incompletas até nova análise.
 

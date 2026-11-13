@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: composicao-hyperframes
+expected_outcome: |
+  Produz uma composição principal HyperFrames + GSAP com ativos/cenas/voz/legendas e render comprovado até render/master.mp4 antes de deliver/review. Base FFmpeg e demo isolada não contam como filme completo. Se o runtime bloquear render ou inspeção, relata a etapa pendente sem inventar execução ou aprovação.

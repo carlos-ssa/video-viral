@@ -3,6 +3,7 @@ import io
 import json
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import unittest
 
@@ -232,6 +233,105 @@ class VerdictTests(unittest.TestCase):
         self.assessment['audio']['status'] = 'not_applicable'
         self.write_json(self.round / 'assessment.json', self.assessment)
         self.assertEqual(self.verdict(), 2)
+
+    def filled_human_form(self):
+        review.human_form(self.round, self.metrics)
+        path = self.round / 'ficha-humana.md'
+        text = path.read_text(encoding='utf-8')
+        fields = {'Revisor': 'human:fixture', 'Notas do autor não consultadas': 'SIM',
+                  'Assisti ao vídeo inteiro': 'SIM', 'Ouvi o áudio inteiro': 'SIM',
+                  'Início observado': '0', 'Fim observado': '2',
+                  'Método e aparelho': 'synthetic unit fixture; no real playback',
+                  'Observações gerais': 'registro sintético para testar política'}
+        for label, value in fields.items():
+            text = text.replace(f'{label}: \n', f'{label}: {value}\n')
+        for key in self.metrics['rubric']:
+            text = text.replace(f'| {key} |  |  |', f'| {key} | 4 | trecho sintético 0–2 s |')
+        path.write_text(text, encoding='utf-8')
+        return path
+
+    def test_valid_human_form_passes_same_verdict(self):
+        path = self.filled_human_form()
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(review.ingest_human_form(self.proj, path), 0)
+        assessment = json.loads((self.round / 'assessment.json').read_text(encoding='utf-8'))
+        self.assertEqual(assessment['reviewer_preflight']['reviewer_type'], 'human')
+        self.assertEqual(assessment['audio']['ranges'], [[0, 2]])
+        self.assertEqual(assessment['audio']['status'], 'observed')
+        self.assertEqual(self.verdict(), 0)
+
+    def test_empty_human_form_preserves_assessment(self):
+        review.human_form(self.round, self.metrics)
+        before = (self.round / 'assessment.json').read_bytes()
+        with self.assertRaises(ValueError):
+            review.ingest_human_form(self.proj, self.round / 'ficha-humana.md')
+        self.assertEqual((self.round / 'assessment.json').read_bytes(), before)
+
+    def test_human_form_rejects_author_hash_partial_or_missing_confirmations(self):
+        for old, new in [('Revisor: human:fixture', 'Revisor: PRODUCER:fixture'),
+                         (self.metrics['video_sha256'], 'bad-hash'),
+                         (self.metrics['manifest_sha256'], 'bad-manifest'),
+                         ('Fim observado: 2', 'Fim observado: 1'),
+                         ('Fim observado: 2', 'Fim observado: nan'),
+                         ('Ouvi o áudio inteiro: SIM', 'Ouvi o áudio inteiro: NA'),
+                         ('Assisti ao vídeo inteiro: SIM', 'Assisti ao vídeo inteiro: NÃO'),
+                         ('Notas do autor não consultadas: SIM', 'Notas do autor não consultadas: NÃO'),
+                         ('| 4 | trecho sintético', '|  | trecho sintético')]:
+            with self.subTest(new=new):
+                path = self.filled_human_form()
+                path.write_text(path.read_text(encoding='utf-8').replace(old, new), encoding='utf-8')
+                before = (self.round / 'assessment.json').read_bytes()
+                with self.assertRaises(ValueError):
+                    review.ingest_human_form(self.proj, path)
+                self.assertEqual((self.round / 'assessment.json').read_bytes(), before)
+
+    def test_human_form_cli_passes_and_rejects_empty_without_ffmpeg(self):
+        command = [sys.executable, str(Path(review.__file__)), str(self.proj), '--human-form']
+        result = subprocess.run(command + [str(self.filled_human_form())], capture_output=True, text=True, encoding='utf-8')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        review.human_form(self.round, self.metrics)
+        result = subprocess.run(command + [str(self.round / 'ficha-humana.md')], capture_output=True, text=True, encoding='utf-8')
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn('FICHA HUMANA INVÁLIDA', result.stdout)
+
+    def test_human_form_preserves_silent_video_and_low_grade_rules(self):
+        self.metrics['has_audio'] = False
+        self.write_evidence()
+        path = self.filled_human_form()
+        text = path.read_text(encoding='utf-8')
+        path.write_text(text.replace('| 4 | trecho sintético', '| 3 | trecho sintético', 1), encoding='utf-8')
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(review.ingest_human_form(self.proj, path), 1)
+        assessment = json.loads((self.round / 'assessment.json').read_text(encoding='utf-8'))
+        self.assertEqual(assessment['audio']['status'], 'not_applicable')
+
+    def test_human_form_does_not_override_technical_failure(self):
+        self.receipt['approved'] = False
+        self.write_evidence()
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(review.ingest_human_form(self.proj, self.filled_human_form()), 1)
+
+    def test_human_form_stale_video_never_passes(self):
+        path = self.filled_human_form()
+        self.video.write_bytes(b'new render')
+        with self.assertRaises(ValueError):
+            review.ingest_human_form(self.proj, path)
+
+    def test_pristine_assessment_reports_human_pending_without_approval(self):
+        self.assessment = {'video_sha256': self.metrics['video_sha256'],
+                           'reviewer_preflight': review.empty_preflight(),
+                           **{ch: {'status': 'pending', 'method': '', 'ranges': []} for ch in review.CHANNELS}}
+        self.write_evidence()
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(review.verdict(self.proj), 2)
+        self.assertIn('ENTREGA TÉCNICA APROVADA, REVISÃO HUMANA PENDENTE', output.getvalue())
+        self.receipt['approved'] = False
+        self.write_evidence()
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(review.verdict(self.proj), 2)
+        self.assertNotIn('ENTREGA TÉCNICA APROVADA', output.getvalue())
 
     def test_assessment_method_requires_text(self):
         self.assessment['motion']['method'] = None

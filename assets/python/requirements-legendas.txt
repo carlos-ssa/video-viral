@@ -1,0 +1,3 @@
+# Versões existentes no PyPI; fontes em references/setup.md.
+faster-whisper==1.2.1
+numpy==1.26.4

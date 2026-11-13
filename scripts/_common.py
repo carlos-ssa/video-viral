@@ -26,8 +26,9 @@ def venv_python(name: str):
 def use_venv(group: str, modules: list) -> None:
     """Se faltam `modules` neste Python, roda o mesmo comando com o Python da venv do grupo.
 
-    Instala a venv com setup_tools.py se ela não existir (a skill instala sozinha o que precisa, salvo
-    VIDEO_VIRAL_NO_INSTALL=1). Volta sem fazer nada se não conseguir: quem chamou segue com a reserva.
+    Solicita a venv via setup_tools.py, salvo VIDEO_VIRAL_NO_INSTALL. O instalador não recebe
+    flags de consentimento aqui: sistema/pip --user/ComfyUI pendentes só imprimem o plano (código 4).
+    Volta sem fazer nada se não conseguir: quem chamou segue com a reserva.
     """
     import importlib.util
     import os
@@ -37,7 +38,8 @@ def use_venv(group: str, modules: list) -> None:
     ok = lambda py: py and subprocess.run([str(py), "-c", probe], capture_output=True).returncode == 0  # noqa: E731
     py = venv_python(group)
     if not ok(py) and not os.environ.get("VIDEO_VIRAL_NO_INSTALL"):
-        print(f"Faltam {', '.join(modules)}: instalando o grupo '{group}' (scripts/setup_tools.py)...", flush=True)
+        print(f"Faltam {', '.join(modules)}: verificando instalação local do grupo '{group}' "
+              "(scripts/setup_tools.py, sem consentimento implícito para sistema/grande porte)...", flush=True)
         subprocess.run([sys.executable, str(SKILL_DIR / "scripts" / "setup_tools.py"), group])
         py = venv_python(group)
     if ok(py):
