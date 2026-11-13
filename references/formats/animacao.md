@@ -12,7 +12,7 @@ Planejar storyboard com ações e enquadramentos por plano. Registrar identidade
 
 - HyperFrames + GSAP: composição, tipografia, gráficos, recortes e transições.
 - Three.js/Blender: personagens/objetos, câmera, luz e atuação que precisem de geometria.
-- ComfyUI ou gerador disponível: referências, fundos e ativos; um gerador imagem-para-vídeo exige workflow/modelo específico, saída de teste e registro em `tool_plan`. `images.py` não deve ser anunciado como gerador de vídeo universal.
+- ComfyUI: imagens de referência, fundos e ativos para motion/paralaxe; não anunciar `images.py` como gerador de vídeo. Para POV, criaturas e minisséries, consultar o [catálogo de formatos com IA e limite do stack](virais-ia.md). Clipes externos fornecidos são ativos, não integração com outro gerador.
 
 Mapear ferramenta e contribuição por plano. Preferir continuidade de identidade e intenção a uma sequência de efeitos desconexos. Medir voz antes de temporizar as cenas; em ação sem fala, trabalhar os tempos e a música. Usar [motion](../motion.md) e animação determinística no compositor, com ativos gerados fixados e versionados.
 

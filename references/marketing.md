@@ -42,6 +42,17 @@ Selecione pela adequação ao objetivo e à promessa, não só pela maior soma. 
 
 Em vertical, torne a proposta compreensível nos primeiros instantes; no longo, desenvolva a promessa inicial e reabra interesse por blocos. O primeiro quadro precisa trabalhar mesmo sem som. A fala não precisa dizer tudo: imagem e texto podem completar a informação.
 
+## Padrões de gancho relatados em formatos com IA
+
+A [pesquisa documental](formats/virais-ia.md#fotografia-da-pesquisa-13112026) sugere padrões para testar, não resultados garantidos nem observação direta dos vídeos:
+
+- Abrir com contradição ou perigo concreto da história, nunca com apresentação do canal. Não fabricar ameaça real, urgência ou informação factual para conseguir atenção.
+- Colocar o personagem dentro do conflito, em primeira pessoa: ele relata o que está vivendo, em vez de anunciar o tema de fora.
+- Serializar com personagem fixo, recompensa no episódio e gancho para o próximo. Oferecer uma decisão ao público sem fingir votação/participação que não existe.
+- Usar linguagem local sobre história conhecida para criar reconhecimento, sem trocar fatos por estereótipos ou desrespeito; em temas bíblicos, seguir a revisão do catálogo.
+
+Dos cinco candidatos já previstos, preparar **três aberturas por roteiro para teste**, mantendo o corpo e o payoff comparáveis. Registrar hipótese e variável; sem publicação/analytics, entregar variantes, não declarar uma vencedora por desempenho inexistente.
+
 ## Retenção e conversão na montagem
 
 Planeje a função de cada batida: abrir pergunta, demonstrar, aprofundar, provar ou recompensar. A cada mudança visual, pergunte o que ela acrescenta. Use performance, enquadramento, câmera, motion, B-roll, gráficos e som para organizar atenção. Pausas e contraste também dão ritmo; efeito a cada palavra não é critério de qualidade.

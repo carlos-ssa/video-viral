@@ -14,6 +14,27 @@ Em `research.sources`, mantenha URL, data de coleta, filtros/recorte, observaç�
 - `owned_analytics`: dado fornecido/autorizado do próprio canal, com intervalo e definição.
 - `hypothesis`: inferência que será testada; não apresentar como fato do algoritmo.
 
+## Ficha de referência por plano
+
+Método inspirado no [rea-video](https://github.com/JuneYaooo/rea-video), projeto Apache-2.0: adotar somente a ideia de leitura em camadas e evidências por plano, sem copiar código, instalar ou integrar o projeto. A licença do método/ferramenta não licencia os vídeos estudados; estudar referência não autoriza reutilização.
+
+Organize as notas em `research/` para ler só o necessário:
+
+1. **Cartão do vídeo:** URL, fonte/data, contexto, duração conhecida, promessa e limites de acesso. Diga se houve reprodução integral, parcial ou apenas consulta a relato/metadados.
+2. **Linha do tempo:** uma linha por plano, com intervalo, ação e grupo de cenário/identidade; serve de mapa para o detalhe.
+3. **Detalhe por cena/plano:** preencher a ficha abaixo. Agrupar tomadas do mesmo cenário e da mesma identidade ajuda a estudar continuidade e planejar produção em lotes, sem confundir tomadas distintas.
+
+| Campo | Registro |
+|---|---|
+| Plano / cena / grupo | ID do plano, cena e grupo de cenário/identidade; indicar identidade incerta |
+| Tempo | Início–fim observado na mídia; sem acesso, registrar indisponível, nunca inventar timecode |
+| Observado | O que efetivamente se vê/ouve, separado de explicações sobre como foi feito |
+| Inferido | Hipótese de técnica, intenção ou origem (filmado/IA/3D); classificação é estimativa, não detecção comprovada |
+| Evidência | URL e trecho, quadro/timecode ou citação da fonte; distinguir inspeção direta de relato de terceiros |
+| Confiança | Alta/média/baixa, com motivo e lacunas; não usar uma nota como prova de origem |
+
+Sem assistir, registre apenas o que a fonte relata e deixe montagem/câmera/som como não verificados. Os exemplos do [catálogo de virais com IA](formats/virais-ia.md#fotografia-da-pesquisa-13112026) são pesquisa documental não assistida, não fichas de inspeção audiovisual.
+
 ## Google Trends
 
 Use para interesse de busca, sazonalidade, termos relacionados e escolha do ângulo. Compare termos ou tópicos com a mesma região, período, categoria e propriedade. Use Pesquisa do YouTube para interesse de busca no YouTube; isso não mede a recomendação no feed de Shorts. Pesquisa Web pode revelar demanda por produtos e serviços, mas não mede demanda de compra diretamente.

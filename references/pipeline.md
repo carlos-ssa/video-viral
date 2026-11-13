@@ -13,4 +13,6 @@ O manifesto coordena brief, roteiro, voz, ativos e composição. Todos os comand
 9. `deliver.py <projeto> --video render/master.mp4` exporta e mede, incluindo audio/sound-design.wav quando existir. `--no-music` e `--no-captions` evitam camadas duplicadas. A saída precisa corresponder ao render revisado.
 10. `review.py` e o método de [revisão](review.md) verificam o arquivo final. O hash e a nota não substituem inspeção audiovisual. Corrigir só etapas afetadas, preservando primeiro render e fontes.
 
+Para formatos inspirados em referências virais, consultar o [guia de como fazer e limite do stack](formats/virais-ia.md) e seu [procedimento executável comum](formats/virais-ia/producao.md): oito receitas com roteiros, continuidade, prompts por plano e duas rotas. Clipes gerados fora e fornecidos pelo usuário seguem a mesma lógica dos WAVs externos: ativos com origem, licença e rótulo de IA, sem chamar serviços de geração de vídeo. O [exemplo trabalhado por plano](formats/virais-ia/exemplo-planos.md) distingue observação por quadros, medição, ASR e inferência.
+
 Para séries: reutilizar ativos e componentes aprovados, mantendo a direção de cada episódio. Processos pesados de GPU são sequenciais; não iniciar dois geradores grandes sem memória disponível. Uma composição editável não equivale a qualidade estética validada.
