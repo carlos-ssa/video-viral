@@ -8,7 +8,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from captions import caption_lines, group_words, script_spelling, write_ass
+from captions import caption_lines, functional_tail, group_words, script_spelling, write_ass
 
 
 def timed(text, step=0.5):
@@ -23,9 +23,60 @@ class CaptionTests(unittest.TestCase):
                      'chegaram e prepare o primeiro gesto do dia seguinte.',
                      'de uma caixa. Achava que um gesto bastava.'):
             groups = group_words(timed(text), 3)
-            self.assertEqual(' '.join(g['text'] for g in groups), text)
+            self.assertEqual(' '.join(g['text'] for g in groups), text[0].upper() + text[1:])
             self.assertTrue(all(len(g['words']) > 1 for g in groups), groups)
             self.assertTrue(all(not re.search(r'[.!?] .', g['text']) for g in groups))
+
+    def test_real_mascotes_prefers_clauses_without_functional_tails(self):
+        rows = [('Nina', 5.68, 5.94), ('tentou', 5.94, 6.36), ('uma', 6.36, 6.54),
+                ('folha,', 6.54, 6.94), ('só', 7.16, 7.34), ('a', 7.34, 7.46),
+                ('folha', 7.46, 7.76), ('foi', 7.76, 7.9), ('embora.', 7.9, 8.24),
+                ('Lia', 8.96, 9.1), ('ofereceu', 9.1, 9.58), ('o', 9.58, 9.72),
+                ('barco,', 9.72, 10.1), ('juntas', 10.3, 10.7), ('atravessaram.', 10.7, 11.36)]
+        words = [{'w': w, 'start': start, 'end': end} for w, start, end in rows]
+        groups = group_words(words, 3)
+        self.assertEqual([g['text'] for g in groups], ['Nina tentou uma folha,', 'só a folha foi embora.',
+                                                    'Lia ofereceu o barco,', 'juntas atravessaram.'])
+        self.assertTrue(all(not functional_tail(g['words'][-1]['w']) for g in groups))
+        self.assertTrue(all(g['end'] - g['start'] + .001 >= max(.6, len(g['text']) / 24) for g in groups))
+
+    def test_real_explanation_keeps_short_clause_and_capitalizes_after_period(self):
+        rows = [('Nesta', 2.52, 2.78), ('oficina,', 2.78, 3.38), ('passa', 3.52, 3.72),
+                ('uma', 3.72, 3.9), ('caixa', 3.9, 4.26), ('por', 4.26, 4.5), ('vez.', 4.5, 4.74),
+                ('a', 10.2, 10.22), ('fila', 10.22, 10.48), ('cresce.', 10.48, 10.98)]
+        words = [{'w': w, 'start': start, 'end': end} for w, start, end in rows]
+        groups = group_words(words, 3)
+        self.assertEqual([g['text'] for g in groups], ['Nesta oficina,', 'passa uma caixa por vez.', 'A fila cresce.'])
+        self.assertEqual(words[-3]['w'], 'a', 'a normalização não altera a transcrição de entrada')
+
+    def test_functional_word_categories_stay_with_the_complement(self):
+        for word in ('o', 'a', 'os', 'as', 'um', 'uma', 'de', 'do', 'da', 'em', 'no', 'na',
+                     'por', 'para', 'com', 'e', 'que', 'se', 'só', 'seu', 'sua', 'me', 'te', 'lhe'):
+            with self.subTest(word=word):
+                groups = group_words(timed(f'Faça algo {word} cuidado agora.'), 3)
+                self.assertTrue(all(not functional_tail(g['words'][-1]['w']) for g in groups[:-1]), groups)
+        words = timed('Nina tentou uma folha azul.')
+        for w in words[3:]:
+            w['start'] += .7
+            w['end'] += .7
+        self.assertTrue(all(not functional_tail(g['words'][-1]['w']) for g in group_words(words, 3)[:-1]))
+
+    def test_hard_reading_and_line_limits_override_linguistic_preferences(self):
+        groups = group_words(timed('Ela me viu.', 1), 3, max_chars=6, max_lines=1)
+        self.assertEqual([g['text'] for g in groups], ['Ela me', 'viu.'])
+        self.assertTrue(all(len(g['lines']) == 1 and len(g['lines'][0]) <= 6 for g in groups))
+        groups = group_words(timed('Uma caixa, outra caixa.', .1), 3)
+        self.assertEqual([g['text'] for g in groups], ['Uma caixa, outra caixa.'])
+        self.assertGreaterEqual(groups[0]['end'] - groups[0]['start'] + .001, len(groups[0]['text']) / 24)
+
+    def test_sentence_capitalization_preserves_timing_and_input(self):
+        words = timed('a fila parou. a fila cresce. “outra frase.”')
+        before = json.loads(json.dumps(words))
+        groups = group_words(words, 3)
+        self.assertEqual([g['text'] for g in groups], ['A fila parou.', 'A fila cresce.', '“Outra frase.”'])
+        self.assertEqual(words, before)
+        self.assertEqual([(w['start'], w['end']) for g in groups for w in g['words']],
+                         [(w['start'], w['end']) for w in before])
 
     def test_pause_and_jump_are_hard_boundaries(self):
         words = timed('Uma frase outra frase')

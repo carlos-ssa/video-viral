@@ -244,15 +244,33 @@ def caption_lines(words, max_chars=32, max_lines=2):
     return min(choices, key=lambda x: x[0])[1] if choices else None
 
 
+# Evita separar palavras funcionais do complemento; pontuação pode fechar o trecho legitimamente.
+FUNCTION_WORDS = set("o a os as um uma uns umas de do da dos das em no na nos nas por pelo pela pelos pelas "
+                     "para com sem sob sobre entre até e ou mas que se só seu sua seus suas meu minha meus minhas "
+                     "teu tua teus tuas nosso nossa nossos nossas vosso vossa vossos vossas "
+                     "me te lhe lhes vos lo la los las ao aos à às num numa nuns numas dum duma".split())
+
+
+def functional_tail(word):
+    return not re.search(r'[,;:.!?…]["”\')]*$', word) and word.casefold() in FUNCTION_WORDS
+
+
 def group_words(words, n, max_chars=32, max_lines=2, min_duration=0.6, max_cps=24, pause=0.45):
     if n < 1 or max_chars < 1 or max_lines not in (1, 2) or min_duration <= 0 or max_cps <= 0 or pause <= 0:
         raise ValueError("Limites de legenda inválidos (linhas: 1 ou 2).")
     # Frases e cortes são fronteiras duras; palavras por grupo são uma meta, não uma guilhotina.
     phrases, cur = [], []
     sentence_end = lambda w: bool(re.search(r'[.!?…]["”\')]*$', w["w"]))
+    # Não altera as palavras/tempos de entrada; só normaliza a grafia usada na legenda.
+    words = [dict(w) for w in words]
+    new_sentence = True
     for index, w in enumerate(words):
+        if new_sentence:
+            w["w"] = re.sub(r'^(\W*)([^\W\d_])', lambda match: match[1] + match[2].upper(), w["w"], count=1)
+        new_sentence = sentence_end(w)
         # Uma pausa é fronteira preferida, mas não isola a última palavra da frase.
-        pause_break = (cur and len(cur) > 1 and w["start"] - cur[-1]["end"] >= pause
+        pause_break = (cur and len(cur) > 1 and not functional_tail(cur[-1]["w"])
+                       and w["start"] - cur[-1]["end"] >= pause
                        and not sentence_end(w) and index + 1 < len(words)
                        and not words[index + 1].get("jump")
                        and words[index + 1]["start"] - w["end"] < pause)
@@ -269,7 +287,7 @@ def group_words(words, n, max_chars=32, max_lines=2, min_duration=0.6, max_cps=2
     for phrase_index, phrase in enumerate(phrases):
         count = len(phrase)
         phrase_end = phrases[phrase_index + 1][0]["start"] if phrase_index + 1 < len(phrases) else float('inf')
-        best = {count: (0, [])}
+        best = {count: ((0, 0, 0, 0), [])}
         for i in range(count - 1, -1, -1):
             candidates = []
             for j in range(i + 1, count + 1):
@@ -283,11 +301,14 @@ def group_words(words, n, max_chars=32, max_lines=2, min_duration=0.6, max_cps=2
                 required = max(min_duration, len(" ".join(w["w"] for w in phrase[i:j])) / max_cps)
                 if limit - start + 0.001 < required:
                     continue
-                # Evita tanto a cauda órfã como um bloco isolado no começo da frase.
-                cost = (j - i - n) ** 2 + (1000 if j - i == 1 and count > 1 else 0)
-                if j < count and re.search(r'[,;:]$', phrase[j - 1]["w"]):
-                    cost -= 2
-                candidates.append((cost + best[j][0], [phrase[i:j]] + best[j][1]))
+                # Entre soluções legíveis: evita órfãs, depois caudas funcionais e vírgulas internas.
+                # O custo por bloco evita dividir unidades curtas como "passa uma caixa por vez".
+                cost = (int(j - i == 1 and count > 1),
+                        int(j < count and functional_tail(phrase[j - 1]["w"])),
+                        sum(bool(re.search(r'[,;:]["”\')]*$', w["w"])) for w in phrase[i:j - 1]),
+                        4 + (j - i - n) ** 2)
+                total = tuple(a + b for a, b in zip(cost, best[j][0]))
+                candidates.append((total, [phrase[i:j]] + best[j][1]))
             if candidates:
                 best[i] = min(candidates, key=lambda x: x[0])
         if 0 not in best:
