@@ -11,11 +11,16 @@ python scripts/captions.py transcribe <projeto>          # ou: captions.py impor
 python scripts/footage.py cut <projeto>                  # silêncios + vícios -> edit/edl.json e edit/transcript.md
 python scripts/footage.py frames <projeto>               # edit/frames.jpg para conferir o enquadramento
 python scripts/footage.py render <projeto>               # base A-roll em render/master.mp4
-# Componha o acabamento em HyperFrames/FFmpeg, conforme tool_plan, em render/final.mp4
+# Preserve o A-roll como render/aroll.mp4 e componha em HyperFrames + GSAP (guia abaixo)
+# Renderize a composição principal em render/master.mp4, sem sobrescrever a base preservada
 python scripts/captions.py ass <projeto>
-python scripts/deliver.py <projeto> --video render/final.mp4
-python scripts/review.py <projeto>
+python scripts/deliver.py <projeto> --video render/master.mp4
+python scripts/review.py <projeto> --producer-id <id-do-autor>
 ```
+
+## Camada de acabamento
+
+Siga [composição HyperFrames](../composition.md): preserve a base A-roll, copie-a para `composition/assets/aroll.mp4`, inclua como clip de vídeo com tempos/duração reais e acrescente hierarquia, textos, cenas e transições GSAP. Execute lint/check/preview e renderize o filme inteiro para `render/master.mp4` antes de `deliver.py`. FFmpeg continua preparação/mix/exportação, não substituto do compositor.
 
 O A-roll renderizado é uma base, não uma prova automática de acabamento. Use direção, B-roll, composição, animação e som conforme a peça; não é necessário misturar motores redundantes. Para um pedido pontual, preserve o resto da edição. Se as legendas já estiverem na composição, entregue com `--no-captions`.
 
