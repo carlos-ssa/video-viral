@@ -2,6 +2,8 @@
 
 HyperFrames + GSAP é o compositor. Escolha a linguagem pela cena; o arsenal é exclusivo e os módulos não precisam aparecer todos no mesmo vídeo. [Direção](direction.md) e [módulos](modules.md) definem a função de cada recurso.
 
+Antes de escolher trajetórias/easings, consulte [pesquisa de câmera](camera-references.md). Diferencie deslocamento 3D, rotação, lente e crop digital; passe da referência observada a parâmetros e preview no motor escolhido. Bibliotecas externas de movimentos são referências de linguagem, não novos motores instalados automaticamente.
+
 ## Tempo determinístico
 
 Toda animação é função do tempo/quadro pedido. Não usar relógio real, aleatório sem semente ou uma física que muda ao buscar para trás. Os adaptadores retornam createScene(host,params) e drawAt(t); carregamento assíncrono termina antes de capturar. Testar busca 2→0→2 e conferir o mesmo quadro.

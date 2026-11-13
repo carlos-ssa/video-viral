@@ -19,6 +19,8 @@ Use o recorte de [pesquisa](research.md): nicho, plataforma, objetivo, duração
 
 Sem pesquisa disponível, avance com hipóteses identificadas. Use a [ficha por plano](research.md#ficha-de-referência-por-plano) para separar observação e inferência.
 
+Para linguagem de câmera e composições no Blender, aplique [pesquisa e pacote visual](camera-references.md): estudar filmes/séries/vlogs pertinentes, abrir fotos/trechos reais no contexto da IA e vincular referência → decisão → plano. A mesma pesquisa orienta luz, cenário, materiais e a seleção de [itens 3D gratuitos](free-3d-assets.md). Uma foto não comprova movimento; citar uma obra não substitui observar o material.
+
 Separe geração de ativos → seleção humana → montagem; gerar não é aprovar. Agrupe tomadas por cenário/identidade para conferir continuidade. Trate ambiente sonoro como etapa própria: planeje camadas, perspectiva e sincronismo, depois confira a mixagem com voz e efeitos.
 
 ## 2. Estilo
@@ -92,6 +94,8 @@ Cada cena vira uma lista de planos em `scenes[].visual.shots`. Em vertical dinâ
 | `in` | corte, máscara, escala com mola, whip pan, morph, gl-transition (nome) |
 | `emphasis` | Texto na tela, palavra-chave destacada, número que conta, seta, círculo que se desenha |
 | `sfx` | Efeito sonoro alinhado com a entrada |
+
+Quando houver câmera dirigida, detalhe `camera_plan` e `reference_ids` conforme o [contrato por plano](camera-references.md#traduzir-linguagem-em-câmera), preservando o campo `camera` existente. Esses detalhes são opcionais e não alteram o schema nem fazem `plan.py` validar estética ou a observação das referências.
 
 Prefira imagem que acrescenta à fala, não que a repete: se a narração diz "dinheiro", mostre o gráfico caindo ou a carteira vazia, não uma pilha de notas.
 

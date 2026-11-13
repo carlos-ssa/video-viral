@@ -1,7 +1,7 @@
 ---
 name: video-viral
 metadata:
-  version: "2.4.1"
+  version: "2.5.0"
 description: Direção, produção e edição audiovisual profissional com IA para vídeos curtos e longos, TikTok, Reels, Shorts, YouTube e Kwai. Use para pesquisar nichos, planejar marketing e ganchos, roteirizar, editar gravações, produzir vídeos de produtos/serviços, UGC, avatares, canais dark, animação e música. Entrega arquivos revisados e material de publicação. Para apenas converter arquivo ou extrair áudio, use FFmpeg diretamente.
 ---
 
@@ -43,7 +43,7 @@ Preserve conteúdo/direção fora de correções pontuais. Na produção complet
 2. **Pesquisa:** referências recentes, Trends e analytics fornecidos, com fonte/data/filtros/tipo em `research`. Sem acesso, identifique hipóteses. Siga os limites de evidência e inferência em [pesquisa](references/research.md).
 3. **Ganchos:** cinco candidatos audiovisuais conforme [marketing](references/marketing.md), avaliados por relevância, curiosidade, clareza, execução e cumprimento. Salve `hook_candidates`, vencedor em `hook` e alternativas para testes; ajuste pontual dispensa refazê-los.
 4. **Roteiro:** batidas, prova, recompensa e CTA contextual. Use [writing](references/writing.md); longo pede blocos e reaberturas. Meça áudio/performance/música antes de temporizar cenas.
-5. **Direção:** registre visual, performance, luz, câmera, movimento e som em `direction`; planeje cenas e três quadros de estilo antes do render. [Direção](references/direction.md).
+5. **Direção:** registre visual, performance, luz, câmera, movimento e som em `direction`; planeje cenas e três quadros de estilo antes do render. Pesquise a linguagem de câmera em filmes, séries, vlogs ou referências técnicas e traduza-a por plano: [câmera e pacote visual](references/camera-references.md). Para criar/compor uma ou várias cenas no Blender, a IA deve inspecionar fotos e trechos de vídeo acessíveis do estilo, entregar esse pacote ao executor e carregá-lo como referência no arquivo de trabalho; só URLs/nomes não bastam. Ausência de mídia/capacidade fica explícita, sem inventar observação. [Direção](references/direction.md) e [fluxo Blender](references/modules/3d.md).
 
 **Portão de planejamento:** salve o manifesto e rode `python scripts/plan.py <projeto>` antes de entregar plano completo ou produzir. Código 0 confirma estrutura, não criatividade; 1 pede completar; 2 permite plano provisório, sem liberar produção. Desconhecidos ficam em `brief.missing_inputs`. Correção pontual dispensa o portão.
 
@@ -57,6 +57,7 @@ Use exclusivamente `assets/stack.json` conforme [stack](references/stack.md). `s
 - **Acabamento:** hierarquia, enquadramento, cortes naturais, continuidade, cor, B-roll e som. Preserve sofisticação; escolha recursos pela função, não quantidade. Legendas sincronizadas fora do rosto/UI; confira capa, CTA, recorte e [área segura](references/platforms.md) por destino.
 - **Música de reserva:** `python scripts/music.py <projeto> --backend procedural --duration 30 --seed 7`, sem endpoint/prompt; cama instrumental simples com `fallback:true`, nunca geração ACE-Step equivalente.
 - **Recursos:** um modelo pesado de GPU por vez no perfil de 8 GB. Preserve projetos/caches; [setup](references/setup.md) orienta reservas concretas sem repetir operações idênticas.
+- **Itens 3D:** antes de modelar, pesquise [modelos, materiais e HDRIs gratuitos](references/free-3d-assets.md) compatíveis com a direção; confira licença por item, texturas, escala e custo de render, importe em teste e registre origem/direitos dos arquivos realmente usados. Gratuidade não confirma licença comercial.
 
 ## Entrega e revisão
 

@@ -1,4 +1,4 @@
-# Vídeo viral — 2.4.1
+# Vídeo viral — 2.5.0
 
 Skill em português para direção, produção e edição audiovisual com IA, marketing, ganchos, retenção e conversão. Produz vídeos curtos/longos, gravações editadas, demonstrações de produto, UGC, animações e peças musicais com planejamento e revisão. Não promete viralização nem valida estética apenas porque o render passou.
 
@@ -88,6 +88,10 @@ O caso `composicao-hyperframes` exige evidência do render da composição princ
 A entrega monetizada exige licenças/ativos confirmados; --draft gera rascunho identificado. `out/delivery.json`, métricas, imagens e assessment.json ligam revisão ao mesmo render/manifesto. Código 3 é limite com deficiências, não aprovação. Não publicar ou acessar contas sem pedido explícito.
 
 Distribuição da skill: MIT. Ferramentas, pesos e ativos têm termos próprios; registre os reais. Sem provas, datas, preços ou analytics fornecidos, não inventar informação para passar num teste.
+
+## Câmera, referências e itens 3D — 2.5.0
+
+Pesquisa movimentos em filmes, séries, vlogs e bibliotecas de exemplos; traduz referências em câmera, lente, trajetória, ritmo e continuidade por plano. A criação de cenas no Blender passa a receber um pacote real de fotos/vídeos inspecionados, carregados no arquivo de trabalho como estudo. Inclui busca de modelos/materiais/HDRIs gratuitos com licença por item e teste de importação. Consulte [câmera e referências](references/camera-references.md), [fluxo Blender](references/modules/3d.md) e [itens gratuitos](references/free-3d-assets.md). Bibliotecas estudadas não são novos motores instalados, e uma foto não prova movimento observado.
 
 ## Auditoria e confiabilidade — 2.4.1
 
