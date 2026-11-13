@@ -6,6 +6,14 @@
 
 Para criar reconhecimento e vínculo com um personagem próprio ao longo de episódios. O público reconhece quem age, mas fica pela mudança de objetivo/relação; consistência não significa repetir a mesma história.
 
+## Requisitos e limite local
+
+- **Obrigatório:** mascote reconhecível em poses/ações distintas, objetivo, tentativa e consequência; identidade e contatos sonoros contínuos. Não basta repetir a mesma figura com títulos novos.
+- **Local possível:** rig 2D/3D original reutilizado, cenários próprios e performance animada por tempo; imagens fornecidas ou ComfyUI validado podem apoiar poses/fundos. Uma direção cartoon aceita não exige fotorrealismo nem gerador de vídeo.
+- **PARE:** se o pedido exigir atuação/realismo que os ativos ou rig não entregam e não houver gerador de imagem/vídeo validado, avise que poses vetoriais com zoom serão **animatic**, não a minissérie viral solicitada. Só produza essa alternativa com escopo aceito.
+
+Aplique as [regras comuns de composição](../../composition.md#regras-de-acabamento-obrigatórias); mantenha o cartão final fora do rodapé e confirme a fonte carregada.
+
 ## Roteiro preenchível — alvo 36 s
 
 Ganchos (completar mais dois candidatos audiovisuais):
@@ -68,7 +76,7 @@ Ambiente de rio/vila autorizado separado, madeira do barco e pacote na bancada e
 [{"type":"pop","at":0.4,"duration":0.15,"gainDb":-25},{"type":"whoosh","at":12,"duration":0.4,"gainDb":-29},{"type":"pop","at":29.4,"duration":0.15,"gainDb":-26}]
 ```
 
-Realinhar ao áudio medido e à entrega do pacote; assinatura sonora breve e consistente, sem cobrir palavras. Legenda de 2–3 palavras, sem cobrir colete/pacote; textos da oficina compostos, não gerados na imagem.
+Sem rio/vila/madeira autorizados, aplique a [reserva ambiente/Foley](../../modules.md#reserva-de-ambiente-e-foley-sintetizados) com **D=36 s**, **seed=191**, preset sob fala e `pop` na entrega do pacote. Ajuste D/contatos ao áudio medido, registre `kind:"sfx"` e identifique a textura como sintética, não rio real. Use assinatura breve sem cobrir palavras e legenda por sentido fora do colete/pacote; componha os textos da oficina, não os gere na imagem.
 
 ### Conhecimento de Theo, adaptado ao stack
 

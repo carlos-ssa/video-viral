@@ -6,6 +6,14 @@
 
 Para uma passagem cuja escala/conflito precise de contexto visual, sem depender de diálogo labial. Contrastar ameaça, decisão e consequência; a imagem oferece progressão, a narração mantém a precisão da adaptação.
 
+## Requisitos e limite local
+
+- **Obrigatório:** escala da ameaça, reação humana e mudança visível de estado; barco/água/luz coerentes, narração fiel e ambiente aquático. Realismo pedido exige ativos e movimento compatíveis, não bonecos-palito.
+- **Local possível:** imagens fornecidas/aprovadas com câmera limitada ou cena Three.js/Blender realmente construída. Sem gerador e sem modelos/cenas prontos, recortes 2D servem para storyboard; não prometem tempestade física ou cinematografia realista.
+- **PARE:** se faltar imagem/vídeo capaz de sustentar o realismo e não houver 3D próprio equivalente, avise que a composição vetorial será **animatic**, não o formato viral cinematográfico. Só siga nessa alternativa com escopo aceito.
+
+Aplique as [regras comuns de composição](../../composition.md#regras-de-acabamento-obrigatórias); a referência bíblica fixa fica fora da faixa da legenda, não sob ela.
+
 ## Roteiro preenchível — alvo 36 s
 
 Três aberturas para completar com mais duas no portão:
@@ -70,7 +78,7 @@ Salvar referências aprovadas do barco, paleta e mapa de posições. Reutilizar 
 [{"type":"pulse","at":0.2,"duration":0.6,"gainDb":-27},{"type":"riser","at":15,"duration":1.5,"gainDb":-30},{"type":"pop","at":25.2,"duration":0.15,"gainDb":-32}]
 ```
 
-Recalcular pelos tempos medidos. Reduzir ambiente sob nomes/passagem, sem prometer ducking automático da receita. Legenda só da narração, 2–3 palavras/grupo; referência bíblica como cartão legível sem cobrir barco; não pôr versículo inventado numa imagem gerada.
+Sem água/vento/madeira autorizados, aplique a [reserva ambiente/Foley](../../modules.md#reserva-de-ambiente-e-foley-sintetizados) com **D=36 s**, **seed=73**, preset sob fala e impacto no balanço do barco. Identifique-a como textura sintética; ela não reproduz tempestade real. Recalcule pelos tempos medidos e registre `kind:"sfx"`. Reduza ambiente sob nomes/passagem sem prometer ducking automático. Legenda só da narração, segmentada por sentido; componha **“Marcos 4:35–41”** como cartão legível separado, sem cobrir barco nem legenda; não ponha versículo inventado numa imagem gerada.
 
 ## Checklist específico
 

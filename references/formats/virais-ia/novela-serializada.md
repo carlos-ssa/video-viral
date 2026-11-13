@@ -6,6 +6,14 @@
 
 Séries com personagens recorrentes, escolhas incompatíveis e consequência persistente. Entregar uma resposta parcial no episódio; a próxima pergunta deve nascer da ação, não de interromper arbitrariamente uma fala.
 
+## Requisitos e limite local
+
+- **Obrigatório:** personagens distinguíveis, falas atribuídas no instante certo, reações e uma decisão com consequência. O cenário precisa sustentar o conflito, não ser só faixa decorativa.
+- **Local possível:** rigs próprios 2D/3D, performances WAV separadas e montagem por fala/reação; animação cartoon acabada não exige gerador de vídeo.
+- **PARE:** se faltar atuação suficiente nos rigs/ativos e não houver gerador de imagem/vídeo validado para a performance pedida, avise que cartões/poses serão **animatic**, não a novela viral. Só siga nessa alternativa com escopo aceito; realismo ou lip-sync não nascem da montagem de WAVs.
+
+Aplique as [regras comuns de composição](../../composition.md#regras-de-acabamento-obrigatórias).
+
 ## Roteiro preenchível — alvo 54 s
 
 Três ganchos, mais dois candidatos para o portão:
@@ -70,7 +78,7 @@ Oficina com ruído baixo de bancada e exterior noturno licenciado; mesmo ambient
 [{"type":"pop","at":0.4,"duration":0.15,"gainDb":-26},{"type":"pulse","at":26,"duration":0.7,"gainDb":-29},{"type":"whoosh","at":43,"duration":0.3,"gainDb":-28}]
 ```
 
-Sincronizar o teste de luz e os cartões após medir performances. Legendas de 2–3 palavras, identificar o falante por rótulo editorial/posição consistente (não só cor), sem cobrir alças/rosto.
+Sem oficina/noite autorizadas, aplique a [reserva ambiente/Foley](../../modules.md#reserva-de-ambiente-e-foley-sintetizados) com **D=54 s**, **seed=163**, preset sob fala e contato no teste do refletor; identifique a textura sintética e registre `kind:"sfx"`. Sincronize teste de luz e cartões após medir performances. Segmente legendas por sentido e identifique o falante por rótulo/posição, não só cor. Faça o rótulo entrar **no início da fala medida (erro máximo de 1 quadro)** e sair na troca de voz; não deixe “NARRADOR” sobre Lume ou Bruma. Confira cada virada contra o WAV/legenda final, sem cobrir alças/rosto.
 
 ### Contribuição documental de Theo
 

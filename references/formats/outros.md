@@ -1,6 +1,6 @@
 # Produto, UGC e formatos avançados
 
-O manifesto suporta todos os formatos. O status de uma ferramenta depende da integração e de uma saída validada, não do nome do formato.
+O manifesto suporta todos os formatos. O status de uma ferramenta depende da integração e de uma saída validada, não do nome do formato. Aplique as [regras de acabamento](../composition.md#regras-de-acabamento-obrigatórias) também a produto, checklist e peças tipográficas.
 
 ## Produto e serviço (`produto`)
 

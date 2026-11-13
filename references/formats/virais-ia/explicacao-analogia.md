@@ -6,6 +6,14 @@
 
 Para explicar uma pergunta abstrata por um pequeno mundo com regras visíveis: pergunta → hipótese → consequência → limite/reformulação → resposta → convite. A referência local usa tema de fé; esta receita nova usa **uma oficina ficcional**, sem copiar pessoas, personagens, argumentos ou falas do vídeo.
 
+## Requisitos e limite local
+
+- **Obrigatório:** pergunta única, regra visível, teste de condição e resposta encenada; contagem/fluxo de caixas precisam mudar de verdade.
+- **Local possível:** construir oficina/carrinhos/porta por geometria e rig próprios, com estado determinístico. Uma direção cartoon 2D/2.5D aceita pode cumprir a explicação sem gerador de imagem/vídeo.
+- **PARE:** se só houver cartões estáticos, ou se o pedido exigir realismo/performance indisponíveis sem gerador ou ativos equivalentes, avise que a alternativa será **animatic**, não o formato viral encenado. Só siga com esse escopo aceito; não substitua mecanismo visual por títulos sucessivos.
+
+Aplique as [regras comuns de composição](../../composition.md#regras-de-acabamento-obrigatórias), inclusive coerência e entonação do gancho.
+
 ## Roteiro preenchível — alvo 42 s
 
 Ganchos (criar outros dois audiovisuais para o portão):
@@ -49,7 +57,7 @@ Guardar rig/modelo/recortes e mapa da oficina; posição/cor da porta e estado d
 4. Fragmento a completar:
 
 ```json
-{"scenes":[{"id":"s01","narration":"Mais carrinhos. Por que a fila não anda?","on_screen":"MAIS CARRINHOS, MESMA FILA?","visual":{"engine":"hyperframes","brief":"Apresentador geométrico próprio e oficina; sem reutilizar referência","shots":[{"cue":"Mais carrinhos","frame":"médio","subject":"Nilo e fila parada","camera":"avanço curto","in":"corte","emphasis":"porta única à direita","sfx":"pop"}],"transition_out":"corte"},"start":0,"duration":3}],"tool_plan":[{"module":"three","tool":"Three.js: geometria própria de oficina → cena determinística; fluxo de caixas","status":"planejado"},{"module":"gsap","tool":"GSAP: recorte Nilo e cartões → timeline HyperFrames; entradas por palavra medida","status":"planejado"}]}
+{"scenes":[{"id":"s01","narration":"Mais carrinhos. Por que a fila não anda?","on_screen":"Mais carrinhos. Por que a fila não anda?","visual":{"engine":"hyperframes","brief":"Apresentador geométrico próprio e oficina; sem reutilizar referência","shots":[{"cue":"Mais carrinhos","frame":"médio","subject":"Nilo e fila parada","camera":"avanço curto","in":"corte","emphasis":"porta única à direita","sfx":"pop"}],"transition_out":"corte"},"start":0,"duration":3}],"tool_plan":[{"module":"three","tool":"Three.js: geometria própria de oficina → cena determinística; fluxo de caixas","status":"planejado"},{"module":"gsap","tool":"GSAP: recorte Nilo e cartões → timeline HyperFrames; entradas por palavra medida","status":"planejado"}]}
 ```
 
 5. Gerar/montar voz (`voice.py` ou WAVs), medir, conferir `captions/words.json` e ancorar os cartões “chegada”, “passagem” e “limite do modelo” às palavras respectivas. Sem boca detalhada, relato off/atuação de rig; não fingir lip-sync fotorrealista. Renderizar composição principal, som e os portões comuns.
@@ -70,7 +78,7 @@ Ambiente de oficina ficcional discreto e rodas/caixas em Foley próprio/licencia
 [{"type":"pop","at":0.3,"duration":0.15,"gainDb":-25},{"type":"whoosh","at":10.2,"duration":0.35,"gainDb":-29},{"type":"pulse","at":19.2,"duration":0.6,"gainDb":-30},{"type":"pop","at":28.2,"duration":0.15,"gainDb":-26}]
 ```
 
-Reancorar aos tempos reais. Legenda de 2–3 palavras, sem serifa pesada licenciada; cartões maiores, no máximo um conceito por vez, sem encobrir porta/personagem. Realce visual no HTML/ASS, não campo de cor inventado. Registrar escuta ou pendência.
+Sem oficina/rodas/caixas autorizadas, aplique a [reserva ambiente/Foley](../../modules.md#reserva-de-ambiente-e-foley-sintetizados) com **D=42 s**, **seed=257**, preset sob fala e contatos na parada dos carrinhos. Reancore aos tempos reais, identifique textura sintética e registre `kind:"sfx"`. Segmente legendas por sentido, com fonte licenciada; cartões maiores, um conceito por vez, sem encobrir porta/personagem. Realce no HTML/ASS, não campo inventado. Use a mesma pergunta **“Mais carrinhos. Por que a fila não anda?”** na abertura falada, no título e na legenda correspondente; confira a entonação em escuta ou registre pendência.
 
 ### O que vem do relato de Theo
 

@@ -8,7 +8,7 @@ UGC é uma linguagem de performance e demonstração; pode usar gravação real 
 - Avatar: criar identidade/performance → voz → render falante → composição e B-roll → entrega/revisão.
 - Os scripts atuais importam e editam o vídeo do avatar; não incluem um gerador de avatar/lip-sync. A geração precisa de workflow ComfyUI realmente disponível e validado. Registrar em `tool_plan` como `adaptacao` até testar uma saída; não afirmar suporte nativo por apenas listar um repositório.
 
-Escolha o gerador conforme identidade, expressão, enquadramento, idioma, qualidade e recursos disponíveis. Se o usuário já usa um serviço, preserve essa escolha. Não iniciar cobranças, enviar material privado ou usar conta sem a autorização pertinente. Sem gerador disponível, entregar roteiro/performance/voz e indicar o bloqueio; não substituir por um rosto estático e chamar de avatar animado final.
+Escolha o gerador conforme identidade, expressão, enquadramento, idioma, qualidade e recursos disponíveis. Se o usuário já usa um serviço, preserve essa escolha. Não iniciar cobranças, enviar material privado ou usar conta sem a autorização pertinente. Sem gerador disponível, PARE, entregue roteiro/performance/voz e indique o bloqueio; rosto estático/robô com zoom seria **animatic**, não avatar falante final. Só produza essa alternativa com escopo aceito e identificação explícita. Aplique as [regras de composição](../composition.md#regras-de-acabamento-obrigatórias).
 
 ## Produção
 
