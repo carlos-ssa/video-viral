@@ -371,6 +371,31 @@ def src_to_out(mapping, t):
     return None
 
 
+def remap_words(words, mapping):
+    """Mantém palavras com sobreposição real; cada ocorrência pertence ao maior trecho audível."""
+    out = []
+    for w in words:
+        choices = [(min(w["end"], s["out"]) - max(w["start"], s["in"]), k, s, o)
+                   for k, (s, o) in enumerate(mapping)]
+        overlap, k, s, o = max(choices, key=lambda x: x[0]) if choices else (0, 0, {}, 0)
+        if overlap <= 0:
+            continue
+        st = o + max(w["start"] - s["in"], 0)
+        en = o + min(w["end"] - s["in"], s["_dur"])
+        nw = {**w, "start": round(st, 3), "end": round(en, 3), "_seg": k,
+              "_cont": k > 0 and abs(mapping[k - 1][0]["out"] - s["in"]) < 0.05}
+        nw.pop("jump", None)
+        if nw["end"] > nw["start"]:
+            out.append(nw)
+    out.sort(key=lambda w: w["start"])
+    for prev, w in zip([None] + out, out):
+        if prev is not None and w["_seg"] != prev["_seg"] and not w["_cont"]:
+            w["jump"] = True
+    for w in out:
+        del w["_seg"], w["_cont"]
+    return out
+
+
 def cmd_render(proj, m, a):
     ff = need("ffmpeg")
     path, src = source_of(proj, m)
@@ -457,25 +482,7 @@ def cmd_render(proj, m, a):
 
     words = source_words(proj)
     if words:
-        out_words = []
-        for w in words:
-            mid = (w["start"] + w["end"]) / 2
-            for k, (s, o) in enumerate(mapping):
-                if s["in"] <= mid < s["out"]:
-                    st = o + max(w["start"] - s["in"], 0)
-                    en = o + min(w["end"] - s["in"], s["_dur"])
-                    nw = {**w, "start": round(st, 3), "end": round(max(en, st + 0.05), 3)}
-                    nw.pop("jump", None)
-                    # salto na gravação: a legenda não junta palavras de frases que não eram vizinhas
-                    nw["_seg"], nw["_cont"] = k, k > 0 and abs(mapping[k - 1][0]["out"] - s["in"]) < 0.05
-                    out_words.append(nw)
-                    break
-        out_words.sort(key=lambda w: w["start"])
-        for prev, w in zip([None] + out_words, out_words):
-            if prev is not None and w["_seg"] != prev["_seg"] and not w["_cont"]:
-                w["jump"] = True
-        for w in out_words:
-            del w["_seg"], w["_cont"]
+        out_words = remap_words(words, mapping)
         (proj / "captions" / "words.json").write_text(json.dumps(out_words, ensure_ascii=False, indent=1),
                                                        encoding="utf-8")
         print(f"captions/words.json: {len(out_words)} de {len(words)} palavras na linha do tempo nova")
