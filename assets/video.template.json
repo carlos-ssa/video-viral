@@ -1,5 +1,5 @@
 {
-  "schema": 2,
+  "schema": 3,
   "slug": "",
   "title": "",
   "format": "narrado",
@@ -17,6 +17,28 @@
     1080,
     1920
   ],
+  "brief": {
+    "objective": "alcance",
+    "audience": "",
+    "niche": "",
+    "offer": "",
+    "problem_or_desire": "",
+    "benefit": "",
+    "proof": [],
+    "objections": [],
+    "desired_action": "",
+    "cta_destination": "",
+    "success_metric": "",
+    "assumptions": [],
+    "missing_inputs": []
+  },
+  "research": {
+    "sources": [],
+    "hypotheses": [],
+    "google_trends": null
+  },
+  "hook_candidates": [],
+  "tool_plan": [],
   "source": {
     "footage": "",
     "range": null,

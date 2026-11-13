@@ -1,6 +1,6 @@
 # Instalação (Windows, GPU NVIDIA)
 
-A skill instala sozinha, sem perguntar, as etapas que o pedido usa: `python scripts/setup_tools.py <grupo...>` (base, legendas, voz, chatterbox, blender) faz os blocos abaixo e pula o que já existe; `captions.py transcribe` e `voice.py` o chamam por conta própria e trocam para a venv certa. Os comandos abaixo servem para conferir ou instalar à mão. Se o usuário pedir para não instalar, rode os scripts com `VIDEO_VIRAL_NO_INSTALL=1` e entregue com as reservas (tabela "Quando falta ferramenta" no SKILL.md); se uma instalação falhar, faça o mesmo e relate. `python scripts/check_env.py` mostra o que já existe. Cada ferramenta Python fica numa venv própria em `~/.video-viral/venvs/<nome>`, que o `check_env.py` encontra sozinho; torch e dependências conflitam entre ferramentas.
+Os comandos desta página são relativos à pasta da skill; use seu workdir ou caminhos absolutos. A skill instala autonomamente apenas as etapas necessárias ao plano, respeitando permissões do ambiente e restrições do usuário: `python scripts/setup_tools.py <grupo...>` (base, legendas, voz, chatterbox, blender) faz os blocos abaixo e pula o que já existe; `captions.py transcribe` e `voice.py` o chamam por conta própria e trocam para a venv certa. Os comandos abaixo servem para conferir ou instalar à mão. Se o usuário pedir para não instalar, rode os scripts com `VIDEO_VIRAL_NO_INSTALL=1` e entregue com as reservas (tabela de reservas abaixo); se uma instalação falhar, faça o mesmo e relate. `python scripts/check_env.py` mostra o que já existe. Cada ferramenta Python fica numa venv própria em `~/.video-viral/venvs/<nome>`, que o `check_env.py` encontra sozinho; torch e dependências conflitam entre ferramentas.
 
 Use Python 3.11 ou 3.12 nas venvs: bibliotecas de IA costumam demorar a suportar a versão mais nova do Python.
 
@@ -58,3 +58,17 @@ winget install --id BlenderFoundation.Blender
 ## Pesquisa
 
 - Exa MCP: precisa de chave da Exa; configure o servidor na CLI conforme o README. Sem chave, a etapa usa a busca web.
+
+Google Trends: não requer instalação para URL/CSV oficial; veja [pesquisa](research.md). Não instalar clientes de endpoints internos como dependência obrigatória.
+
+## Reservas por etapa
+
+| Etapa indisponível | Reserva | Declaração necessária |
+|---|---|---|
+| Transcrição/alinhamento | Importar SRT/VTT; em narrado usar estimate; sem texto da gravação, cortar só silêncio | Tempos estimados ou cortes de vícios/retomadas não verificados precisam ser revisados |
+| Kokoro/Chatterbox | Voz do sistema, quando disponível | Sem licença comercial verificada, monetizado continua rascunho; não chamar voz instrumental de escuta |
+| HyperFrames/Remotion | Composição FFmpeg implementada conforme direção | Validar o acabamento real; identificar limitações de motion em vez de dar nota alta automaticamente |
+| Música/efeitos gerados | Ativos permitidos do usuário ou síntese local disponível | Registrar fonte/licença e diferenças da direção; não inventar uma geração que não ocorreu |
+| Avatar/lip-sync/vídeo generativo | Planejar e preparar ativos ou importar render autorizado disponível | Sem gerador validado, a geração permanece bloqueada; uma imagem estática não é avatar final |
+
+Reavaliar a ferramenta apenas quando houver uma mudança de condição ou alternativa concreta. Não repetir instalações/renders idênticos em todas as rodadas.

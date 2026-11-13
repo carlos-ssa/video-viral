@@ -1,4 +1,5 @@
 """Funções compartilhadas pelos scripts da skill video-viral (só biblioteca padrão)."""
+import hashlib
 import json
 import shutil
 import subprocess
@@ -97,6 +98,17 @@ def save_manifest(proj: Path, m: dict) -> None:
     tmp = path.with_suffix(".json.tmp")
     tmp.write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     tmp.replace(path)
+
+
+def file_sha256(path: Path) -> str:
+    with path.open("rb") as source:
+        return hashlib.file_digest(source, "sha256").hexdigest()
+
+
+def manifest_sha256(m: dict) -> str:
+    # Appending a review does not change the creative brief being reviewed.
+    content = {k: v for k, v in m.items() if k != "review"}
+    return hashlib.sha256(json.dumps(content, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
 
 
 def add_asset(m: dict, path: str, kind: str, source: str, license_: str, commercial_ok) -> None:

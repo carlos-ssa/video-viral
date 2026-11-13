@@ -37,6 +37,9 @@ def main():
     ap.add_argument("--voice", default=None)
     ap.add_argument("--fps", type=int, default=30, choices=[24, 25, 30, 50, 60])
     ap.add_argument("--lang", default="pt-BR")
+    ap.add_argument("--objective", choices=["alcance", "consideracao", "conversao", "entretenimento"])
+    ap.add_argument("--audience", default="")
+    ap.add_argument("--offer", default="")
     a = ap.parse_args()
 
     if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", a.slug):
@@ -60,12 +63,17 @@ def main():
     m.update(slug=a.slug, title=a.title, format=a.format, aspect=a.aspect, lang=a.lang, platforms=plats,
              monetized=not a.not_monetized, target_seconds=seconds, fps=a.fps, size=list(ASPECTS[a.aspect]))
     m["captions"]["size"] = CAPTION_SIZE.get(a.aspect, 72)
+    m["brief"].update(objective=a.objective or ("conversao" if a.format in ("produto", "ugc")
+                                              else "entretenimento" if a.format == "musica" else "alcance"),
+                      audience=a.audience, offer=a.offer)
     if a.voice:
         m["voice"]["voice"] = a.voice
     if a.format not in VOICE_FORMATS:
         m["voice"]["engine"] = "gravacao" if a.format in ("gravacao", "corte", "ugc") else m["voice"]["engine"]
     if a.format in ("gravacao", "corte", "ugc", "musica"):
         m["scenes"] = []
+    if a.format == "musica":
+        m["voice"]["engine"] = "none"
     if not m["monetized"]:
         m["music"]["engine"] = "ace-step"
     save_manifest(proj, m)

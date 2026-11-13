@@ -1,6 +1,6 @@
 # Ferramentas
 
-Cada repositório tem um papel. Use o padrão da etapa e só traga uma alternativa quando o pedido precisar dela; cada ferramenta a mais é instalação, VRAM e ponto de falha. Licenças e requisitos foram conferidos em 12/11/2026; confira o LICENSE do repositório antes de uso comercial.
+Cada repositório tem um papel. Use o catálogo para compor um plano por etapa/cena e registre contribuição, entrada/saída e status em tool_plan. A presença nesta lista não comprova integração ou validação local. Licenças e requisitos foram conferidos em 12/11/2026; confira o LICENSE do repositório antes de uso comercial.
 
 ## Encontrar
 
@@ -8,6 +8,15 @@ Cada repositório tem um papel. Use o padrão da etapa e só traga uma alternati
 |---|---|---|---|
 | [exa-labs/exa-mcp-server](https://github.com/exa-labs/exa-mcp-server) | Busca o que está em alta no nicho na semana | Servidor MCP; exige chave da Exa (serviço remoto, tem plano gratuito) | Pesquisa de tendência. Sem chave, use a busca web da CLI |
 | [yt-dlp/yt-dlp](https://github.com/yt-dlp/yt-dlp) | Metadados e legendas dos shorts que performam | Unlicense | Estudar ganchos, duração e estrutura. Use `--skip-download`; ver [pipeline](pipeline.md#1-encontrar) |
+
+Google Trends complementa a pesquisa com interesse de busca e sazonalidade. Use [research.md](research.md) e `scripts/trends.py` para gerar a consulta e importar CSV oficial, sem scraping ou dependência de pytrends. A API oficial alpha exige acesso concedido; dados do site não são métricas de retenção.
+
+## Status das integrações
+
+- **Scripts existentes:** FFmpeg, importação/corte, transcrição/legendas, voz, faces, imagens ComfyUI, entrega e revisão. Cada instalação ainda precisa de uma saída verificada no ambiente.
+- **Composição por projeto:** HyperFrames/Remotion, bibliotecas web e Blender; a cena é implementada e validada no projeto do vídeo.
+- **Adaptadores necessários:** geração de avatar/lip-sync, imagem-para-vídeo e música. Não há CLI próprio dessas gerações nesta skill; usar um fornecedor disponível, registrar os parâmetros e validar uma amostra antes da produção completa.
+- **Pesquisa:** Trends URL/CSV é integrado; API Trends, Exa e dados privados dependem do acesso real disponível.
 
 ## Escrever
 
@@ -47,7 +56,7 @@ Cada repositório tem um papel. Use o padrão da etapa e só traga uma alternati
 
 ### Bibliotecas dentro da composição (HyperFrames ou Remotion)
 
-Escolha a menor que resolve a cena. Todas precisam respeitar a regra de animação determinística do SKILL.md. Princípios de animação, receitas e a ponte `drawAt(t)` estão em [motion graphics](motion.md).
+Escolha as bibliotecas necessárias ao resultado da cena, evitando motores redundantes. Todas precisam respeitar a regra de animação determinística do SKILL.md. Princípios de animação, receitas e a ponte `drawAt(t)` estão em [motion graphics](motion.md).
 
 | Repositório | Para quê | Cuidado no render |
 |---|---|---|

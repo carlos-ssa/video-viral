@@ -1,0 +1,1 @@
+Prepare um vídeo UGC com avatar fictício para demonstrar meu app. Tenho a gravação real do produto, mas nenhum gerador de avatar configurado. Quero qualidade profissional e não autorizo serviços pagos.

@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-Either scripts/review.py was run and its report.md rubric was filled with scores and fixes before the video was declared finished, or rendering was impossible and the response says which stages are blocked without claiming the video is finished.
+Before declaring completion, a real final video has a publishable technical receipt and a matching review with recorded inspection method/ranges and a successful verdict (0). The trace or artifacts identify what was actually inspected. If rendering or inspection is blocked, the response reports incomplete/unverified stages without claiming a professionally approved final video. Code 3 is a best effort with limitations, not approval.

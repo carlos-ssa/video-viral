@@ -1,0 +1,1 @@
+Crie o planejamento de um Reels para divulgar meu serviço de limpeza de estofados em São Paulo. Quero leads pelo WhatsApp. Não tenho analytics. Inclua pesquisa com Google Trends, cinco ganchos audiovisuais e uma edição profissional. Não instale nem publique nada.
