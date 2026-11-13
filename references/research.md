@@ -2,6 +2,8 @@
 
 A pesquisa orienta decisões criativas. Ela não revela pesos internos dos algoritmos nem comprova que um vídeo será viral.
 
+Para fotografia/câmera e cenas no Blender, use o [pacote de referências de filmes, séries e vlogs](camera-references.md); para obter objetos, materiais e HDRIs, use a [pesquisa de itens 3D gratuitos](free-3d-assets.md). Referências estudadas e ativos realmente incorporados têm registros e direitos distintos.
+
 ## Recorte e evidências
 
 Defina nicho, idioma/região, plataforma, formato/duração, objetivo e período. Busque referências recentes e recorrentes, não apenas o maior vídeo isolado. Use a busca web disponível e informações públicas realmente acessíveis. Metadados/legendas fornecidos podem apoiar a pesquisa, sem instalar um downloader adicional. Estudar não autoriza reaproveitar ativos.

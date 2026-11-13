@@ -4,6 +4,8 @@ O vídeo compete com o próximo do feed. Cada segundo precisa dar um motivo para
 
 Antes do roteiro, use o brief e os candidatos de [marketing e ganchos](marketing.md). Escolha a progressão pelo público e objetivo; para longo, veja [longo](formats/longo.md).
 
+Registre a mensagem central em `brief.core_message`, reaproveitando tema, público e duração já fornecidos. As [receitas de prompts](prompt-patterns.md) ensinam final→gancho, pares de afirmação/evidência visual e explicadores ancorados nas palavras. Escolha o perfil pelo pedido; não transforme seus parâmetros ou perguntas em regra universal. Tempos escritos antes da voz são alvos e precisam ser reancorados ao áudio medido.
+
 ## Exemplo de estrutura de 40 segundos
 
 | Tempo | Batida | O que fazer |

@@ -2,11 +2,15 @@
 
 HyperFrames + GSAP é o compositor. Escolha a linguagem pela cena; o arsenal é exclusivo e os módulos não precisam aparecer todos no mesmo vídeo. [Direção](direction.md) e [módulos](modules.md) definem a função de cada recurso.
 
+Antes de escolher trajetórias/easings, consulte [pesquisa de câmera](camera-references.md). Diferencie deslocamento 3D, rotação, lente e crop digital; passe da referência observada a parâmetros e preview no motor escolhido. Bibliotecas externas de movimentos são referências de linguagem, não novos motores instalados automaticamente.
+
 ## Tempo determinístico
 
 Toda animação é função do tempo/quadro pedido. Não usar relógio real, aleatório sem semente ou uma física que muda ao buscar para trás. Os adaptadores retornam createScene(host,params) e drawAt(t); carregamento assíncrono termina antes de capturar. Testar busca 2→0→2 e conferir o mesmo quadro.
 
 GSAP usa uma timeline pausada registrada no compositor. PixiJS, Paper.js e p5.js desenham a partir desse tempo. gl-transitions recebe texturas e progresso explícitos. Three.js renderiza câmera/objetos no tempo solicitado; o Blender pode entregar vídeo/frames ou GLB preparado com glTF Transform. Não duplicar motores sem contribuição concreta.
+
+Em explicadores com rewind ou mudança de velocidade, derive dois tempos do quadro solicitado: tempo ambiente e tempo narrativo, por uma função explícita de remapeamento. Não avance contadores por chamadas acumuladas. Grão/tremor/estrelas precisam de seed e índice de frame ou bucket temporal (por exemplo `floor(t * 24)` para textura a 24 Hz), preservando o mesmo resultado em busca fora de ordem e subframes. [Receitas e eventos por palavra](prompt-patterns.md) detalham a direção; isso não substitui o compositor por um player/renderer externo.
 
 ## Linguagens
 

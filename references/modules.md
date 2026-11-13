@@ -36,6 +36,8 @@ Adapte a fonte e reconstrua o bundle antes de renderizar. Integre no filme como 
 
 `node scripts/gltf.mjs entrada.glb saida.glb --node-root <raiz-npm>` preserva a fonte e otimiza para carregamento sem exigir um decoder adicional. O receipt não aprova qualidade visual; confira materiais, geometria e animação no destino. Para criação/câmera/iluminação, use Blender/Three.js. [Fluxo 3D](modules/3d.md).
 
+Antes de criar/adaptar uma cena, prepare o [pacote de fotos/vídeos de referência](camera-references.md) e procure [itens gratuitos compatíveis](free-3d-assets.md). O executor Blender recebe e abre as mídias, não só uma lista de estilos; carregamento de referência não é geração automática de geometria.
+
 ## ComfyUI
 
 ```sh

@@ -20,3 +20,8 @@ Links canônicos do catálogo. Fixar versões de runtime e registrar versões de
 - [faster-whisper](https://github.com/SYSTRAN/faster-whisper)
 
 - Google Trends: [dados](https://support.google.com/trends/answer/4365533), [CSV/atribuição](https://support.google.com/trends/answer/4365538), [API alpha](https://developers.google.com/search/apis/trends). É fonte de pesquisa, não motor audiovisual.
+
+## Referências de pesquisa, sem novos motores
+
+- [Câmera: filmes, séries, vlogs e bibliotecas](camera-references.md): fontes, mídias reais e tradução em decisões por plano; inclui a leitura direta do [artigo de Theo](https://x.com/theoardley/status/2116684286837330374) e a consulta ao [Motion Prompt](https://github.com/showheyohtaki/motion-prompt).
+- [Itens 3D gratuitos](free-3d-assets.md): bibliotecas, fonte específica, licença por item e importação no stack existente. Estado dos termos deve ser reconferido ao escolher o arquivo.

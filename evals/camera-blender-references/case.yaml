@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: camera-blender-references
+expected_outcome: |
+  Researches camera language and free 3D candidates, prepares a traceable visual reference pack and concrete per-shot Blender plan. Distinguishes still-image observation from unverified motion, actually inspects available media, and explains delivery to the Blender executor. Does not invent licensed assets, tool conditioning, observed footage, lens measurements or completed imports. Respects planning-only scope.

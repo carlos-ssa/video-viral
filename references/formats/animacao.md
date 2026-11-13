@@ -8,6 +8,8 @@ Definir público, tom, arco, gancho, conflito/pergunta, progressão e recompensa
 
 Planeje storyboard com ações e enquadramentos por plano. Registre identidade/aparência, escala, roupas, adereços e relações espaciais; forneça/construa referências e execute os [três quadros de estilo e seek](../composition-check.md). Aplique as [regras de acabamento](../composition.md#regras-de-acabamento-obrigatórias). Semente fixa ajuda na repetição, mas não garante identidade entre cenas; conferir referências e corrigir inconsistências antes de animar.
 
+Em Blender, monte e entregue ao executor o [pacote de fotos/trechos de vídeo](../camera-references.md), associado aos planos, antes do blockout. Mantenha linguagem de câmera, escala, luz e identidade entre cenas; busque [itens 3D gratuitos](../free-3d-assets.md) pela mesma direção. Inspeção de imagens não valida movimento nem torna uma referência ativo liberado para o filme.
+
 ## Ferramentas e produção
 
 - HyperFrames + GSAP: composição, tipografia, gráficos, recortes e transições.
