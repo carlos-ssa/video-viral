@@ -344,10 +344,120 @@ class VerdictTests(unittest.TestCase):
             self.assertEqual(review.verdict(self.proj), 2)
         self.assertNotIn('ENTREGA TÉCNICA APROVADA', output.getvalue())
 
+    def test_self_check_does_not_replace_pending_independent_reviewer(self):
+        self.assessment = {'video_sha256': self.metrics['video_sha256'],
+                           'reviewer_preflight': review.empty_preflight(),
+                           **{ch: {'status': 'pending', 'method': '', 'ranges': []} for ch in review.CHANNELS},
+                           'self_check': {'producer_id': 'producer:fixture', 'independent': False,
+                                          'audio': {'status': 'instrumented', 'method': 'LUFS e silencedetect',
+                                                    'ranges': [[0, 2]]}}}
+        self.write_evidence()
+        self.assertEqual(self.verdict(), 2)
+
     def test_assessment_method_requires_text(self):
         self.assessment['motion']['method'] = None
         self.write_evidence()
         self.assertEqual(self.verdict(), 2)
+
+
+class GateTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.proj = Path(self.temp.name)
+
+    def test_freeze_at_end_has_same_threshold_as_middle(self):
+        for span in (2.3, 2.5, 4.0):
+            with self.subTest(span=span):
+                mid = review.freeze_checks([(1, span)], 10, False, [])
+                end = review.freeze_checks([(10 - span, None)], 10, False, [])
+                self.assertEqual(bool(mid[0]), bool(end[0]))
+                self.assertEqual(bool(mid[1]), bool(end[1]))
+
+    def test_caption_reading_and_long_video_do_not_trigger_short_freeze_gate(self):
+        self.assertTrue(review.freeze_checks([(0, 6)], 20, False, [])[0])
+        self.assertFalse(review.freeze_checks([(0, 6)], 20, False, [(0, 2), (2, 4), (4, 6)])[0])
+        self.assertFalse(review.freeze_checks([(0, 6)], 20, True, [])[0])
+        self.assertTrue(review.freeze_checks([(0, 13)], 20, True, [])[0])
+
+    def test_speech_is_not_inferred_from_pulses_or_music(self):
+        for manifest in ({'voice': {'engine': 'none'}}, {'format': 'musica'},
+                         {'scenes': [{'narration': ''}]}, {'format': 'asmr-impossivel'}):
+            self.assertFalse(review.expects_speech(manifest))
+        self.assertTrue(review.expects_speech({'format': 'gravacao', 'voice': {'engine': 'none'}}))
+        self.assertTrue(review.expects_speech({'scenes': [{'narration': 'Oi'}]}))
+
+    def test_silent_sound_led_video_fails_even_if_lufs_would_pass(self):
+        block, warn = review.audio_checks({'voice': {'engine': 'none'}}, 10, False,
+                                         {'silences': [(0.2, 10)], 'audible_fraction': 0.02}, [], [])
+        self.assertIn('apenas 2%', block[0])
+        self.assertIn('LUFS', block[0])
+        self.assertFalse(review.audio_checks({'voice': {'engine': 'none'}}, 10, False,
+                                            {'silences': [], 'audible_fraction': 0.5}, [], [])[0])
+
+    def test_middle_silence_warns_with_time_and_correction_and_long_threshold(self):
+        activity = {'silences': [(2, 3.1)], 'audible_fraction': 0.89}
+        block, warn = review.audio_checks({}, 10, False, activity, [], [])
+        self.assertFalse(block)
+        self.assertIn('2.0–3.1 s', warn[0])
+        self.assertIn('encurte', warn[0])
+        self.assertFalse(review.audio_checks({}, 10, True, activity, [], [])[1])
+
+    def test_dead_tail_requires_all_three_signals(self):
+        activity = {'silences': [(3.5, 6)], 'audible_fraction': 0.6}
+        self.assertIn('Cauda morta', review.audio_checks({}, 6, False, activity, [(4, None)], [])[0][0])
+        self.assertFalse(review.audio_checks({}, 6, False, activity, [], [])[0])
+        self.assertFalse(review.audio_checks({}, 6, False, activity, [(4, None)], [(4, 6)])[0])
+        audible = {'silences': [], 'audible_fraction': 1}
+        self.assertFalse(review.audio_checks({}, 6, False, audible, [(4, None)], [])[0])
+        unknown = review.audio_checks({}, 6, False, activity, [(4, None)], None)
+        self.assertFalse(unknown[0])
+        self.assertIn('tempos de exibição', unknown[1][0])
+        self.assertFalse(review.audio_checks({}, 6, True, activity, [(4, None)], [])[0])
+
+    def test_residual_motion_tail_is_joint_gate_not_a_freeze(self):
+        activity = {'silences': [(3.5, 6)], 'audible_fraction': 0.6}
+        for fps in (10, 30):
+            energy = [(i / fps, 2 / fps) for i in range(1, 6 * fps)]
+            block, _ = review.audio_checks({}, 6, False, activity, [], [], energy)
+            self.assertTrue(any('Cauda morta' in b for b in block))
+            self.assertEqual(review.freeze_checks([], 6, False, []), ([], []))
+        energy = [(i / 10, 2) for i in range(1, 60)]
+        self.assertFalse(review.audio_checks({}, 6, False, activity, [], [], energy)[0])
+
+    def test_caption_timing_uses_display_cues_not_asr_words(self):
+        captions = self.proj / 'captions'
+        captions.mkdir()
+        (captions / 'words.json').write_text('[{"start":0,"end":2,"word":"Oi"}]')
+        self.assertIsNone(review.caption_ranges(self.proj, {}))
+        (captions / 'captions.ass').write_text('[Events]\nDialogue: 0,0:00:00.50,0:00:02.30,Default,,0,0,0,,Oi\n')
+        self.assertEqual(review.caption_ranges(self.proj, {}), [(0.5, 2.3)])
+        (captions / 'captions.ass').unlink()
+        (captions / 'captions.json').write_text('[{"start":1,"end":3,"text":"Oi"}]')
+        self.assertEqual(review.caption_ranges(self.proj, {}), [(1, 3)])
+
+    def test_effects_accept_real_audio_asset_and_default_output_without_kind_sfx(self):
+        for manifest in ({'assets': [{'path': 'audio/sound-design.wav', 'kind': 'audio'}]},
+                         {'assets': [{'path': 'audio/custom.wav', 'role': 'sfx'}]}):
+            self.assertTrue(review.has_audio_role(self.proj, manifest, 'sfx'))
+        (self.proj / 'audio').mkdir()
+        (self.proj / 'audio/sound-design.wav').touch()
+        self.assertTrue(review.has_audio_role(self.proj, {}, 'sfx'))
+        self.assertFalse(review.has_audio_role(self.proj, {'assets': [{'path': 'audio/voice.wav', 'kind': 'audio'}]}, 'bed'))
+
+    def test_narrated_video_warns_for_missing_bed_unless_waived(self):
+        base = {'format': 'gravacao'}
+        self.assertTrue(any('cama sonora' in w for w in review.manifest_checks(self.proj, base, False)))
+        for change in ({'music': {'bed_waiver': 'Demonstração só com voz, opção editorial'}},
+                       {'assets': [{'path': 'audio/ambiente.wav', 'kind': 'audio'}]}):
+            self.assertFalse(any('cama sonora' in w for w in review.manifest_checks(self.proj, {**base, **change}, False)))
+
+    def test_shot_and_rhythm_limits_match_long_format(self):
+        manifest = {'aspect': '16:9', 'scenes': [{'id': 's1', 'start': 0, 'duration': 10,
+                                                'visual': {'shots': [{}]}}]}
+        self.assertTrue(any('por plano' in w for w in review.manifest_checks(self.proj, manifest, False)))
+        self.assertFalse(any('por plano' in w for w in review.manifest_checks(self.proj, manifest, True)))
+        self.assertIn('15 s', dict(review.rubric_for(manifest, 71))['Ritmo'])
 
 
 if __name__ == "__main__":
