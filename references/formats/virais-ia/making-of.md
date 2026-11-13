@@ -6,6 +6,14 @@
 
 Para ensinar uma transformação realmente feita e mostrar decisões humanas/técnicas. Entregar o resultado primeiro e depois revelar os passos que explicam sua diferença; tela de ferramenta não é prova suficiente de autoria ou qualidade.
 
+## Requisitos e limite local
+
+- **Obrigatório:** transformação realmente executada, fontes/versões preservadas e comparação verificável; captura real quando a fala alegar gravação ou trabalho manual.
+- **Local possível:** construir o farol SVG com máscara/rig abaixo e mostrar o processo digital realmente feito. Identifique-o como demonstração digital, não bancada filmada. Não é necessário gerador de imagem/vídeo para ensinar essa edição.
+- **PARE:** se o pedido exigir bastidor filmado/realista sem gravação adequada, não fabrique a prova com geração nem cartões. Avise que a alternativa seria tutorial ilustrativo/**animatic**, não o making-of viral solicitado; só siga com escopo aceito.
+
+Aplique as [regras comuns de composição](../../composition.md#regras-de-acabamento-obrigatórias).
+
 ## Roteiro preenchível — alvo 40 s
 
 Três aberturas (completar mais duas para o portão):
@@ -44,6 +52,44 @@ Salvar fontes próprias, takes, workflow/receipts e versões antes/depois. Seed 
 
 5. Para captura-base com fala, `footage.py import`/transcrição/EDL podem preparar A-roll; preservar base e fazer o filme principal conforme [gravação](../gravacao.md). Para narração separada, `voice.py`/WAVs medidos. Legendas do áudio final, render HyperFrames, som, `deliver.py` e revisão comum. Não duplicar fala do A-roll com narração sintética.
 
+### Construir máscara, rig e comparação do farol
+
+1. Crie `source/primeira-versao.svg` e `source/final.svg` próprios, preserve hashes e copie os derivados para `composition/assets/`. Use a mesma geometria/câmera/escala: a única variável comparada é a máscara. Para demonstração digital, diga **“recortes digitais”**, não “gravei papel” ou “minhas mãos”. Registre o que realmente mudou em `research/`, com fontes e saídas.
+2. Insira o SVG abaixo num **filho** de uma `.clip` da composição. A máscara começa branca e subtrai em preto a silhueta da torre/telhado; coloque-a num grupo externo para a máscara ficar fixa enquanto o feixe interno gira. Isso evita que a correção gire junto com a luz.
+
+```html
+<svg viewBox="0 0 900 760" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <mask id="m-final" maskUnits="userSpaceOnUse" x="0" y="0" width="900" height="760">
+      <rect width="900" height="760" fill="white"/>
+      <path d="M380 250H520L560 610H340Z M355 250H545L490 150H410Z" fill="black"/>
+    </mask>
+  </defs>
+  <rect width="900" height="760" fill="#F6EBD5"/>
+  <g id="base-final"><path d="M285 610H615L650 650H250Z" fill="#DBCCAC"/></g>
+  <g id="torre-final">
+    <path d="M380 250H520L560 610H340Z" fill="#387BA1"/>
+    <path d="M355 250H545L490 150H410Z" fill="#10283F"/>
+    <circle cx="450" cy="289" r="32" fill="#F0B54A"/>
+  </g>
+  <g mask="url(#m-final)">
+    <g id="feixe-final"><path d="M450 289L865 100V584Z" fill="#F0B54A" opacity=".78"/></g>
+  </g>
+</svg>
+```
+
+3. Faça o rig com grupos independentes `base`, `torre`, `feixe`, não com zoom do cartão inteiro. No plano de camadas, mostre deslocamentos separados e reconstrua; no resultado, mantenha base/torre imóveis e anime só o feixe. Na timeline pausada existente, use tempo absoluto e `fromTo` para o seek não herdar estado. Exemplo local de 4 s (some o início real do plano):
+
+```js
+tl.fromTo('#torre-final', {x:-130}, {x:0,duration:1,ease:'power2.out'}, 0);
+tl.fromTo('#base-final', {y:75}, {y:0,duration:1,ease:'power2.out'}, 0);
+tl.fromTo('#feixe-final', {rotation:-5,svgOrigin:'450 289'},
+  {rotation:5,svgOrigin:'450 289',duration:4,ease:'none'}, 0);
+```
+
+4. Para comparar, duplique o SVG com **todos** os IDs/URLs renomeados de `final` para `antes`, e retire somente `mask="url(#m-antes)"` dessa cópia. Mostre “SEM MÁSCARA” e “COM MÁSCARA” na mesma escala e instante; aplique a ambos apenas o mesmo tween do feixe, sem a animação de montagem. Use alternância em tela cheia se o lado a lado tornar o detalhe pequeno. Não “melhore” cor/luz/câmera só no depois. A área principal e os rótulos seguem a composição comum, não um cartão diminuto.
+5. Capture um quadro em que o feixe cruza a torre nas duas versões; a primeira deve mostrar invasão e a final preservar a silhueta. Execute [quadros e seek](../../composition-check.md), incluindo 2 → 0 → 2. Guarde SVGs, capturas e comando real; isso prova uma edição digital específica, não uma gravação de processo inexistente.
+
 ## Rota B — processo com clipes externos
 
 1. A lista de planos continua 3/7/9/11/6/4 s. O **resultado** pode ser gerado fora, mas p02–p04 precisam de capturas reais do usuário e das escolhas de tomada/montagem. Solicitar esses arquivos autorizados; se não vierem, fazer tutorial ilustrativo identificado, não inventar making-of.
@@ -60,7 +106,7 @@ Som real útil de recorte/bancada autorizado; ambiente de sala separado. Spec pi
 [{"type":"pop","at":0.3,"duration":0.15,"gainDb":-25},{"type":"whoosh","at":10,"duration":0.3,"gainDb":-28},{"type":"pop","at":30.2,"duration":0.15,"gainDb":-27}]
 ```
 
-Reancorar após medir a fala. Legendas de 2–3 palavras em região sem interface importante; títulos “fonte”, “primeira versão”, “final” compostos e com tempo de leitura. Áudio do processo não fica tocando junto com duplicata do master; conferir em escuta, não só LUFS.
+Sem sala/contatos autorizados, aplique a [reserva ambiente/Foley](../../modules.md#reserva-de-ambiente-e-foley-sintetizados) com **D=40 s**, **seed=223**, preset sob fala e `pop` na montagem das camadas. Identifique síntese, não som captado da bancada; registre `kind:"sfx"`. Reancore após medir a fala. Legendas por sentido em região sem interface importante; títulos “fonte”, “primeira versão”, “final” compostos e com tempo de leitura. Áudio do processo não fica tocando junto com duplicata do master; confira em escuta, não só LUFS.
 
 ### Aprendizado atribuído, não validação por nota
 

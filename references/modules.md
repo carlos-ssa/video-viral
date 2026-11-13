@@ -8,7 +8,19 @@
 node scripts/sound.mjs <projeto> --spec edit/sound.json --node-root <raiz-npm>
 ```
 
-A spec contém duration (segundos), seed e events: [{"type":"whoosh","at":1,"duration":0.4,"gainDb":-18}]. Tipos: whoosh, impact, pop, riser e pulse. A saída padrão é audio/sound-design.wav com receipt JSON. A geração é offline, não reprodução ao vivo; não sobrescreve resultado existente. Registre o ativo e sua origem no manifesto. deliver.py inclui essa faixa automaticamente; --sfx seleciona outra faixa. Não duplicar efeitos já mixados no master.
+A spec contém duration (segundos), seed e events: [{"type":"whoosh","at":1,"duration":0.4,"gainDb":-18}]. Tipos: whoosh, impact, pop, riser e pulse. A saída padrão é audio/sound-design.wav com receipt JSON. A geração é offline, não reprodução ao vivo; não sobrescreve resultado existente. deliver.py inclui essa faixa automaticamente; --sfx seleciona outra faixa. Não duplique efeitos já mixados no master.
+
+Registre efeitos e ambientes sintetizados em `video.json.assets` com **`kind:"sfx"`**, não apenas `kind:"audio"`/`"sound"`. O review reconhece `sfx` (ou arquivos em `audio/sfx/`); esse registro declara a função, não comprova qualidade nem mix. Exemplo para som próprio realmente gerado:
+
+```json
+{"path":"audio/sound-design.wav","kind":"sfx","source":"Tone.js local; edit/sound.json; textura e contatos sintetizados, não gravação de ambiente real","license":"Síntese original deste projeto; sem amostras externas","commercial_ok":true}
+```
+
+### Reserva de ambiente e Foley sintetizados
+
+Sem gravação/ativo autorizado, crie uma **textura estilizada de reserva**, nunca anuncie chuva, rua, madeira ou musgo realista. Em `edit/sound.json`, use a duração medida `D`, uma seed fixa da receita e eventos `whoosh` sobrepostos: início a cada **1,5 s**, duração **min(3, D − at) s**, `gainDb:-24` sob fala ou `-18` sem fala. Comece em 0, termine em D e omita eventos com duração ≤0. Acrescente `pop` de **0,12 s / −28 dB** no contato leve, `impact` de **0,18 s / −26 dB** no contato grave e `whoosh` de **0,4 s / −29 dB** no deslocamento, sempre ancorados à imagem e contidos em D. São parâmetros de síntese, não LUFS finais; os tipos atuais usam osciladores e não modelam ambientes físicos.
+
+Gere pela CLI acima, registre `kind:"sfx"` e escute a mix; ajuste ganho/densidade conforme [composição](composition.md#regras-de-acabamento-obrigatórias). A textura pode soar tonal: se não cumprir a função sensorial/realista, PARE e solicite áudio adequado, ou ofereça demonstração sintética identificada. Não preencha falta de Foley com quatro estalos separados por silêncio.
 
 ## Cenas — PixiJS, Paper.js, p5.js e gl-transitions
 
@@ -38,7 +50,7 @@ Workflow exportado em formato API, nós e checkpoints reais já disponíveis no 
 python scripts/music.py <projeto> --endpoint http://127.0.0.1:8001 --prompt "..." --duration 30 --seed 7
 ```
 
-O cliente usa release_task, query_result e o endpoint de áudio da mesma origem. Opcional ACE_STEP_API_KEY por ambiente, sem gravar o segredo. Timeout/falha/resposta incompleta não geram sucesso fictício; arquivo anterior é preservado. O serviço e os pesos precisam ser configurados à parte. Registre a licença real antes de --commercial-ok. O contrato de API foi testado com servidor simulado; isso não comprova uma geração musical local.
+O cliente usa release_task, query_result e o endpoint de áudio da mesma origem. Opcional ACE_STEP_API_KEY por ambiente, sem gravar o segredo. Timeout/falha/resposta incompleta não geram sucesso fictício; arquivo anterior é preservado. O serviço e os pesos precisam ser configurados à parte. Sem serviço, siga a distinção entre reserva procedural identificada e falha orientada em [música](formats/musica.md), sem prometer geração ACE-Step. Registre a licença real antes de --commercial-ok. O contrato de API foi testado com servidor simulado; isso não comprova uma geração musical local.
 
 ## Voz e legendas
 

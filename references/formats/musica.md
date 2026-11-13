@@ -4,7 +4,9 @@ A estrutura vem da faixa musical. Não impor roteiro de narração ou fala nos p
 
 ## Brief e música
 
-Definir público/nicho, gênero, emoção, duração, trecho principal e linguagem visual. Para canal, registrar identidade de série. Se a faixa já existe, preservar o arquivo e verificar os direitos. Se precisar gerar, selecionar ferramenta disponível (ACE-Step ou workflow configurado), registrar parâmetros/versão e revisar uma amostra antes da faixa completa. A integração atual não inclui CLI próprio de geração musical; usar o workflow/serviço ACE-Step 1.5 disponível e registrar `adaptacao` até validar a saída.
+Defina público/nicho, gênero, emoção, duração, trecho principal e linguagem visual. Para canal, registre identidade de série. Se a faixa já existe, preserve o arquivo e verifique os direitos. Para gerar, use o cliente **`scripts/music.py`** com a API ACE-Step 1.5 realmente disponível; [comando e contrato](../modules.md#música--ace-step-15). Registre parâmetros/versão e revise uma amostra antes da faixa completa; mantenha `adaptacao` até validar a saída.
+
+Sem ACE-Step, não prometa canto, estilo ou faixa equivalentes. A saída aceitável é **reserva procedural marcada como reserva**, se a implementação disponível a produzir e ela atender ao uso acordado, ou **falha com orientação** para configurar o serviço ou fornecer faixa autorizada. Não invente flags de reserva, não renomeie efeitos Tone.js como música ACE-Step e não crie recibo de geração inexistente. Se o pedido exigir voz cantada ou realismo que a reserva não entregue, PARE, avise o usuário e ofereça plano/ativos disponíveis; reserva instrumental não satisfaz lyric video cantado.
 
 Guardar o master em `audio/music.wav` com proveniência em `assets`. Verificar os termos dos pesos e ativos usados no ACE-Step 1.5. Não atribuir uma licença de software automaticamente à faixa ou aos modelos usados.
 

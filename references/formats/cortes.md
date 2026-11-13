@@ -30,7 +30,8 @@ Não use dois cortes que contam a mesma coisa na mesma semana. Se o longo repete
 
 ## Para cada corte
 
-- Texto do gancho na tela no quadro 0 (até 6 palavras) que resume a promessa, não repete a fala.
+- Texto do gancho na tela no quadro 0 (até 6 palavras), com a mesma promessa/pergunta da fala; siga as [regras de composição](../composition.md#regras-de-acabamento-obrigatórias).
+- Use o trecho real do original e a variação de título/moldura exigida em [gravação](gravacao.md#camada-de-acabamento), com a [cadência daquele fluxo](gravacao.md#ritmo-e-cortes). Preserve nome/fonte/marca d'água fora da faixa exclusiva da legenda.
 - Legenda palavra a palavra; muita gente assiste sem som.
 - Se o original tem duas pessoas, enquadre quem fala em cada trecho (`x` por trecho) ou use 16:9 com `fit` padrão.
 - Título e descrição próprios em `publish`, com o link ou nome do vídeo completo na descrição.

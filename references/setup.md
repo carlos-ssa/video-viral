@@ -1,6 +1,6 @@
 # Instalação seletiva do stack v2
 
-Execute comandos com caminhos absolutos ou a partir da pasta desta skill. `VIDEO_VIRAL_NO_INSTALL=1` impede instalar. Não reative skills arquivadas ou instale motores fora de `assets/stack.json`.
+Execute comandos com caminhos absolutos ou a partir da pasta desta skill. `VIDEO_VIRAL_NO_INSTALL=1` bloqueia instalações pelos scripts da skill, **não os downloads da CLI HyperFrames**. Não reative skills arquivadas ou instale motores fora de `assets/stack.json`.
 
 ## Consentimento antes da instalação
 
@@ -21,7 +21,23 @@ Exemplo, somente **após** consentimento da lista: `python scripts/setup_tools.p
 - `python scripts/setup_tools.py blender`: Blender.
 - `python scripts/setup_tools.py comfyui`: runtime ComfyUI em ambiente próprio, sem checkpoints. Adicionar somente os modelos/nós necessários ao workflow e registrar as versões/licenças.
 
-`VIDEO_VIRAL_NODE_ROOT` aponta à raiz npm. `VIDEO_VIRAL_BROWSER_PATH` aponta a um Chrome/Edge instalado; os adaptadores não baixam um navegador. Não misturar pacotes Node v1 e v2 silenciosamente. Para um projeto isolado, copiar assets/node/package.json e package-lock.json e executar npm ci --ignore-scripts --no-audit --no-fund nessa pasta.
+`VIDEO_VIRAL_NODE_ROOT` aponta à raiz npm. Não misture pacotes Node v1 e v2 silenciosamente. Para um projeto isolado, copie assets/node/package.json e package-lock.json e execute npm ci --ignore-scripts --no-audit --no-fund nessa pasta **somente com instalação permitida**.
+
+### Browser, cache e execução sem rede
+
+- `VIDEO_VIRAL_BROWSER_PATH`: Chrome/Edge existente usado pelos adaptadores da skill; eles não baixam browser.
+- `HYPERFRAMES_BROWSER_PATH`: caminho absoluto do executável usado pela **CLI HyperFrames**. A CLI não lê `VIDEO_VIRAL_BROWSER_PATH`; defina as duas quando usar ambas as rotas.
+- `HYPERFRAMES_CACHE_DIR`: raiz de cache da CLI, incluindo fontes, histórico e lock de render. Use pasta curta, gravável e exclusiva do trabalho; não compartilhe lock/cache entre testes sem intenção. Isso **não desativa downloads**.
+
+No HyperFrames 0.9.40 instalado, a CLI pode baixar Chrome e fontes mesmo com `VIDEO_VIRAL_NO_INSTALL=1`, `HF_HUB_OFFLINE=1` e `TRANSFORMERS_OFFLINE=1`. Essas variáveis não são um bloqueio de rede da CLI. Antes de lint/check/preview/render, selecione o browser existente e forneça cada fonte com `@font-face` e arquivo local (sem Google Fonts/CDN). Em Git Bash/POSIX, com caminhos reais:
+
+```sh
+export VIDEO_VIRAL_BROWSER_PATH="<Chrome-ou-Edge-existente>"
+export HYPERFRAMES_BROWSER_PATH="$VIDEO_VIRAL_BROWSER_PATH"
+export HYPERFRAMES_CACHE_DIR="<pasta-curta-gravavel>"
+```
+
+Se não houver permissão de rede, execute sob bloqueio de saída do ambiente, sem alterar políticas para contorná-lo. Cache vazio não é autorização para baixar; tentativa de download ou dependência ausente exige PARAR e avisar. Não há flag offline universal documentada aqui. Para falha de captura com browser existente, use a [reserva por screenshot](composition.md#reserva-por-screenshot).
 
 Kokoro e faster-whisper usam venvs separadas sob ~/.video-viral/venvs. ACE-Step 1.5 deve ser configurado conforme o perfil real de hardware e expor sua API; music.py é cliente, não instalador de pesos. Blender MCP é configurado no cliente do agente separadamente, com o addon ativo. Não inventar disponibilidade com base no catálogo.
 
@@ -32,7 +48,7 @@ Diagnóstico: `python scripts/check_env.py` e `python scripts/stack.py doctor --
 Se a voz pt-BR do Kokoro não atender, a rota oficial é fornecer narração gravada ou gerada fora em `audio/scenes/<id>.wav` e executar `voice.py <projeto> --from-wavs`. Registre origem/licença/consentimento; isso importa áudio, sem adicionar TTS ao catálogo.
 No narrado sem ComfyUI configurado, tente na ordem: ativos fornecidos → cenas 2D/tipografia/3D do stack → relatar a etapa bloqueada se a necessidade essencial continuar. Preserve a direção sem inventar disponibilidade de imagem.
 
-Legendas: importar SRT/VTT ou usar estimate com tempos declarados aproximados. Sem HyperFrames, pode haver base/rascunho FFmpeg, nunca declará-lo acabamento profissional aprovado. Sem API musical, entregar plano/ativos disponíveis e relatar a etapa bloqueada. Não baixar modelos repetidamente para tentar mudar a nota.
+Legendas: importe SRT/VTT ou use estimate com tempos declarados aproximados. Sem HyperFrames, pode haver base/rascunho FFmpeg, nunca acabamento profissional aprovado. Sem API musical, aceite somente reserva procedural **identificada como reserva**, quando disponível e adequada ao pedido, ou falha com orientação para configurar ACE-Step/fornecer faixa autorizada; veja [música](formats/musica.md). Não anuncie geração ACE-Step nem música equivalente ao pedido sem ela. Não baixe modelos repetidamente para tentar mudar a nota.
 
 Com VIDEO_VIRAL_NO_INSTALL, voz/transcrição usam somente pesos já em cache. Para CPU explícita em narração: voice.py <projeto> --device cpu. Isso não troca o motor de voz.
 

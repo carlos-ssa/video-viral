@@ -6,7 +6,7 @@ Escolha a linguagem pela história: animação 2D, 2.5D, personagens 3D, tipogra
 
 Definir público, tom, arco, gancho, conflito/pergunta, progressão e recompensa. Se for marketing, conectar a história ao benefício e à prova, sem inserir um CTA desconectado. Para canal/série, manter uma bíblia enxuta de personagens, cenários, paleta, fontes e linguagem de movimento.
 
-Planejar storyboard com ações e enquadramentos por plano. Registrar identidade/aparência, escala, roupas, adereços e relações espaciais; gerar imagens de referência e três quadros de estilo. Semente fixa ajuda na repetição, mas não garante identidade entre cenas; conferir referências e corrigir inconsistências antes de animar.
+Planeje storyboard com ações e enquadramentos por plano. Registre identidade/aparência, escala, roupas, adereços e relações espaciais; forneça/construa referências e execute os [três quadros de estilo e seek](../composition-check.md). Aplique as [regras de acabamento](../composition.md#regras-de-acabamento-obrigatórias). Semente fixa ajuda na repetição, mas não garante identidade entre cenas; conferir referências e corrigir inconsistências antes de animar.
 
 ## Ferramentas e produção
 
