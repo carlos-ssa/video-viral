@@ -139,6 +139,18 @@ class SetupConsentTests(unittest.TestCase):
             self.assertTrue(setup.install_venv('legendas'))
             self.assertIn(setup.PYTHON_ASSETS / 'requirements-legendas.txt', sh.call_args.args[0])
 
+    def test_voice_installs_without_torch_cuda_or_espeak(self):
+        with patch.object(setup, 'uv', return_value=['uv']), \
+                patch.object(setup, 'uv_available', return_value=True), \
+                patch.object(setup, 'venv_python', return_value=Path('venv/python')), \
+                patch.object(setup, 'has_modules', return_value=True) as modules, \
+                patch.object(setup, 'NVIDIA', True), patch.object(setup, 'sh', return_value=True) as sh:
+            self.assertEqual(setup.consent_plan(['voz']), [])
+            self.assertTrue(setup.install_venv('voz'))
+            sh.assert_called_once()
+            self.assertIn(setup.PYTHON_ASSETS / 'requirements-voz.txt', sh.call_args.args[0])
+            modules.assert_called_once_with(Path('venv/python'), ['edge_tts'])
+
 
 if __name__ == '__main__':
     unittest.main()

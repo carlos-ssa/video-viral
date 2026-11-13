@@ -2,7 +2,7 @@
 
 Uso: python scripts/new_project.py <slug> --title "Título" [--format narrado] [--aspect 9:16]
      [--dir pasta] [--platforms tiktok,reels,shorts,kwai] [--not-monetized] [--seconds 40]
-     [--voice pf_dora] [--fps 30]
+     [--voice pt-BR-ThalitaMultilingualNeural] [--fps 30]
 
 Formatos: narrado (canal dark, narração + visual gerado), gravacao (sua gravação editada),
 corte (trecho de vídeo longo), produto, ugc, storytelling, musica, avatar.
@@ -17,6 +17,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _common import ASPECTS, FORMATS, MANIFEST, PLATFORMS, TEMPLATE, manifest_path, save_manifest  # noqa: E402
+from voice import default_voice  # noqa: E402
 
 FOLDERS = ["research", "source", "edit", "audio/scenes", "audio/sfx", "captions", "scenes", "assets", "render", "out"]
 DEFAULT_PLATFORMS = {"9:16": "tiktok,reels,shorts,kwai", "16:9": "youtube", "1:1": "feed", "4:5": "feed"}
@@ -52,6 +53,14 @@ def main():
         if a.aspect not in PLATFORMS[p]["aspects"]:
             print(f"Aviso: {p} espera {' ou '.join(PLATFORMS[p]['aspects'])}, e o projeto é {a.aspect}.")
 
+    try:
+        selected_voice = a.voice or default_voice(a.lang)
+    except ValueError as exc:
+        if a.format in ("gravacao", "corte", "ugc", "musica"):
+            selected_voice = None
+        else:
+            ap.error(str(exc))
+
     proj = Path(a.dir).expanduser().resolve() / a.slug
     if manifest_path(proj).exists():
         sys.exit(f"Já existe {manifest_path(proj)}; não sobrescrevo.")
@@ -66,8 +75,8 @@ def main():
     m["brief"].update(objective=a.objective or ("conversao" if a.format in ("produto", "ugc")
                                               else "entretenimento" if a.format == "musica" else "alcance"),
                       audience=a.audience, offer=a.offer)
-    if a.voice:
-        m["voice"]["voice"] = a.voice
+    if selected_voice:
+        m["voice"]["voice"] = selected_voice
     if a.format not in VOICE_FORMATS:
         m["voice"]["engine"] = "gravacao" if a.format in ("gravacao", "corte", "ugc") else m["voice"]["engine"]
     if a.format in ("gravacao", "corte", "ugc", "musica"):

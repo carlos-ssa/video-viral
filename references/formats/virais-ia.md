@@ -4,7 +4,7 @@ Receitas de produção, não promessa de viralização. Cada capítulo contém r
 
 ## Limite do stack
 
-Os geradores externos citados pela pesquisa, como Veo 3, Kling e Seedance, **não fazem parte do stack**. A rota A ensina imagens ComfyUI + motion/paralaxe, recortes/2D ou Three.js/Blender, narração Kokoro e composição HyperFrames + GSAP. Não promete geração nativa de vídeo contínuo nem lip-sync automático. Tone.js gera efeitos; ambientes e performances podem ser ativos próprios/licenciados.
+Os geradores externos citados pela pesquisa, como Veo 3, Kling e Seedance, **não fazem parte do stack**. A rota A ensina imagens ComfyUI + motion/paralaxe, recortes/2D ou Three.js/Blender, narração Edge TTS e composição HyperFrames + GSAP. Não promete geração nativa de vídeo contínuo nem lip-sync automático. Tone.js gera efeitos; ambientes e performances podem ser ativos próprios/licenciados.
 
 A rota B ensina a dirigir clipes em um gerador **à escolha do usuário**, fora da skill. A skill não chama esse serviço: recebe arquivos, registra origem/licença/consentimento e rótulo de IA, seleciona e compõe. **Adicionar um gerador é decisão do dono**; não alterar `assets/stack.json`, instalar motores ou simular integração. Sem recursos essenciais, entregar animatic identificado ou registrar bloqueio, não final aprovado.
 

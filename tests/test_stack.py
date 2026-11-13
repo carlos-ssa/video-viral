@@ -56,7 +56,7 @@ class StackTests(unittest.TestCase):
         data = json.loads((ROOT / 'assets/stack.json').read_text(encoding='utf-8'))
         self.assertEqual(data['version'], '2.0.0')
         self.assertEqual({x['id'] for x in data['modules']}, {'hyperframes', 'gsap', 'ffmpeg', 'three', 'blender',
-            'tone', 'gl-transitions', 'comfyui', 'pixi', 'paper', 'p5', 'blender-mcp', 'gltf', 'ace-step', 'kokoro', 'faster-whisper'})
+            'tone', 'gl-transitions', 'comfyui', 'pixi', 'paper', 'p5', 'blender-mcp', 'gltf', 'ace-step', 'edge-tts', 'faster-whisper'})
         for module in data['modules']:
             self.assertTrue((ROOT / module['entrypoint']).exists(), module['id'])
 

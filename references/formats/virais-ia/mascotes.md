@@ -34,7 +34,7 @@ Não é necessário alongar narração para preencher os alvos: reservar silênc
 
 ## Ficha da série
 
-Bia: capivara ilustrada de focinho retangular, pelo castanho uniforme, colete lilás com bolso quadrado, orelha direita com pequena dobra **desenhada**, pacote amarelo sem letras. Voz autorizada pt-BR acolhedora, mesma seleção Kokoro/ator e velocidade; bordão “A gente acha um caminho”. Barqueira é personagem própria secundária com referência separada, nunca introduzida por geração aleatória.
+Bia: capivara ilustrada de focinho retangular, pelo castanho uniforme, colete lilás com bolso quadrado, orelha direita com pequena dobra **desenhada**, pacote amarelo sem letras. Voz autorizada pt-BR acolhedora, mesma seleção Edge TTS/ator e velocidade; bordão “A gente acha um caminho”. Barqueira é personagem própria secundária com referência separada, nunca introduzida por geração aleatória.
 
 Paleta castanho/lilás/amarelo/azul-rio, vila fosca estilizada; câmera 40 mm na altura dos olhos, travessia esquerda→direita. Guardar frente/perfil/costas, escala e rig/modelo aprovados, voz de amostra e relações. Seed 191 nos workflows não garante dobra/bolso: conferir os dois a cada tomada, reutilizar assets sempre que possível. Registrar pacote entregue e favor pendente no mapa da série.
 

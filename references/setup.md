@@ -16,7 +16,7 @@ Exemplo, somente **após** consentimento da lista: `python scripts/setup_tools.p
 
 - `python scripts/setup_tools.py base`: FFmpeg/ffprobe e Node.
 - `python scripts/setup_tools.py hyperframes`: stack Node v2 com package.json/package-lock fixados, em ~/.video-viral/node-v2. Inclui o compositor e os módulos JS selecionados, mais infraestrutura de build/browser. Não sobrescreve um package.json estranho.
-- `python scripts/setup_tools.py voz`: Kokoro e dependências próprias, inclusive espeak-ng usado pela fonetização; ele não é um segundo TTS de reserva.
+- `python scripts/setup_tools.py voz`: edge-tts e dependências de rede em venv dedicada. Não instala Torch, pesos nem espeak-ng; a síntese é online. FFmpeg/ffprobe do grupo base convertem e montam WAVs.
 - `python scripts/setup_tools.py legendas`: faster-whisper; não instala outro transcritor/alinhador.
 - `python scripts/setup_tools.py blender`: Blender.
 - `python scripts/setup_tools.py comfyui`: runtime ComfyUI em ambiente próprio, sem checkpoints. Adicionar somente os modelos/nós necessários ao workflow e registrar as versões/licenças.
@@ -42,18 +42,18 @@ export HYPERFRAMES_CACHE_DIR="<pasta-curta-gravavel>"
 
 Se não houver permissão de rede, execute sob bloqueio de saída do ambiente, sem alterar políticas para contorná-lo. Cache vazio não é autorização para baixar; tentativa de download ou dependência ausente exige PARAR e avisar. Não há flag offline universal documentada aqui. Para falha de captura com browser existente, use a [reserva por screenshot](composition.md#reserva-por-screenshot).
 
-Kokoro e faster-whisper usam venvs separadas sob ~/.video-viral/venvs. ACE-Step 1.5 deve ser configurado conforme o perfil real de hardware e expor sua API; music.py é cliente, não instalador de pesos. Blender MCP é configurado no cliente do agente separadamente, com o addon ativo. Não inventar disponibilidade com base no catálogo.
+Edge TTS e faster-whisper usam venvs separadas sob ~/.video-viral/venvs. Atualizar o grupo `voz` instala edge-tts na venv existente; não remove pacotes antigos de outros usos. Vozes padrão: Thalita em pt-BR e Ava em inglês, +20%; veja [voz e legendas](modules.md#voz-e-legendas). ACE-Step 1.5 deve ser configurado conforme o perfil real de hardware e expor sua API; music.py é cliente, não instalador de pesos. Blender MCP é configurado no cliente do agente separadamente, com o addon ativo. Não inventar disponibilidade com base no catálogo.
 
 Diagnóstico: `python scripts/check_env.py` e `python scripts/stack.py doctor --node-root <pasta>`. Detectado não significa testado. CPU/GPU, tempo e memória dependem do módulo; apenas um modelo pesado de GPU por vez no perfil de 8 GB.
 
 ## Quando faltar algo
 
-Se a voz pt-BR do Kokoro não atender, a rota oficial é fornecer narração gravada ou gerada fora em `audio/scenes/<id>.wav` e executar `voice.py <projeto> --from-wavs`. Registre origem/licença/consentimento; isso importa áudio, sem adicionar TTS ao catálogo.
+Sem conexão/serviço Edge TTS ou se a voz não atender, a rota oficial é fornecer narração gravada ou gerada fora em `audio/scenes/<id>.wav` e executar `voice.py <projeto> --from-wavs`. Registre origem/licença/consentimento; isso importa áudio, sem adicionar TTS ao catálogo.
 No narrado sem ComfyUI configurado, tente na ordem: ativos fornecidos → cenas 2D/tipografia/3D do stack → relatar a etapa bloqueada se a necessidade essencial continuar. Preserve a direção sem inventar disponibilidade de imagem.
 
 Legendas: importe SRT/VTT ou use estimate com tempos declarados aproximados. Sem HyperFrames, pode haver base/rascunho FFmpeg, nunca acabamento profissional aprovado. Sem API musical, use `python scripts/music.py <projeto> --backend procedural --duration 30 --seed 7` para cama instrumental simples **identificada como reserva** (`fallback:true` no ativo), sem `--endpoint`/`--prompt`, somente quando adequada ao pedido; senão, falha com orientação para configurar ACE-Step/fornecer faixa autorizada. Veja [música](formats/musica.md). Não anuncie geração ACE-Step nem música equivalente ao pedido sem ela. Não baixe modelos repetidamente para tentar mudar a nota.
 
-Com VIDEO_VIRAL_NO_INSTALL, voz/transcrição usam somente pesos já em cache. Para CPU explícita em narração: voice.py <projeto> --device cpu. Isso não troca o motor de voz.
+Com `VIDEO_VIRAL_NO_INSTALL`, a transcrição usa somente pesos já em cache. Edge TTS não usa pesos locais nem opção `--device`: requer pacote instalado e acesso à internet autorizado, mesmo com a proibição de instalar. Para narração sem rede, use `--from-wavs`; as variáveis `HF_HUB_OFFLINE`/`TRANSFORMERS_OFFLINE` não tornam Edge TTS offline.
 
 ## Versões Python e ComfyUI
 
@@ -62,15 +62,13 @@ Com VIDEO_VIRAL_NO_INSTALL, voz/transcrição usam somente pesos já em cache. P
 | Pacote | Pin | Fonte consultada |
 |---|---|---|
 | faster-whisper | 1.2.1 | [PyPI](https://pypi.org/pypi/faster-whisper/1.2.1/json) |
-| kokoro | 0.9.4 | [PyPI](https://pypi.org/pypi/kokoro/0.9.4/json) |
-| soundfile | 0.13.1 | [PyPI](https://pypi.org/pypi/soundfile/0.13.1/json) |
-| numpy | 1.26.4 | [PyPI](https://pypi.org/pypi/numpy/1.26.4/json) |
+| edge-tts | 7.3.1 | [PyPI](https://pypi.org/pypi/edge-tts/7.3.1/json) |
 | torch / torchaudio | 2.8.0 / 2.8.0 | [torch](https://pypi.org/pypi/torch/2.8.0/json), [torchaudio](https://pypi.org/pypi/torchaudio/2.8.0/json) |
 | torchvision (ComfyUI) | 0.23.0 | [PyPI](https://pypi.org/pypi/torchvision/0.23.0/json), requer torch 2.8.0 |
 | nvidia-cublas-cu12 | 12.8.4.1 | [PyPI](https://pypi.org/pypi/nvidia-cublas-cu12/12.8.4.1/json) |
 | nvidia-cudnn-cu12 | 9.10.2.21 | [PyPI](https://pypi.org/pypi/nvidia-cudnn-cu12/9.10.2.21/json) |
 | ComfyUI | v0.3.60, b8730510db30c8858e1e5d8e126ef19eac395560 | [Ref oficial](https://api.github.com/repos/Comfy-Org/ComfyUI/git/ref/tags/v0.3.60) |
 
-Torch CUDA usa o índice cu128 já previsto pelo script; disponibilidade de wheel para cada SO/hardware deve ser conferida na instalação consentida. Requirements ComfyUI são lidos do commit fixado com constraints dos pins diretos; checkout existente divergente/sujo é preservado e pede migração manual. Venvs existentes recebem os pins de novo, em vez de tratar import bem-sucedido como versão validada.
+Torch CUDA do ComfyUI usa o índice cu128 já previsto pelo script; disponibilidade de wheel para cada SO/hardware deve ser conferida na instalação consentida. O grupo voz não depende de Torch. Requirements ComfyUI são lidos do commit fixado com constraints dos pins diretos; checkout existente divergente/sujo é preservado e pede migração manual. Venvs existentes recebem os pins de novo, em vez de tratar import bem-sucedido como versão validada.
 
-Isto não é lock completo das dependências transitivas: uv bootstrap, misaki/transformers e demais requisitos upstream conservam suas restrições originais; não foi verificada uma resolução completa nem versões de modelos/checkpoints. Conserve esses limites no relato, sem anunciar reprodutibilidade binária de Python/GPU.
+Isto não é lock completo das dependências transitivas: uv bootstrap, aiohttp e demais requisitos upstream conservam suas restrições originais; não foram fixadas todas as dependências nem versões de modelos/checkpoints. O catálogo/serviço de voz é remoto. Conserve esses limites no relato, sem anunciar reprodutibilidade binária de Python/GPU.

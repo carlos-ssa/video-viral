@@ -54,7 +54,19 @@ O cliente usa release_task, query_result e o endpoint de áudio da mesma origem.
 
 ## Voz e legendas
 
-voice.py usa Kokoro ou WAVs fornecidos. captions.py transcribe usa faster-whisper; import lê SRT/VTT, estimate marca aproximação e ass gera a camada de legenda. align é um comando legado que explica a migração, sem instalar outro motor. Scripts de apoio não autorizam adicionar novos provedores ao stack.
+`voice.py` usa Edge TTS online ou WAVs fornecidos. Padrões: português `pt-BR-ThalitaMultilingualNeural`, inglês `en-US-AvaMultilingualNeural`, ambas com `speed: 1.2` → `rate: +20%`. `new_project.py --lang en-US` escolhe Ava; `--voice` substitui a escolha, inclusive para outros idiomas (consulte `python -m edge_tts --list-voices`). O manifesto guarda `voice.engine: "edge-tts"`, `voice.voice` e `voice.speed`. A síntese envia o roteiro ao serviço Microsoft; o MP3 recebido vira WAV mono PCM 48 kHz e os tempos medidos alimentam cenas/legendas. Não acelere o áudio de novo na entrega.
+
+```sh
+python scripts/voice.py <projeto>
+python scripts/voice.py <projeto> --voice en-US-AvaMultilingualNeural --speed 1.2
+python scripts/voice.py <projeto> --from-wavs
+```
+
+`--from-wavs` monta `audio/scenes/<id>.wav` sem chamar o serviço ou instalar TTS e preserva os registros de origem/licença fornecidos. Em falha de rede/voz, não troca de motor; preserva os WAVs anteriores se a síntese/conversão de alguma cena falhar. `VIDEO_VIRAL_NO_INSTALL` bloqueia instalações, não a síntese online com pacote existente; para trabalho sem rede use WAVs externos. Configurações antigas `voice.engine: "kokoro"` são migradas aos padrões do idioma e +20% ao regenerar; opções explícitas prevalecem. IDs antigos de módulo são atualizados, mas descrições livres do `tool_plan` devem ser conferidas.
+
+A licença LGPL-3.0 do cliente não licencia automaticamente a saída do serviço Microsoft. `voice.py` registra a fonte e deixa `commercial_ok: false` por padrão; confirme os termos reais com `--license "<termos aplicáveis ao áudio>" --commercial-ok` quando verificados. A entrega monetizada mantém o portão de licenças; `--draft` em `deliver.py` permite a prévia identificada.
+
+`captions.py transcribe` usa faster-whisper; import lê SRT/VTT, estimate marca aproximação e ass gera a camada de legenda. align é um comando legado que explica a migração, sem instalar outro motor. Scripts de apoio não autorizam adicionar novos provedores ao stack.
 
 ```sh
 python scripts/captions.py ass <projeto> --words 3 --script-text <roteiro.txt>

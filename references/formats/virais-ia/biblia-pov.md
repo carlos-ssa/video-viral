@@ -34,7 +34,7 @@ Exemplo é narração autoral, **não citação nem registro histórico**. Não 
 
 ## Ficha de personagem/mundo
 
-Testemunha ficcional adulta, rosto oval, cabelo castanho preso, túnica areia sem adornos modernos, faixa verde-oliva e cesta sem marca. Voz feminina autorizada, pt-BR calma (Kokoro `pf_dora` como opção, não imitação de pessoa). Bordão autoral: “Uma pedra de cada vez”; usar só quando acrescentar sentido. Paleta areia/oliva/âmbar. Selfie médio em equivalente 28 mm, rosto no terço superior, mão fora do quadro; contraplano sempre do mesmo lado da rua. Mundo ilustrativo, não reconstrução arqueológica certificada.
+Testemunha ficcional adulta, rosto oval, cabelo castanho preso, túnica areia sem adornos modernos, faixa verde-oliva e cesta sem marca. Voz feminina autorizada, pt-BR calma (Edge TTS `pt-BR-ThalitaMultilingualNeural` a +20% como opção, não imitação de pessoa). Bordão autoral: “Uma pedra de cada vez”; usar só quando acrescentar sentido. Paleta areia/oliva/âmbar. Selfie médio em equivalente 28 mm, rosto no terço superior, mão fora do quadro; contraplano sempre do mesmo lado da rua. Mundo ilustrativo, não reconstrução arqueológica certificada.
 
 Manter ficha, pose frontal/perfil e roupa aprovadas; reaproveitar o mesmo recorte/rig e fundo. Fixar seed 41 nos workflows reais e comparar cada pose com a referência; rejeitar deriva. Guardar qual passagem e tom cada episódio adapta; não trocar apenas a legenda da mesma cena.
 
