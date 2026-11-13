@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "reviewer_id": "",
+  "author_scores_exposed": null,
+  "channels": {
+    "visual": {"available": null, "method": "", "evidence": ""},
+    "motion": {"available": null, "method": "", "evidence": ""},
+    "audio": {"available": null, "method": "", "evidence": ""}
+  }
+}

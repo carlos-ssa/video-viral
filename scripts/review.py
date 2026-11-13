@@ -20,7 +20,9 @@ Sai com código 1 se houver alerta bloqueante. Só biblioteca padrão e FFmpeg.
 import argparse
 import json
 import math
+import os
 import re
+import shutil
 import statistics
 import sys
 from pathlib import Path
@@ -251,6 +253,69 @@ def pace_checks(proj, long_):
 
 
 MAX_ROUNDS = 3
+CHANNELS = ("visual", "motion", "audio")
+
+
+def reviewer_preflight(capabilities, producer_id, required=CHANNELS):
+    """Validate the recorded capability check; this does not authenticate tools or people."""
+    if not isinstance(producer_id, str) or not producer_id.strip():
+        raise ValueError("informe o ID do autor com --producer-id")
+    if not isinstance(capabilities, dict) or capabilities.get("schema") != 1:
+        raise ValueError("preflight do revisor ausente ou inválido")
+    reviewer = capabilities.get("reviewer_id")
+    if not isinstance(reviewer, str) or not reviewer.strip() or reviewer.strip().casefold() == producer_id.strip().casefold():
+        raise ValueError("revisor precisa ter ID próprio, diferente do autor")
+    if capabilities.get("author_scores_exposed") is not False:
+        raise ValueError("o revisor não pode receber as notas/conclusões do autor")
+    channels = capabilities.get("channels")
+    if not isinstance(channels, dict):
+        raise ValueError("registre as capacidades reais por modalidade")
+    missing = []
+    for channel in required:
+        item = channels.get(channel)
+        if not isinstance(item, dict) or type(item.get("available")) is not bool:
+            raise ValueError(f"capacidade {channel} não foi conferida")
+        if not item["available"]:
+            missing.append(channel)
+        elif any(not isinstance(item.get(key), str) or not item[key].strip() for key in ("method", "evidence")):
+            raise ValueError(f"registre método e evidência da capacidade {channel}")
+    return missing
+
+
+def covered_seconds(ranges):
+    total, end = 0.0, 0.0
+    for start, stop in sorted(ranges):
+        total += max(0, stop - max(start, end))
+        end = max(end, stop)
+    return total
+
+
+def prepare_review_input(out_dir, video, manifest, metrics, producer_id):
+    """Give the reviewer artifacts and criteria, without the author's score report."""
+    target = out_dir / "input"
+    target.mkdir()
+    clip = target / ("video" + video.suffix)
+    try:
+        os.link(video, clip)
+    except OSError:
+        shutil.copyfile(video, clip)
+    for name in ("hook.jpg", "grid.jpg"):
+        shutil.copyfile(out_dir / name, target / name)
+    direction = manifest.get("direction") or {}
+    request = {
+        "schema": 1, "producer_id": producer_id,
+        "video_sha256": metrics["video_sha256"], "manifest_sha256": metrics["manifest_sha256"],
+        "title": manifest.get("title", ""), "brief": manifest.get("brief", {}),
+        "direction": direction,
+        "references": direction.get("references", []),
+        "criteria": [{"name": key, "definition": text} for key, text in rubric_for(manifest, metrics["duration"])],
+        "artifacts": {"video": clip.name, "hook": "hook.jpg", "grid": "grid.jpg"},
+        "technical": {key: metrics.get(key) for key in ("duration", "fps", "has_audio", "blockers", "warnings")},
+        "instructions": "Avalie os artefatos e o briefing. Não leia report.md, assessment.json ou notas/conclusões do autor. Registre capacidades, método e intervalos reais; não invente reprodução ou escuta."
+    }
+    path = target / "request.json"
+    path.write_text(json.dumps(request, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return file_sha256(path)
 
 
 def verdict(proj):
@@ -267,6 +332,8 @@ def verdict(proj):
         met = json.loads(mpath.read_text(encoding="utf-8"))
         if met["schema"] != 2:
             raise ValueError("métricas antigas; gere uma nova revisão")
+        if type(met.get("has_audio")) is not bool or type(met.get("duration")) not in (int, float) or not math.isfinite(met["duration"]) or met["duration"] <= 0:
+            raise ValueError("duração/modalidade de áudio inválida")
         video = Path(met["video"])
         if not video.is_absolute():
             video = proj / video
@@ -290,7 +357,26 @@ def verdict(proj):
         assessment = json.loads((last / "assessment.json").read_text(encoding="utf-8"))
         if assessment["video_sha256"] != digest:
             raise ValueError("a avaliação pertence a outro vídeo")
-        unverified = []
+        request_path = last / "input" / "request.json"
+        if file_sha256(request_path) != met["review_request_sha256"]:
+            raise ValueError("o pacote de revisão mudou; gere uma nova revisão")
+        request = json.loads(request_path.read_text(encoding="utf-8"))
+        if request["schema"] != 1 or request["video_sha256"] != digest or request["manifest_sha256"] != met["manifest_sha256"]:
+            raise ValueError("pacote de revisão incompatível com o render/manifesto")
+        clip_name = request["artifacts"]["video"]
+        if not isinstance(clip_name, str) or Path(clip_name).name != clip_name or file_sha256(last / "input" / clip_name) != digest:
+            raise ValueError("vídeo do pacote independente ausente ou alterado")
+        if {path.name for path in (last / "input").iterdir()} != {clip_name, "request.json", "hook.jpg", "grid.jpg"}:
+            raise ValueError("o pacote independente contém arquivos não previstos; não inclua notas do autor")
+        if request["technical"]["has_audio"] is not met["has_audio"] or request["technical"]["duration"] != met["duration"]:
+            raise ValueError("modalidades/duração divergem do pacote de revisão")
+        for name in ("hook.jpg", "grid.jpg"):
+            if file_sha256(last / "input" / name) != met["frame_sha256"][name]:
+                raise ValueError("imagens do pacote independente foram alteradas")
+        required = ("visual", "motion", "audio") if met["has_audio"] else ("visual", "motion")
+        capabilities = assessment["reviewer_preflight"]
+        missing_capabilities = reviewer_preflight(capabilities, request["producer_id"], required)
+        unverified = [f"{channel}: revisor sem capacidade verificada" for channel in missing_capabilities]
         for channel in ("visual", "motion", "audio"):
             item = assessment[channel]
             status = item["status"]
@@ -299,14 +385,25 @@ def verdict(proj):
             if status == "unverified":
                 unverified.append(f"{channel}: não verificado")
                 continue
-            if status not in ("observed", "instrumented") or not str(item["method"]).strip():
+            if status not in ("observed", "instrumented") or not isinstance(item["method"], str) or not item["method"].strip():
                 raise ValueError(f"registre como {channel} foi inspecionado em assessment.json")
             ranges = item["ranges"]
             if not ranges or any(len(r) != 2 or not 0 <= r[0] < r[1] <= met["duration"] + 0.05 for r in ranges):
                 raise ValueError(f"registre os intervalos inspecionados de {channel}")
+            if status == "observed" and not capabilities["channels"][channel]["available"]:
+                raise ValueError(f"observação de {channel} contradiz o preflight do revisor")
+            if status == "instrumented":
+                unverified.append(f"{channel}: somente análise instrumentada, sem aprovação perceptual")
+            elif covered_seconds(ranges) < met["duration"] - 0.05:
+                unverified.append(f"{channel}: inspeção parcial, não cobre o vídeo completo")
     except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
         print(f"REVISÃO INCOMPLETA OU DESATUALIZADA: {exc}. Rode deliver/review e registre a evidência.")
         return 2
+    if unverified:
+        print("REVISÃO AUDIOVISUAL PARCIAL: " + "; ".join(unverified))
+        print("Não declare aprovação completa nem invente notas. Complete a inspeção com capacidade adequada; "
+              "a ausência de modalidade não exige nova renderização por si só. Confira também as falhas técnicas registradas.")
+        return 1
     names = {k.lower(): k for k in keys}
     scores = {}
     for line in report.splitlines():
@@ -321,7 +418,7 @@ def verdict(proj):
         print(f"{last.name}: preencha a nota (1 a 5) de {', '.join(missing)} em {last.name}/report.md "
               "depois de olhar hook.jpg e grid.jpg.")
         return 2
-    block = list(met["blockers"]) + unverified
+    block = list(met["blockers"])
     if receipt.get("approved") is not True or receipt.get("draft") is not False:
         block.append("entrega técnica reprovada ou rascunho; não publicar")
     low = [f"{k}={scores[k]:g}" for k in keys if scores[k] < 4]
@@ -342,12 +439,31 @@ def verdict(proj):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("project")
+    ap.add_argument("project", nargs="?")
+    ap.add_argument("--producer-id", help="ID estável do autor; necessário à aprovação independente")
+    ap.add_argument("--check-reviewer", type=Path, help="confere o preflight antes de delegar; não gera revisão")
+    ap.add_argument("--channels", nargs="+", choices=CHANNELS, default=list(CHANNELS),
+                    help="escopo solicitado em --check-reviewer; o veredito completo exige todas as modalidades aplicáveis")
     ap.add_argument("--video", help="padrão: out/<slug>.mp4, senão out/<slug>_rascunho.mp4, senão render/master.mp4")
     ap.add_argument("--every", type=float, help="intervalo entre quadros da grade, em segundos (padrão: 1, ou dur/48)")
     ap.add_argument("--verdict", action="store_true",
                     help="não gera rodada; lê as notas da última e diz se o vídeo pode ser declarado pronto")
     a = ap.parse_args()
+
+    if a.check_reviewer:
+        try:
+            capabilities = json.loads(a.check_reviewer.read_text(encoding="utf-8"))
+            missing = reviewer_preflight(capabilities, a.producer_id, a.channels)
+            print(json.dumps({"status": "partial" if missing else "eligible-for-requested-scope",
+                              "requested_channels": a.channels, "unavailable": missing,
+                              "note": "Registro de capacidades; não comprova sozinho ferramentas, identidade ou observação."},
+                             ensure_ascii=False))
+            sys.exit(1 if missing else 0)
+        except (OSError, ValueError, TypeError) as exc:
+            print(f"PREFLIGHT INCOMPLETO: {exc}")
+            sys.exit(2)
+    if not a.project:
+        ap.error("informe o projeto ou use --check-reviewer")
 
     proj = project_dir(a.project)
     if a.verdict:
@@ -437,8 +553,11 @@ def main():
         "blockers": block, "warnings": warn, "format": m.get("format", "narrado"), "long": long_,
         "rubric": [k for k, _ in rubric],
     }
+    metrics["review_request_sha256"] = prepare_review_input(out_dir, video, m, metrics, a.producer_id)
     (out_dir / "metrics.json").write_text(json.dumps(metrics, ensure_ascii=False, indent=1), encoding="utf-8")
-    assessment = {"video_sha256": digest}
+    assessment = {"video_sha256": digest, "reviewer_preflight": {
+        "schema": 1, "reviewer_id": "", "author_scores_exposed": None,
+        "channels": {channel: {"available": None, "method": "", "evidence": ""} for channel in CHANNELS}}}
     for channel in ("visual", "motion", "audio"):
         assessment[channel] = {"status": "not_applicable" if channel == "audio" and not has_audio else "pending",
                                "method": "", "ranges": []}
@@ -461,7 +580,7 @@ def main():
         "## Alertas", "",
     ]
     lines += [f"- **Bloqueante:** {b}" for b in block] + [f"- {w}" for w in warn] or ["- Nenhum."]
-    lines += ["", "## Notas (1 a 5, preencha depois de olhar grid.jpg e hook.jpg)", "",
+    lines += ["", "## Notas do revisor independente (1 a 5, depois de inspecionar as modalidades reais)", "",
               "| Critério | O que olhar | Nota | Correção |", "|---|---|---|---|"]
     lines += [f"| {k} | {v} |  |  |" for k, v in rubric]
     lines += ["", "Passa com todas as notas 4 ou mais e nenhum bloqueante. Senão, aplique as 3 correções de "
@@ -469,7 +588,9 @@ def main():
               "`python scripts/review.py <projeto> --verdict`; só declare pronto se ele sair com 0. "
               "Código 3 entrega apenas o melhor resultado com limitações, nunca aprovação. "
               "Preencha assessment.json com método e intervalos reais de inspeção visual, temporal e de áudio; "
-              "não descreva uma grade de imagens como reprodução ou escuta do vídeo."]
+              "não descreva uma grade de imagens como reprodução ou escuta do vídeo. "
+              "Envie somente input/ e os critérios ao revisor, sem notas/conclusões do autor. "
+              "A aprovação completa exige observação por revisor distinto e cobertura de todas as modalidades aplicáveis."]
     (out_dir / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     m.setdefault("review", []).append({"round": out_dir.name, "video": video.name,
@@ -483,7 +604,8 @@ def main():
         print(f"  BLOQUEANTE: {b}")
     for w in warn:
         print(f"  alerta: {w}")
-    print(f"Olhe {rel}/hook.jpg e {rel}/grid.jpg, preencha as notas em {rel}/report.md e rode --verdict")
+    print(f"Pacote para revisor independente: {rel}/input/. Confira capacidades antes de delegar; "
+          f"depois registre a avaliação em {rel}/assessment.json, notas em report.md e rode --verdict.")
     sys.exit(1 if block else 0)
 
 

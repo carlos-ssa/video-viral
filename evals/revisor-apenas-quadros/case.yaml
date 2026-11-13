@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: revisor-apenas-quadros
+expected_outcome: |
+  Confere capacidades e separação de autor/revisor antes de delegar. Com apenas quadros e métricas instrumentadas, limita a avaliação ao visual e mantém aprovação audiovisual pendente, sem inventar escuta/reprodução.

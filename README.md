@@ -1,4 +1,4 @@
-# Vídeo viral — 2.0.0
+# Vídeo viral — 2.0.1
 
 Skill em português para direção, produção e edição audiovisual com IA, marketing, ganchos, retenção e conversão. Produz vídeos curtos/longos, gravações editadas, demonstrações de produto, UGC, animações e peças musicais com planejamento e revisão. Não promete viralização nem valida estética apenas porque o render passou.
 
@@ -74,3 +74,9 @@ Distribuição da skill: MIT. Ferramentas, pesos e ativos têm termos próprios;
 - Kokoro é o único TTS; não há troca automática para voz do sistema. faster-whisper é o transcritor; importação SRT/VTT e estimativa permanecem.
 - images.py agora é alias do cliente por workflow API ComfyUI: migrar specs antigas para um grafo exportado e informar o nó de saída.
 - O runtime Node v2 usa pasta/lockfile próprios; não atualiza silenciosamente o cache v1 ou reativa skills removidas.
+
+## Revisão independente — 2.0.1
+
+Única mudança de fluxo nesta atualização: a aprovação audiovisual completa exige revisor distinto do autor, capacidades conferidas por modalidade e observação registrada do vídeo inteiro. O novo preflight é executado antes da delegação; o pacote input/ não inclui notas/conclusões do autor. Métricas de áudio, pranchas ou amostragem podem apoiar uma avaliação parcial, mas não promovem sozinhas o vídeo a aprovado.
+
+Use `review.py --check-reviewer capacidades.json --producer-id <id-do-autor>` e depois `review.py <projeto> --producer-id <id-do-autor>`. O modelo em assets/reviewer.example.json começa vazio para evitar disponibilidade presumida. O script valida o registro e a consistência, não autentica ferramentas/identidades nem prova por si que houve reprodução/escuta. Revisões antigas precisam ser regeneradas com o novo pacote. O stack e os demais fluxos continuam os mesmos.

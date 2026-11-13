@@ -33,7 +33,11 @@ class VerdictTests(unittest.TestCase):
         self.receipt = {"schema": 1, "video": str(self.video), "video_sha256": digest,
                         "manifest_sha256": self.metrics["manifest_sha256"],
                         "approved": True, "draft": False}
-        self.assessment = {"video_sha256": digest, **{k: {"status": "instrumented", "method": "unit fixture",
+        self.assessment = {"video_sha256": digest, "reviewer_preflight": {
+            "schema": 1, "reviewer_id": "reviewer:fixture", "author_scores_exposed": False,
+            "channels": {k: {"available": True, "method": "synthetic policy fixture",
+                              "evidence": "test record; not a real perceptual review"} for k in review.CHANNELS}},
+            **{k: {"status": "observed", "method": "synthetic policy fixture",
                                                        "ranges": [[0, 2]]} for k in ("visual", "motion", "audio")}}
         self.write_evidence()
         self.write_scores()
@@ -42,6 +46,14 @@ class VerdictTests(unittest.TestCase):
         path.write_text(json.dumps(value), encoding="utf-8")
 
     def write_evidence(self):
+        if not (self.round / 'input').exists():
+            review.prepare_review_input(self.round, self.video, self.manifest, self.metrics, 'producer:fixture')
+        request_path = self.round / 'input/request.json'
+        request = json.loads(request_path.read_text(encoding='utf-8'))
+        request.update(video_sha256=self.metrics['video_sha256'], manifest_sha256=self.metrics['manifest_sha256'])
+        request['technical'].update(has_audio=self.metrics['has_audio'], duration=self.metrics['duration'])
+        self.write_json(request_path, request)
+        self.metrics['review_request_sha256'] = file_sha256(request_path)
         self.write_json(self.round / "metrics.json", self.metrics)
         self.write_json(self.proj / "out" / "delivery.json", self.receipt)
         self.write_json(self.round / "assessment.json", self.assessment)
@@ -133,6 +145,98 @@ class VerdictTests(unittest.TestCase):
         self.write_scores("3")
         self.round.rename(self.round.with_name("r03"))
         self.assertEqual(self.verdict(), 3)
+
+    def test_author_cannot_review_own_video(self):
+        self.assessment['reviewer_preflight']['reviewer_id'] = 'producer:fixture'
+        self.write_evidence()
+        self.assertEqual(self.verdict(), 2)
+
+    def test_author_scores_exposure_requires_new_reviewer_context(self):
+        self.assessment['reviewer_preflight']['author_scores_exposed'] = True
+        self.write_evidence()
+        self.assertEqual(self.verdict(), 2)
+
+    def test_frame_only_reviewer_cannot_approve_audiovisual_result(self):
+        for channel in ('motion', 'audio'):
+            self.assessment['reviewer_preflight']['channels'][channel]['available'] = False
+            self.assessment[channel]['status'] = 'unverified'
+        self.write_evidence()
+        self.assertEqual(self.verdict(), 1)
+
+    def test_metrics_are_not_perceptual_approval(self):
+        self.assessment['audio']['status'] = 'instrumented'
+        self.write_evidence()
+        self.assertEqual(self.verdict(), 1)
+
+    def test_partial_review_does_not_require_fabricated_scores_or_new_round(self):
+        self.assessment['audio']['status'] = 'unverified'
+        self.write_evidence()
+        self.write_scores('')
+        before = self.video.read_bytes()
+        self.assertEqual(self.verdict(), 1)
+        self.assertEqual(self.video.read_bytes(), before)
+        self.assertEqual(len(list((self.proj / 'review').iterdir())), 1)
+
+    def test_claimed_observation_requires_capability(self):
+        self.assessment['reviewer_preflight']['channels']['motion']['available'] = False
+        self.write_evidence()
+        self.assertEqual(self.verdict(), 2)
+
+    def test_partial_ranges_do_not_approve_whole_video(self):
+        self.assessment['motion']['ranges'] = [[0, 1]]
+        self.write_evidence()
+        self.assertEqual(self.verdict(), 1)
+        self.assessment['motion']['ranges'] = [[0, 1.5], [0.5, 2]]
+        self.write_evidence()
+        self.assertEqual(self.verdict(), 0)
+
+    def test_silent_video_does_not_require_audio_capability(self):
+        self.metrics['has_audio'] = False
+        self.assessment['audio']['status'] = 'not_applicable'
+        self.assessment['reviewer_preflight']['channels']['audio']['available'] = False
+        self.write_evidence()
+        self.assertEqual(self.verdict(), 0)
+
+    def test_missing_or_changed_review_request_is_rejected(self):
+        (self.round / 'input/request.json').write_text('{}', encoding='utf-8')
+        self.assertEqual(self.verdict(), 2)
+
+    def test_capability_needs_method_and_evidence(self):
+        self.assessment['reviewer_preflight']['channels']['audio']['evidence'] = ''
+        self.write_evidence()
+        self.assertEqual(self.verdict(), 2)
+
+    def test_preflight_restricts_only_requested_scope(self):
+        capability = self.assessment['reviewer_preflight']
+        capability['channels']['audio']['available'] = False
+        self.assertEqual(review.reviewer_preflight(capability, 'producer:fixture', ('visual',)), [])
+        self.assertEqual(review.reviewer_preflight(capability, 'producer:fixture'), ['audio'])
+
+    def test_review_input_excludes_author_score_report(self):
+        folder = self.proj / 'separate-review'
+        folder.mkdir()
+        for name in ('hook.jpg', 'grid.jpg'):
+            (folder / name).write_bytes(name.encode())
+        (folder / 'report.md').write_text('Author says: all grades 5', encoding='utf-8')
+        review.prepare_review_input(folder, self.video, self.manifest, self.metrics, 'producer:fixture')
+        self.assertEqual({p.name for p in (folder / 'input').iterdir()}, {'video.mp4', 'hook.jpg', 'grid.jpg', 'request.json'})
+        self.assertNotIn('Author says', (folder / 'input/request.json').read_text(encoding='utf-8'))
+
+    def test_extra_author_report_in_input_blocks_approval(self):
+        (self.round / 'input/report.md').write_text('Author grades: 5', encoding='utf-8')
+        self.assertEqual(self.verdict(), 2)
+
+    def test_modalities_cannot_diverge_from_review_package(self):
+        self.metrics['has_audio'] = False
+        self.write_json(self.round / 'metrics.json', self.metrics)
+        self.assessment['audio']['status'] = 'not_applicable'
+        self.write_json(self.round / 'assessment.json', self.assessment)
+        self.assertEqual(self.verdict(), 2)
+
+    def test_assessment_method_requires_text(self):
+        self.assessment['motion']['method'] = None
+        self.write_evidence()
+        self.assertEqual(self.verdict(), 2)
 
 
 if __name__ == "__main__":
