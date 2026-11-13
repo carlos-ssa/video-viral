@@ -68,6 +68,33 @@ class MusicTest(unittest.TestCase):
         env = dict(os.environ, ACE_STEP_API_KEY='test-secret')
         return subprocess.run([sys.executable, str(SCRIPT), str(self.proj), '--endpoint', f'http://127.0.0.1:{self.server.server_port}', '--prompt', 'jazz', '--duration', '30', '--seed', '42', *extra], capture_output=True, text=True, encoding="utf-8", env=env)
 
+    def test_procedural_fallback_is_local_audible_and_honest(self):
+        import wave
+        command = [sys.executable, str(SCRIPT), str(self.proj), '--backend', 'procedural',
+                   '--duration', '10.17', '--seed', '42']
+        result = subprocess.run(command, capture_output=True, text=True, encoding='utf-8')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.server.requests, [])
+        self.assertIn('RESERVA', result.stdout)
+        first = self.output.read_bytes()
+        with wave.open(str(self.output), 'rb') as wav:
+            self.assertEqual(wav.getnframes(), round(10.17 * 22050))
+            self.assertEqual(wav.getnchannels(), 1)
+            self.assertTrue(any(wav.readframes(wav.getnframes())))
+        asset = json.loads(self.manifest.read_text(encoding='utf-8'))['assets'][0]
+        self.assertTrue(asset['fallback'])
+        self.assertEqual(asset['backend'], 'procedural')
+        self.assertIn('reserva', asset['source'])
+        self.assertEqual(self.invoke('--backend', 'procedural', '--duration', '10.17').returncode, 0)
+        self.assertEqual(self.output.read_bytes(), first)
+
+    def test_missing_api_explains_explicit_fallback(self):
+        result = subprocess.run([sys.executable, str(SCRIPT), str(self.proj), '--prompt', 'jazz',
+                                 '--duration', '10', '--seed', '42'], capture_output=True, text=True, encoding='utf-8')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('--backend procedural', result.stderr)
+        self.assertEqual(self.output.read_bytes(), b'previous')
+
     def test_success_contract(self):
         result = self.invoke()
         self.assertEqual(result.returncode, 0, result.stderr)

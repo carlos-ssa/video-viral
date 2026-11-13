@@ -32,6 +32,10 @@ function wav(samples) {
   samples.forEach((n,i) => b.writeInt16LE(Math.round(n < 0 ? n * 32768 : n * 32767),44+i*2));
   return b;
 }
+export function validateSamples(samples, duration) {
+  // OfflineAudioContext arredonda o tamanho para frames inteiros (floor/round conforme o browser).
+  if (!samples.length || Math.abs(samples.length - Math.ceil(duration * 44100)) > 1 || samples.some(n => !Number.isFinite(n) || Math.abs(n) > 1)) throw new Error('Rendered audio has invalid duration, samples or amplitude');
+}
 export async function generate(project, options = {}) {
   const root = await realpath(project);
   const specPath = await safePath(root, options.spec || 'edit/sound.json');
@@ -52,7 +56,7 @@ export async function generate(project, options = {}) {
     await page.setRequestInterception(true); page.on('request', req => req.url().startsWith('file:') || req.url() === 'about:blank' ? req.continue() : req.abort());
     await page.goto('about:blank'); await page.addScriptTag({ content: await readFile(script, 'utf8') });
     const samples = await page.evaluate(s => window.renderSound(s), spec);
-    if (samples.length !== Math.ceil(spec.duration * 44100) || samples.some(n => !Number.isFinite(n) || Math.abs(n) > 1)) throw new Error('Rendered audio has invalid duration, samples or amplitude');
+    validateSamples(samples, spec.duration);
     const audio = wav(samples);
     const receipt = { kind: 'sound-design-smoke', toneVersion: tonePackage.version, sampleRate: 44100, channels: 1, bitsPerSample: 16, duration: spec.duration, frames: samples.length, spec, specSha256: hash(source), wavSha256: hash(audio), note: 'Technical smoke; not aesthetic approval. Oscillator rendering can vary across browser versions and platforms.' };
     // Publish only after successful rendering and validation. Exclusive writes prevent overwriting.
