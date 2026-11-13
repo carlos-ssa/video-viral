@@ -1,0 +1,150 @@
+{
+  "version": "2.0.0",
+  "description": "Stack exclusivo; pacotes de build/browser são infraestrutura, não motores criativos alternativos.",
+  "modules": [
+    {
+      "id": "hyperframes",
+      "name": "HyperFrames",
+      "role": "core",
+      "repository": "https://github.com/heygen-com/hyperframes",
+      "capability": "composition",
+      "node_package": "hyperframes",
+      "entrypoint": "assets/node/package.json"
+    },
+    {
+      "id": "gsap",
+      "name": "GSAP",
+      "role": "core",
+      "repository": "https://github.com/greensock/GSAP",
+      "capability": "motion",
+      "node_package": "gsap",
+      "entrypoint": "assets/node/package.json"
+    },
+    {
+      "id": "ffmpeg",
+      "name": "FFmpeg + ffprobe",
+      "role": "core",
+      "repository": "https://github.com/FFmpeg/FFmpeg",
+      "capability": "delivery",
+      "node_package": null,
+      "entrypoint": "scripts/deliver.py"
+    },
+    {
+      "id": "three",
+      "name": "Three.js",
+      "role": "scene",
+      "repository": "https://github.com/mrdoob/three.js",
+      "capability": "3d",
+      "node_package": "three",
+      "entrypoint": "assets/node/package.json"
+    },
+    {
+      "id": "blender",
+      "name": "Blender",
+      "role": "scene",
+      "repository": "https://github.com/blender/blender",
+      "capability": "3d",
+      "node_package": null,
+      "entrypoint": "references/modules/3d.md"
+    },
+    {
+      "id": "tone",
+      "name": "Tone.js",
+      "role": "module",
+      "repository": "https://github.com/Tonejs/Tone.js",
+      "capability": "sound",
+      "node_package": "tone",
+      "entrypoint": "scripts/sound.mjs"
+    },
+    {
+      "id": "gl-transitions",
+      "name": "gl-transitions",
+      "role": "module",
+      "repository": "https://github.com/gl-transitions/gl-transitions",
+      "capability": "transitions",
+      "node_package": "gl-transitions",
+      "entrypoint": "scripts/visual_scene.mjs"
+    },
+    {
+      "id": "comfyui",
+      "name": "ComfyUI",
+      "role": "module",
+      "repository": "https://github.com/Comfy-Org/ComfyUI",
+      "capability": "images",
+      "node_package": null,
+      "entrypoint": "scripts/comfy.py"
+    },
+    {
+      "id": "pixi",
+      "name": "PixiJS",
+      "role": "module",
+      "repository": "https://github.com/pixijs/pixijs",
+      "capability": "2d",
+      "node_package": "pixi.js",
+      "entrypoint": "scripts/visual_scene.mjs"
+    },
+    {
+      "id": "paper",
+      "name": "Paper.js",
+      "role": "module",
+      "repository": "https://github.com/paperjs/paper.js",
+      "capability": "vector",
+      "node_package": "paper",
+      "entrypoint": "scripts/visual_scene.mjs"
+    },
+    {
+      "id": "p5",
+      "name": "p5.js",
+      "role": "module",
+      "repository": "https://github.com/processing/p5.js",
+      "capability": "generative",
+      "node_package": "p5",
+      "entrypoint": "scripts/visual_scene.mjs"
+    },
+    {
+      "id": "blender-mcp",
+      "name": "MCP for Blender",
+      "role": "module",
+      "repository": "https://github.com/ahujasid/mcp-for-blender",
+      "capability": "automation-3d",
+      "node_package": null,
+      "entrypoint": "references/modules/3d.md"
+    },
+    {
+      "id": "gltf",
+      "name": "glTF Transform",
+      "role": "module",
+      "repository": "https://github.com/donmccurdy/glTF-Transform",
+      "capability": "optimization-3d",
+      "node_package": "@gltf-transform/cli",
+      "entrypoint": "scripts/gltf.mjs"
+    },
+    {
+      "id": "ace-step",
+      "name": "ACE-Step 1.5",
+      "role": "module",
+      "repository": "https://github.com/ace-step/ACE-Step-1.5",
+      "capability": "music",
+      "node_package": null,
+      "entrypoint": "scripts/music.py"
+    },
+    {
+      "id": "kokoro",
+      "name": "Kokoro",
+      "role": "module",
+      "repository": "https://github.com/hexgrad/kokoro",
+      "capability": "voice",
+      "node_package": null,
+      "entrypoint": "scripts/voice.py"
+    },
+    {
+      "id": "faster-whisper",
+      "name": "faster-whisper",
+      "role": "module",
+      "repository": "https://github.com/SYSTRAN/faster-whisper",
+      "capability": "captions",
+      "node_package": null,
+      "entrypoint": "scripts/captions.py"
+    }
+  ]
+}

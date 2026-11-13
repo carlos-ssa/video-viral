@@ -11,7 +11,7 @@ python scripts/captions.py transcribe <projeto>          # ou: captions.py impor
 python scripts/footage.py cut <projeto>                  # silêncios + vícios -> edit/edl.json e edit/transcript.md
 python scripts/footage.py frames <projeto>               # edit/frames.jpg para conferir o enquadramento
 python scripts/footage.py render <projeto>               # base A-roll em render/master.mp4
-# Componha o acabamento em HyperFrames/Remotion/FFmpeg, conforme tool_plan, em render/final.mp4
+# Componha o acabamento em HyperFrames/FFmpeg, conforme tool_plan, em render/final.mp4
 python scripts/captions.py ass <projeto>
 python scripts/deliver.py <projeto> --video render/final.mp4
 python scripts/review.py <projeto>
@@ -21,7 +21,7 @@ O A-roll renderizado é uma base, não uma prova automática de acabamento. Use 
 
 `--from/--to` no import serve para gravações com sobra no começo e no fim. A gravação não é copiada; o projeto guarda o caminho, então não mova o arquivo até entregar. `--third-party` registra que a gravação não é do usuário (e o `deliver.py` passa a exigir a licença).
 
-Sem WhisperX, a legenda pode vir de um `.srt` que o usuário tenha (CapCut, YouTube, editor do celular): `captions.py import` desloca pelo `--from`, aperta cada bloco na fala real e distribui as palavras. Sem transcrição nenhuma, `cut` corta só silêncios; avise que vícios e retomadas ficam para marcar ouvindo.
+A legenda pode vir de um `.srt` fornecido: `captions.py import` desloca pelo `--from`, aperta cada bloco na fala real e distribui as palavras. Sem transcrição nenhuma, `cut` corta só silêncios; avise que vícios e retomadas ficam para marcar ouvindo.
 
 ## Editar o `edl.json`
 

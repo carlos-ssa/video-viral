@@ -4,7 +4,7 @@ A pesquisa orienta decisões criativas. Ela não revela pesos internos dos algor
 
 ## Recorte e evidências
 
-Defina nicho, idioma/região, plataforma, formato/duração, objetivo e período. Busque referências recentes e recorrentes, não apenas o maior vídeo isolado. Use a busca web disponível; Exa é uma opção quando configurado. Para YouTube, yt-dlp pode coletar metadados e legendas sem baixar o vídeo de terceiros. Estudar não autoriza reaproveitar ativos.
+Defina nicho, idioma/região, plataforma, formato/duração, objetivo e período. Busque referências recentes e recorrentes, não apenas o maior vídeo isolado. Use a busca web disponível e informações públicas realmente acessíveis. Metadados/legendas fornecidos podem apoiar a pesquisa, sem instalar um downloader adicional. Estudar não autoriza reaproveitar ativos.
 
 Compare referências com contexto: tamanho e histórico da conta quando públicos, idade da publicação, série/formato e distribuição paga quando identificável. Visualizações/dia é só um sinal auxiliar. Registre abertura visual/verbal, promessa, organização, ritmo, enquadramento, performance, payoff e CTA. Para avaliar montagem real, inspecione a mídia com uma ferramenta disponível; metadados e legendas não revelam transições ou linguagem de câmera.
 

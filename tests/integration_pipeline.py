@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--output", type=Path, required=True)
+    ap.add_argument("--node-root", type=Path, help="ativa integração real Tone.js → mix de entrega")
     args = ap.parse_args()
     output = args.output.resolve()
     if output.exists():
@@ -55,6 +56,17 @@ def main():
                     "-vf", "scale=380:676,crop=360:640:x='10+8*sin(t)':y=18", "-c:v", "libx264",
                     "-pix_fmt", "yuv420p", "-c:a", "copy", proj / "render/final.mp4"])
     run("captions_ass", [py, scripts / "captions.py", "ass", proj])
+    if args.node_root:
+        spec = {"duration": 14, "seed": 7, "events": [
+            {"type": "whoosh", "at": 1, "duration": 0.4, "gainDb": -18},
+            {"type": "pop", "at": 3, "duration": 0.2, "gainDb": -22}]}
+        (proj / "edit/sound.json").write_text(json.dumps(spec), encoding="utf-8")
+        run("tone_sound", ["node", scripts / "sound.mjs", proj, "--spec", "edit/sound.json",
+                           "--node-root", args.node_root])
+        m = json.loads((proj / "video.json").read_text(encoding="utf-8"))
+        m["assets"].append({"path": "audio/sound-design.wav", "kind": "sfx",
+                            "source": "procedural Tone.js test signal", "license": "original test signal", "commercial_ok": True})
+        (proj / "video.json").write_text(json.dumps(m, ensure_ascii=False), encoding="utf-8")
     run("deliver", [py, scripts / "deliver.py", proj, "--video", "render/final.mp4"])
     # review may find a real blocker in the fixture; allow it and inspect its recorded metrics.
     result = subprocess.run([py, str(scripts / "review.py"), str(proj)], cwd=ROOT, env=env,
@@ -68,6 +80,8 @@ def main():
     receipt = json.loads((proj / "out/delivery.json").read_text(encoding="utf-8"))
     assert receipt["approved"] is True and receipt["draft"] is False
     assert receipt["video_sha256"] == metrics["video_sha256"]
+    if args.node_root:
+        assert 'sound-design.wav' in (proj / "out/report.md").read_text(encoding="utf-8")
 
     csv_path = output / "synthetic-trends.csv"
     csv_path.write_text("Week,barbearia: (Brasil)\n2026-11-01,100\n2026-11-08,<1\n", encoding="utf-8")

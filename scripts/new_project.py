@@ -74,8 +74,8 @@ def main():
         m["scenes"] = []
     if a.format == "musica":
         m["voice"]["engine"] = "none"
-    if not m["monetized"]:
-        m["music"]["engine"] = "ace-step"
+    if a.format == "musica":
+        m["music"]["engine"] = "ace-step-1.5"
     save_manifest(proj, m)
     print(f"Projeto criado: {proj} ({a.format}, {a.aspect}, {', '.join(plats)})")
     if a.format in ("gravacao", "corte", "ugc"):

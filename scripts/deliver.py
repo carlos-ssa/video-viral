@@ -61,7 +61,7 @@ def audio_graph(inputs, music_db):
     """inputs: dict com índices de 'voice', 'music', 'video_audio' (ou None). Devolve (filtros, rótulo)."""
     fmt = "aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo"
     f, mix = [], []
-    v, mu, va = inputs.get("voice"), inputs.get("music"), inputs.get("video_audio")
+    v, mu, va, sfx = inputs.get("voice"), inputs.get("music"), inputs.get("video_audio"), inputs.get("sfx")
     if v is not None and mu is not None:
         f.append(f"[{v}:a]{fmt},asplit=2[vo][sc]")
         f.append(f"[{mu}:a]{fmt},volume={music_db}dB[mu]")
@@ -76,6 +76,9 @@ def audio_graph(inputs, music_db):
     if va is not None:
         f.append(f"[{va}:a]{fmt}[va]")
         mix.append("[va]")
+    if sfx is not None:
+        f.append(f"[{sfx}:a]{fmt}[sfx]")
+        mix.append("[sfx]")
     if not mix:
         return f, None
     if len(mix) == 1:
@@ -136,6 +139,7 @@ def main():
     ap.add_argument("--video", required=True)
     ap.add_argument("--voice")
     ap.add_argument("--music")
+    ap.add_argument("--sfx", help="faixa de efeitos; padrão audio/sound-design.wav")
     ap.add_argument("--music-db", type=float)
     ap.add_argument("--captions")
     ap.add_argument("--no-captions", action="store_true")
@@ -183,6 +187,8 @@ def main():
         music = rel(proj, a.music) if a.music else (proj / "audio" / "music.wav")
         music = music if music.exists() else None
     caps = None
+    sfx = rel(proj, a.sfx) if a.sfx else proj / "audio" / "sound-design.wav"
+    sfx = sfx if sfx.exists() else None
     if not a.no_captions:
         caps = rel(proj, a.captions) if a.captions else (proj / "captions" / "captions.ass")
         caps = caps if caps.exists() else None
@@ -190,7 +196,7 @@ def main():
 
     in_args, idx = ["-i", str(video)], {}
     n = 1
-    for key, path in (("voice", voice), ("music", music)):
+    for key, path in (("voice", voice), ("music", music), ("sfx", sfx)):
         if path:
             in_args += ["-i", str(path)]
             idx[key] = n
@@ -321,6 +327,7 @@ def main():
              f"- Prancha: `out/{sheet.name}` (início, 1 s, meio, fim; retângulo vermelho = área segura)",
              f"- Fontes: vídeo `{video.name}`, voz `{voice.name if voice else '-'}`, "
              f"trilha `{music.name if music else '-'}` ({music_db} dB), legendas `{caps.name if caps else '-'}`",
+             f"- Efeitos: `{sfx.name if sfx else '-'}`",
              f"- Resultado: {'APROVADO' if not fails else 'REPROVADO'} ({len(fails)} falha(s), {len(warns)} aviso(s))",
              "", "| Checagem | Resultado |", "|---|---|"]
     for ok, level, text in checks:

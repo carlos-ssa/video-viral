@@ -1,17 +1,8 @@
-"""Instala as ferramentas que a skill usa, sem perguntar. Idempotente: o que já existe é pulado.
+"""Instala somente componentes do stack v2, de forma seletiva.
 
-Uso: python scripts/setup_tools.py <grupo> [<grupo> ...]      # ou: --list
-Grupos:
-  base        FFmpeg, Node 22+ (HyperFrames) e yt-dlp no sistema (winget no Windows, brew/apt nos outros)
-  legendas    venv 'legendas': faster-whisper (+ bibliotecas CUDA quando há GPU NVIDIA)
-  voz         venv 'voz': Kokoro (torch com CUDA quando há GPU) + espeak-ng no sistema
-  chatterbox  venv 'chatterbox': Chatterbox TTS (clonagem de voz)
-  visao       venv 'visao': OpenCV (rastreio de rosto para enquadrar)
-  blender     Blender no sistema
-  hyperframes HyperFrames, three.js, Tone.js e puppeteer-core em ~/.video-viral/node (motion, 3D, efeitos)
-  comfyui     ComfyUI + torch CUDA + SDXL base em ~/.video-viral/ComfyUI (imagens locais; ~12 GB)
-As venvs ficam em ~/.video-viral/venvs/<nome> (Python 3.12 gerenciado pelo uv, que é instalado via pip se faltar).
-Com VIDEO_VIRAL_NO_INSTALL=1 no ambiente, não instala nada (o usuário pediu para não instalar).
+Grupos: base (FFmpeg/Node), voz (Kokoro), legendas (faster-whisper), blender,
+hyperframes (stack Node com lockfile), comfyui (runtime sem checkpoints).
+VIDEO_VIRAL_NO_INSTALL=1 impede instalação. ACE-Step e MCP são serviços configurados à parte.
 """
 import argparse
 import importlib.util
@@ -34,18 +25,15 @@ VENV_GROUPS = {
                  ["faster-whisper", "numpy"] + (["nvidia-cublas-cu12", "nvidia-cudnn-cu12==9.*"] if NVIDIA else []), None),
     "voz": ("voz", "3.12", ["kokoro", "soundfile", "numpy"], ["kokoro>=0.9.4", "soundfile", "numpy"],
             "https://download.pytorch.org/whl/cu128" if NVIDIA else None),
-    "chatterbox": ("chatterbox", "3.11", ["chatterbox"], ["chatterbox-tts"], None),
-    "visao": ("visao", "3.12", ["cv2", "numpy"], ["opencv-python-headless", "numpy"], None),
 }
 # programa -> (id winget, pacote brew, pacote apt)
 SYSTEM = {
     "ffmpeg": ("Gyan.FFmpeg", "ffmpeg", "ffmpeg"),
     "node": ("OpenJS.NodeJS", "node", "nodejs"),
-    "yt-dlp": ("yt-dlp.yt-dlp", "yt-dlp", "yt-dlp"),
     "espeak-ng": ("eSpeak-NG.eSpeak-NG", "espeak-ng", "espeak-ng"),
     "blender": ("BlenderFoundation.Blender", "blender", "blender"),
 }
-SYSTEM_GROUPS = {"base": ["ffmpeg", "node", "yt-dlp"], "voz": ["espeak-ng"], "blender": ["blender"]}
+SYSTEM_GROUPS = {"base": ["ffmpeg", "node"], "voz": ["espeak-ng"], "blender": ["blender"]}
 
 
 def sh(args, **kw):
@@ -121,23 +109,33 @@ def install_venv(group):
 
 
 ROOT = Path.home() / ".video-viral"
-SDXL = "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors"
 
 
 def install_hyperframes():
     """HyperFrames (+ GSAP, three.js, Tone.js, puppeteer-core) em ~/.video-viral/node."""
     if not install_program("node"):
         return False
-    d = ROOT / "node"
+    d = Path(os.environ.get("VIDEO_VIRAL_NODE_ROOT", str(ROOT / "node-v2")))
     d.mkdir(parents=True, exist_ok=True)
     npm = shutil.which("npm") or shutil.which("npm.cmd") or "npm"
-    ok = sh([npm, "install", "--prefix", d, "hyperframes", "three", "tone", "puppeteer-core"])
-    print(f"[{'ok' if ok else '--'}] hyperframes em {d} (npx --prefix {d} hyperframes ...)")
+    import json
+    template = Path(__file__).resolve().parents[1] / "assets" / "node"
+    if (d / "package.json").exists():
+        current = json.loads((d / "package.json").read_text(encoding="utf-8"))
+        if current.get("name") != "video-viral-stack":
+            print("Use uma pasta dedicada para o stack v2; package.json existente não será sobrescrito.")
+            return False
+    shutil.copy2(template / "package.json", d / "package.json")
+    shutil.copy2(template / "package-lock.json", d / "package-lock.json")
+    ok = sh([npm, "ci", "--prefix", d, "--ignore-scripts", "--no-audit", "--no-fund"])
+    if ok:
+        ok = sh([d / "node_modules" / ".bin" / ("esbuild.cmd" if WIN else "esbuild"), "--version"])
+    print(f"[{'ok' if ok else '--'}] stack Node v2 em {d}")
     return ok
 
 
 def install_comfyui():
-    """ComfyUI + torch CUDA + checkpoint SDXL base (~7 GB) em ~/.video-viral/ComfyUI."""
+    """Runtime ComfyUI sem download automático de modelos."""
     cdir = ROOT / "ComfyUI"
     if not (cdir / "main.py").exists() and not sh(["git", "clone", "--depth", "1",
                                                      "https://github.com/Comfy-Org/ComfyUI", cdir]):
@@ -148,16 +146,10 @@ def install_comfyui():
         return False
     py = venv_python("comfyui")
     if not has_modules(py, ["torch"]):
-        sh(UV + ["pip", "install", "--python", py, "torch", "torchvision", "torchaudio",
-                 "--index-url", "https://download.pytorch.org/whl/cu128"])
+        torch_args = ["--index-url", "https://download.pytorch.org/whl/cu128"] if NVIDIA else []
+        sh(UV + ["pip", "install", "--python", py, "torch", "torchvision", "torchaudio", *torch_args])
     if not sh(UV + ["pip", "install", "--python", py, "-r", cdir / "requirements.txt"]):
         return False
-    ck = cdir / "models" / "checkpoints" / "sd_xl_base_1.0.safetensors"
-    if not ck.exists():
-        part = ck.with_suffix(".part")
-        if not sh(["curl", "-L", "--fail", "-o", part, SDXL]):
-            return False
-        part.rename(ck)
     print(f"[ok] ComfyUI em {cdir}")
     return True
 

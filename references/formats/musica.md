@@ -4,9 +4,9 @@ A estrutura vem da faixa musical. Não impor roteiro de narração ou fala nos p
 
 ## Brief e música
 
-Definir público/nicho, gênero, emoção, duração, trecho principal e linguagem visual. Para canal, registrar identidade de série. Se a faixa já existe, preservar o arquivo e verificar os direitos. Se precisar gerar, selecionar ferramenta disponível (ACE-Step ou serviço autorizado), registrar parâmetros/versão e revisar uma amostra antes da faixa completa. A integração atual não inclui CLI próprio de geração musical; usar o fornecedor disponível e registrar `adaptacao` até validar a saída.
+Definir público/nicho, gênero, emoção, duração, trecho principal e linguagem visual. Para canal, registrar identidade de série. Se a faixa já existe, preservar o arquivo e verificar os direitos. Se precisar gerar, selecionar ferramenta disponível (ACE-Step ou workflow configurado), registrar parâmetros/versão e revisar uma amostra antes da faixa completa. A integração atual não inclui CLI próprio de geração musical; usar o workflow/serviço ACE-Step 1.5 disponível e registrar `adaptacao` até validar a saída.
 
-Guardar o master em `audio/music.wav` com proveniência em `assets`. MusicGen só cabe em projeto compatível com a licença dos pesos; verificar os termos atuais. Não atribuir uma licença de software automaticamente à faixa ou aos modelos usados.
+Guardar o master em `audio/music.wav` com proveniência em `assets`. Verificar os termos dos pesos e ativos usados no ACE-Step 1.5. Não atribuir uma licença de software automaticamente à faixa ou aos modelos usados.
 
 ## Planejamento audiovisual
 
@@ -16,7 +16,7 @@ Identificar intro, versos, refrão, drop, respiros e final. Medir batidas/onsets
 - Lyric video: transcrever/alinha a letra cantada, corrigir palavras e ajustar tempos; não tratar canto como narração já perfeitamente alinhada.
 - Clipe animado: usar [animação](animacao.md), personagens/cenários consistentes e um arco visual.
 
-Compor em HyperFrames/Remotion/Blender conforme a direção; sincronizar cortes e revelações em momentos musicais relevantes, sem obrigar corte a cada batida. Preservar contraste e respiros. Para vertical, escolher o trecho que funciona sozinho e abrir com sua força musical/visual. Para longo, planejar evolução e retornos temáticos.
+Compor em HyperFrames/Blender conforme a direção; sincronizar cortes e revelações em momentos musicais relevantes, sem obrigar corte a cada batida. Preservar contraste e respiros. Para vertical, escolher o trecho que funciona sozinho e abrir com sua força musical/visual. Para longo, planejar evolução e retornos temáticos.
 
 ## Mix e revisão
 

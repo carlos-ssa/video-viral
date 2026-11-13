@@ -107,5 +107,15 @@
     "chapters": [],
     "thumbnail": ""
   },
-  "review": []
+  "review": [],
+  "skill_version": "2.0.0",
+  "stack": {
+    "version": "2.0.0",
+    "compositor": "hyperframes",
+    "modules": [
+      "hyperframes",
+      "gsap",
+      "ffmpeg"
+    ]
+  }
 }

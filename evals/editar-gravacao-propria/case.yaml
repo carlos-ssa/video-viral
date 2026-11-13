@@ -1,4 +1,4 @@
 schema_version: "1.1"
 name: editar-gravacao-propria
 expected_outcome: |
-  Cria um projeto de formato gravacao em 9:16, importa a gravação e a legenda .srt (sem precisar do WhisperX), corta silêncios e vícios, descarta a primeira versão da frase repetida, põe a frase mais forte no início, renderiza com legenda palavra a palavra, entrega com deliver.py e roda review.py antes de dizer que está pronto. Não instala nada.
+  Cria um projeto de formato gravacao em 9:16, importa a gravação e a legenda .srt (sem precisar de transcrição automática), corta silêncios e vícios, descarta a primeira versão da frase repetida, põe a frase mais forte no início, renderiza com legenda palavra a palavra, entrega com deliver.py e roda review.py antes de dizer que está pronto. Não instala nada.

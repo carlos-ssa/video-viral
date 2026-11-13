@@ -12,6 +12,12 @@ import deliver
 
 
 class DeliveryTests(unittest.TestCase):
+    def test_sound_design_track_is_mixed_with_voice(self):
+        graph, label = deliver.audio_graph({'voice': 1, 'sfx': 2}, -16)
+        self.assertEqual(label, '[mix]')
+        self.assertTrue(any('[2:a]' in entry and '[sfx]' in entry for entry in graph))
+        self.assertTrue(any('[vo][sfx]amix' in entry for entry in graph))
+
     def test_noncommercial_flag_cannot_bypass_monetized_project(self):
         with tempfile.TemporaryDirectory() as folder:
             proj = Path(folder)

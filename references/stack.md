@@ -1,80 +1,34 @@
-# Ferramentas
+# Stack exclusivo — versão 2.0.0
 
-Cada repositório tem um papel. Use o catálogo para compor um plano por etapa/cena e registre contribuição, entrada/saída e status em tool_plan. A presença nesta lista não comprova integração ou validação local. Licenças e requisitos foram conferidos em 12/11/2026; confira o LICENSE do repositório antes de uso comercial.
+O compositor final de produções completas é HyperFrames + GSAP. FFmpeg/ffprobe prepara, mixa, exporta e mede. Use módulos de cena/áudio quando contribuírem à direção; uma demo ou pacote instalado não equivale a um vídeo profissional validado.
 
-## Encontrar
-
-| Repositório | Papel | Licença e requisitos | Use quando |
-|---|---|---|---|
-| [exa-labs/exa-mcp-server](https://github.com/exa-labs/exa-mcp-server) | Busca o que está em alta no nicho na semana | Servidor MCP; exige chave da Exa (serviço remoto, tem plano gratuito) | Pesquisa de tendência. Sem chave, use a busca web da CLI |
-| [yt-dlp/yt-dlp](https://github.com/yt-dlp/yt-dlp) | Metadados e legendas dos shorts que performam | Unlicense | Estudar ganchos, duração e estrutura. Use `--skip-download`; ver [pipeline](pipeline.md#1-encontrar) |
-
-Google Trends complementa a pesquisa com interesse de busca e sazonalidade. Use [research.md](research.md) e `scripts/trends.py` para gerar a consulta e importar CSV oficial, sem scraping ou dependência de pytrends. A API oficial alpha exige acesso concedido; dados do site não são métricas de retenção.
-
-## Status das integrações
-
-- **Scripts existentes:** FFmpeg, importação/corte, transcrição/legendas, voz, faces, imagens ComfyUI, entrega e revisão. Cada instalação ainda precisa de uma saída verificada no ambiente.
-- **Composição por projeto:** HyperFrames/Remotion, bibliotecas web e Blender; a cena é implementada e validada no projeto do vídeo.
-- **Adaptadores necessários:** geração de avatar/lip-sync, imagem-para-vídeo e música. Não há CLI próprio dessas gerações nesta skill; usar um fornecedor disponível, registrar os parâmetros e validar uma amostra antes da produção completa.
-- **Pesquisa:** Trends URL/CSV é integrado; API Trends, Exa e dados privados dependem do acesso real disponível.
-
-## Escrever
-
-| Repositório | Papel | Use quando |
+| Componente | Papel | Entrada executável/documentação |
 |---|---|---|
-| [anthropics/skills](https://github.com/anthropics/skills) | Skills oficiais de exemplo; esta skill segue o mesmo formato | Sempre que quiser outra skill de apoio (por exemplo, `skill-creator` para evoluir esta). O roteiro em si segue [writing.md](writing.md) |
+| [HyperFrames](https://github.com/heygen-com/hyperframes) | composition | `assets/node/package.json` |
+| [GSAP](https://github.com/greensock/GSAP) | motion | `assets/node/package.json` |
+| [FFmpeg + ffprobe](https://github.com/FFmpeg/FFmpeg) | delivery | `scripts/deliver.py` |
+| [Three.js](https://github.com/mrdoob/three.js) | 3d | `assets/node/package.json` |
+| [Blender](https://github.com/blender/blender) | 3d | `references/modules/3d.md` |
+| [Tone.js](https://github.com/Tonejs/Tone.js) | sound | `scripts/sound.mjs` |
+| [gl-transitions](https://github.com/gl-transitions/gl-transitions) | transitions | `scripts/visual_scene.mjs` |
+| [ComfyUI](https://github.com/Comfy-Org/ComfyUI) | images | `scripts/comfy.py` |
+| [PixiJS](https://github.com/pixijs/pixijs) | 2d | `scripts/visual_scene.mjs` |
+| [Paper.js](https://github.com/paperjs/paper.js) | vector | `scripts/visual_scene.mjs` |
+| [p5.js](https://github.com/processing/p5.js) | generative | `scripts/visual_scene.mjs` |
+| [MCP for Blender](https://github.com/ahujasid/mcp-for-blender) | automation-3d | `references/modules/3d.md` |
+| [glTF Transform](https://github.com/donmccurdy/glTF-Transform) | optimization-3d | `scripts/gltf.mjs` |
+| [ACE-Step 1.5](https://github.com/ace-step/ACE-Step-1.5) | music | `scripts/music.py` |
+| [Kokoro](https://github.com/hexgrad/kokoro) | voice | `scripts/voice.py` |
+| [faster-whisper](https://github.com/SYSTRAN/faster-whisper) | captions | `scripts/captions.py` |
 
-## Voz
+PixiJS, Paper.js e p5.js são alternativas por linguagem, não três dependências criativas obrigatórias em cada cena. Blender MCP é ponte para um Blender configurado; também é possível produzir em Blender headless. glTF Transform otimiza GLB para a cena Three.js. O ACE-Step usado é o 1.5, com serviço/modelo configurado separadamente.
 
-| Repositório | Papel | Licença e requisitos | Use quando |
-|---|---|---|---|
-| [hexgrad/kokoro](https://github.com/hexgrad/kokoro) | Narração local, padrão | Apache-2.0; 82M parâmetros, roda até em CPU; pt-BR com `lang_code="p"` e vozes `pf_dora`, `pm_alex`, `pm_santa`; exige `espeak-ng` | Padrão para narração |
-| [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterbox) | Voz expressiva, clonagem e dublagem | MIT; modelo multilíngue com pt-BR; mais pesado que o Kokoro (conte com ~6 GB de VRAM); saída com marca d'água PerTh | Emoção controlada, voz do próprio usuário (com consentimento) ou versão do short em outro idioma |
-| [m-bain/whisperX](https://github.com/m-bain/whisperX) | Tempo de cada palavra para as legendas | BSD-2; alinhamento wav2vec2 com modelo de português | Padrão para legendas: alinha o roteiro conhecido ao áudio |
-| [SYSTRAN/faster-whisper](https://github.com/SYSTRAN/faster-whisper) | Transcrição com tempo por palavra | MIT; leve, CUDA ou CPU | Quando o WhisperX não instalar, ou para áudio sem roteiro (gravação própria) |
+## Status honesto
 
-## Trilha e efeitos
+`stack.py doctor` informa detecção de pacote/programa, sem declarar render validado. Cada execução gera artefatos/receipts; só registrar validado-neste-projeto após conferir a saída. O gerador visual cria cenas de smoke editáveis, não resolve a direção do filme inteiro. Os clientes ComfyUI/ACE-Step não instalam modelos nem garantem que qualquer workflow/geração esteja disponível.
 
-| Repositório | Papel | Licença e requisitos | Use quando |
-|---|---|---|---|
-| [Tonejs/Tone.js](https://github.com/Tonejs/Tone.js) | Sintetizadores, batidas e efeitos sonoros gerados em código | MIT; roda no navegador, inclusive renderização offline | Padrão para efeitos (whoosh, pop, tique) e bases simples; o resultado é todo seu |
-| [ace-step/ACE-Step](https://github.com/ace-step/ACE-Step) | Música gerada por IA | Versão 1.5 sob MIT (a original era Apache-2.0); relatos de 4 a 8 GB de VRAM | Trilha musical em vídeo monetizado |
-| [facebookresearch/audiocraft](https://github.com/facebookresearch/audiocraft) (MusicGen) | Música gerada por IA | Código MIT, **pesos CC-BY-NC 4.0** | Só em vídeo não monetizado; marque `commercial_ok: false` |
+## Pesquisa e ativos
 
-## Construir (visual)
+Pesquisa usa a ferramenta web já disponível e fontes como Google Trends; não adiciona um motor de produção nem instala outro repositório. Não há downloader dedicado no stack. Ativos fornecidos entram por arquivos, voz pode vir pronta ou por Kokoro, e legendas por faster-whisper/importação. Modelos/checkpoints de workflows têm termos próprios; registrar os reais.
 
-| Repositório | Papel | Licença e requisitos | Use quando |
-|---|---|---|---|
-| [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) | Compõe e renderiza o vídeo a partir de HTML, determinístico (Chrome headless + FFmpeg) | Apache-2.0; Node 22+ e FFmpeg; tem skills próprias (`npx skills add heygen-com/hyperframes`) | **Motor padrão.** Títulos, legendas animadas, gráficos, cenas 2D e 3D web |
-| [remotion-dev/remotion](https://github.com/remotion-dev/remotion) | Motor de vídeo em React | Licença própria: grátis para indivíduos e empresas de até 3 pessoas; acima disso, licença paga | Quando o usuário já usa React/Remotion. Há template `remotion-to-hyperframes` para migrar |
-| [blender/blender](https://github.com/blender/blender) | Cenas 3D completas, render em Eevee | GPL (o vídeo renderizado é seu) | Personagens, objetos e câmera 3D que o Three.js não resolve bem |
-| [ahujasid/blender-mcp](https://github.com/ahujasid/blender-mcp) | O modelo monta e anima a cena no Blender aberto | MIT; addon no Blender + `uvx blender-mcp` | Montagem interativa. Para render reproduzível, prefira script `bpy` em modo headless |
-| [Tencent-Hunyuan/Hunyuan3D-2](https://github.com/Tencent-Hunyuan/Hunyuan3D-2) | Imagem vira objeto 3D | Licença comunitária Tencent: **exclui UE, Reino Unido e Coreia do Sul**; limite de usuários para uso comercial. Em 8 GB, só `Hunyuan3D-2mini`, forma sem textura | Props 3D sob medida a partir de uma imagem do ComfyUI |
-| [donmccurdy/glTF-Transform](https://github.com/donmccurdy/glTF-Transform) | Otimiza GLB (malha, texturas) | MIT; Node | Antes de levar um modelo do Hunyuan3D/Blender para o Three.js |
-| [Comfy-Org/ComfyUI](https://github.com/Comfy-Org/ComfyUI) | Imagens, fundos e capas | GPL-3.0; API local em `127.0.0.1:8188`. Em 8 GB, modelos SDXL ou quantizados. A licença de cada checkpoint é separada | Fundos, ilustrações, imagem de entrada do Hunyuan3D e capa |
-| [obsproject/obs-studio](https://github.com/obsproject/obs-studio) | Gravação de tela | GPL; operação manual | Tutoriais e demonstrações de software; o usuário grava, a skill edita |
-
-### Bibliotecas dentro da composição (HyperFrames ou Remotion)
-
-Escolha as bibliotecas necessárias ao resultado da cena, evitando motores redundantes. Todas precisam respeitar a regra de animação determinística do SKILL.md. Princípios de animação, receitas e a ponte `drawAt(t)` estão em [motion graphics](motion.md).
-
-| Repositório | Para quê | Cuidado no render |
-|---|---|---|
-| [juliangarnier/anime.js](https://github.com/juliangarnier/anime.js) | Linha do tempo de animações | Crie a linha do tempo pausada e posicione pelo tempo do quadro |
-| [pmndrs/react-spring](https://github.com/pmndrs/react-spring) | Molas em React | Depende do relógio real; no Remotion use `spring()` |
-| [pixijs/pixijs](https://github.com/pixijs/pixijs) | 2D acelerado por GPU, muitos sprites | Desligue o ticker automático e renderize por quadro |
-| [processing/p5.js](https://github.com/processing/p5.js) | Efeitos generativos | `noLoop()` e `randomSeed()`; desenhe a partir do tempo |
-| [paperjs/paper.js](https://github.com/paperjs/paper.js) | Caminhos vetoriais, traços que se desenham | Calcule o progresso pelo tempo, não por `onFrame` |
-| [liabru/matter-js](https://github.com/liabru/matter-js) | Física 2D | `Engine.update(engine, 1000/fps)` uma vez por quadro, nunca o `Runner` |
-| [mrdoob/three.js](https://github.com/mrdoob/three.js) | Cenas 3D no navegador | Sem `setAnimationLoop`; renderize a cena no tempo pedido |
-| [dimforge/rapier](https://github.com/dimforge/rapier) | Colisões e física 3D | Passo fixo por quadro; pré-simule se precisar posicionar no meio |
-| [oframe/ogl](https://github.com/oframe/ogl) | Shaders leves | Passe o tempo do quadro como uniform |
-| [tsparticles/tsparticles](https://github.com/tsparticles/tsparticles) | Partículas (confete, poeira, faíscas) | Fixe a semente; o motor é baseado em relógio, então prefira em trechos curtos e confira o render |
-| [gl-transitions/gl-transitions](https://github.com/gl-transitions/gl-transitions) | Transições entre cenas em shader | Progresso da transição vem do tempo do quadro |
-
-## Editar e entregar
-
-| Repositório | Papel | Use quando |
-|---|---|---|
-| [FFmpeg/FFmpeg](https://github.com/FFmpeg/FFmpeg) | Mixagem, legendas queimadas, volume, codificação e checagens | Sempre, via `scripts/deliver.py`. Para outras edições, a skill `ffmpeg-skill`, se instalada |
-| [OpenCut-app/OpenCut](https://github.com/OpenCut-app/OpenCut) | Editor de linha do tempo com interface | Quando o usuário quiser retocar à mão; a skill entrega `render/master.mp4` e o áudio separado |
+Veja [módulos](modules.md), [instalação](setup.md), [pipeline](pipeline.md) e [fontes](sources.md).

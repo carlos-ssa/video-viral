@@ -97,7 +97,7 @@ Prefira imagem que acrescenta à fala, não que a repete: se a narração diz "d
 
 Antes de animar o vídeo inteiro, faça 3 quadros parados no visual final: o quadro 0 (gancho), um quadro do meio e o quadro do payoff. Olhe os três juntos e corrija paleta, fonte, contraste e composição agora. É o ponto mais barato para mudar o visual; depois disso, cada mudança é um novo render.
 
-No HyperFrames ou Remotion, renderize quadros soltos no tempo de cada plano. No Blender, `--frames` de um quadro só. No ComfyUI, gere os fundos com a semente fixa e a paleta descrita no prompt.
+No HyperFrames, renderize quadros soltos no tempo de cada plano. No Blender, `--frames` de um quadro só. No ComfyUI, gere os fundos com a semente fixa e a paleta descrita no prompt.
 
 ## O que deixa vídeo de IA com cara de barato
 
