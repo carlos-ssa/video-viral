@@ -1,4 +1,5 @@
 import json
+import io
 import os
 from pathlib import Path
 import subprocess
@@ -6,10 +7,15 @@ import sys
 import tempfile
 import threading
 import unittest
+import wave
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 SCRIPT = Path(__file__).resolve().parents[1] / 'scripts' / 'music.py'
-WAV = b'RIFF\x04\x00\x00\x00WAVE'
+_fixture = io.BytesIO()
+with wave.open(_fixture, 'wb') as _wav:
+    _wav.setparams((1, 2, 8000, 0, 'NONE', 'not compressed'))
+    _wav.writeframes(b'\x01\x00' * 800)
+WAV = _fixture.getvalue()
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -40,7 +46,8 @@ class Handler(BaseHTTPRequestHandler):
         self.server.requests.append((self.path, None, self.headers.get('Authorization')))
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(WAV)
+        self.wfile.write(b'RIFF\x04\x00\x00\x00WAVE' if self.server.mode == 'invalid_wav' else
+                         WAV[:-10] if self.server.mode == 'truncated_wav' else WAV)
 
 
 class MusicTest(unittest.TestCase):
@@ -107,7 +114,7 @@ class MusicTest(unittest.TestCase):
         self.assertNotIn('test-secret', self.manifest.read_text(encoding='utf-8') + result.stdout + result.stderr)
 
     def test_failures_preserve_files(self):
-        for mode in ('failure', 'timeout', 'foreign', 'incomplete'):
+        for mode in ('failure', 'timeout', 'foreign', 'incomplete', 'invalid_wav', 'truncated_wav'):
             with self.subTest(mode=mode):
                 self.server.mode = mode
                 before = self.manifest.read_bytes()

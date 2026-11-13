@@ -14,6 +14,14 @@ from _common import save_manifest
 
 
 class ReviewerPreflightCLITests(unittest.TestCase):
+    def test_invalid_grid_interval_is_rejected_before_project_or_ffmpeg(self):
+        for value in ('0', '-1', 'nan', 'inf', '-inf'):
+            with self.subTest(value=value):
+                result = subprocess.run([sys.executable, str(SCRIPT), '--every=' + value],
+                                        capture_output=True, text=True)
+                self.assertEqual(result.returncode, 2)
+                self.assertIn('--every precisa', result.stderr)
+
     def test_limited_modalities_and_separation_are_checked_before_delegation(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / 'capabilities.json'
@@ -55,6 +63,31 @@ class RenderGateTests(unittest.TestCase):
                     ['-filter_complex', '[0:v][1:v]overlay=80:110:shortest=1'])
         _, _, freezes = review.analyze('ffmpeg', self.video, self.root, 10, 180, 320)
         self.assertEqual(review.freeze_checks(freezes, 4, False, []), ([], []))
+
+    def test_excessive_grid_is_rejected_before_creating_round(self):
+        self.render(['testsrc2=s=180x320:r=10:d=4'])
+        save_manifest(self.root, {'slug': 'fixture', 'format': 'musica', 'size': [180, 320]})
+        result = subprocess.run([sys.executable, str(SCRIPT), str(self.root), '--video', str(self.video),
+                                 '--every=0.000001', '--producer-id', 'producer:fixture'],
+                                capture_output=True, text=True, encoding='utf-8')
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn('limite JPEG', result.stderr)
+        self.assertFalse((self.root / 'review').exists())
+
+    def test_fourth_round_cli_preserves_manifest_and_prior_evidence(self):
+        self.render(['testsrc2=s=180x320:r=10:d=4'])
+        save_manifest(self.root, {'slug': 'fixture', 'format': 'musica', 'size': [180, 320]})
+        for index in range(1, 4):
+            folder = self.root / 'review' / f'r{index:02d}'
+            folder.mkdir(parents=True)
+            (folder / 'evidence.bin').write_bytes(bytes([index]))
+        before = {p.relative_to(self.root): p.read_bytes() for p in self.root.rglob('*') if p.is_file()}
+        result = subprocess.run([sys.executable, str(SCRIPT), str(self.root), '--video', str(self.video),
+                                 '--producer-id', 'producer:fixture'],
+                                capture_output=True, text=True, encoding='utf-8')
+        self.assertEqual(result.returncode, 3, result.stdout + result.stderr)
+        self.assertIn('LIMITE', result.stdout)
+        self.assertEqual(before, {p.relative_to(self.root): p.read_bytes() for p in self.root.rglob('*') if p.is_file()})
 
     def test_changing_subtitles_break_freezes(self):
         (self.root / 'captions.ass').write_text(

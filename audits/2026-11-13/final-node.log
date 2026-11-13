@@ -1,0 +1,24 @@
+✔ local Chrome uses a dedicated profile despite a deep TEMP and cleans it (1811.665ms)
+ℹ Chrome/157.0.8103.51: BeginFrame indisponível; screenshot é a reserva (Protocol error (HeadlessExperimental.beginFrame): 'HeadlessExperimental.beginFrame' wasn't found)
+✔ explicit missing local browser fails rather than downloading or switching silently (1.5362ms)
+✔ real GLB optimization preserves source and can be read back (1146.4635ms)
+✔ fractional durations accept one sample of rounding, not corrupt audio (4.6432ms)
+✔ renders deterministic PCM and protects outputs on errors (3898.7101ms)
+✔ CLI rejects invalid specifications without creating audio (90.4734ms)
+✔ shader transition loads provided image assets, not placeholder colors (1999.6977ms)
+✔ binary browser transport preserves every rendered Float32 sample (1116.2274ms)
+✔ Tone real rendering is PCM-equivalent through old and binary transports (1885.3151ms)
+▶ visual scenes seek deterministically in a browser and preserve output
+  ✔ pixi (2413.9623ms)
+  ✔ paper (1271.6805ms)
+  ✔ p5 (1659.3825ms)
+  ✔ gl-transitions (1562.6883ms)
+✔ visual scenes seek deterministically in a browser and preserve output (7665.1608ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7946.83

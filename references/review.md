@@ -8,7 +8,7 @@ Revisar é examinar o arquivo que será entregue. Nota estética não mede viral
 2. Renderizar e executar `deliver.py`; ele grava o arquivo final, o relatório e `out/delivery.json`, com hash e resultado técnico.
 3. Executar `review.py <projeto> --producer-id <id-do-autor>` sobre a entrega. Cada `review/rNN/` contém `hook.jpg`, `grid.jpg`, `metrics.json`, `assessment.json`, `report.md` e o pacote `input/`. `--video` pode analisar uma prévia, mas o veredito final exige uma entrega técnica correspondente.
 4. Examinar composição, enquadramento e legibilidade; inspecionar temporalmente os trechos relevantes, transições e sincronismo; ouvir o áudio quando a ferramenta permitir. Para um vídeo curto, preferir revisão integral; para longo, registrar os intervalos observados e combinar com análise instrumentada de toda a faixa.
-5. Registrar `assessment.json` e preencher notas do relatório com evidência/trecho e correção quando necessária. Depois executar `review.py <projeto> --verdict`.
+5. Registrar `assessment.json` e preencher notas do relatório com evidência/trecho e correção quando necessária. Preserve as quatro colunas da tabela gerada (critério, definição, nota, evidência/correção): o veredito lê a coluna Nota. Critério duplicado, tabela malformada ou observação ausente tornam a avaliação incompleta (2), sem recuperar números de outra coluna. Depois executar `review.py <projeto> --verdict`.
 
 Todos os comandos são relativos ao diretório desta skill; use caminhos absolutos ou o workdir correto.
 
@@ -86,7 +86,7 @@ Avaliar gancho e payoff, progressão/clareza, direção e motion, legibilidade, 
 
 O hash vincula notas, vídeo, manifesto e imagens. Trocar o render/brief invalida a avaliação; acrescentar o histórico de revisão não a invalida. Rodadas antigas sem esse registro precisam de nova análise. O script checa consistência e resultados registrados, não comprova sozinho que uma pessoa/modelo realmente assistiu nem substitui julgamento audiovisual.
 
-Cada nova rodada precisa de uma alteração concreta ou nova evidência. Mudar somente uma nota não corrige o vídeo. Se uma dependência impede a inspeção, instalar somente quando necessária e permitida; aplicar uma reserva documentada quando indisponível e registrar a limitação. Não fazer três renders idênticos esperando mudar o resultado.
+Cada nova rodada precisa de uma alteração concreta ou nova evidência. A CLI não consegue provar por hash, sozinha, que a mudança foi significativa; o coordenador verifica esse requisito. A tentativa de gerar r04 retorna 3 e preserva as rodadas existentes. `--every` deve ser finito e positivo; a grade deve respeitar o limite JPEG/FFmpeg de65.500pixels por eixo, sem presumir que maior quantidade de quadros comprova inspeção temporal. Mudar somente uma nota não corrige o vídeo. Se uma dependência impede a inspeção, instalar somente quando necessária e permitida; aplicar uma reserva documentada quando indisponível e registrar a limitação. Não fazer três renders idênticos esperando mudar o resultado.
 
 ## Aprendizado
 

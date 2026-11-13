@@ -20,6 +20,11 @@ test('real GLB optimization preserves source and can be read back', async () => 
     const io = new NodeIO();
     await io.write(input, doc);
     const original = await readFile(input);
+    const orphan = path.join(folder, 'orphan.glb');
+    await writeFile(`${orphan}.receipt.json`, 'keep receipt');
+    assert.throws(() => optimize(input, orphan, nodeRoot), /recibo já existe/);
+    assert.equal(await readFile(`${orphan}.receipt.json`, 'utf8'), 'keep receipt');
+    await assert.rejects(readFile(orphan), { code: 'ENOENT' });
     const receipt = optimize(input, output, nodeRoot);
     assert.equal(receipt.source_preserved, true);
     assert.deepEqual(await readFile(input), original);

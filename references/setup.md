@@ -4,7 +4,7 @@ Execute comandos com caminhos absolutos ou a partir da pasta desta skill. `VIDEO
 
 ## Consentimento antes da instalação
 
-Rode o grupo necessário **sem flags de consentimento** primeiro. O script diagnostica sem subprocessos de instalação e lista programa, gerenciador e tamanho aproximado quando conhecido. Havendo ações protegidas, sai com **4 antes de instalar qualquer grupo**. Apresente essa lista inteira ao usuário e peça uma confirmação única; só depois use as flags correspondentes ao escopo aceito. Pedido explícito para não instalar prevalece: apenas informe a lista, sem tentar obter exceção.
+Rode o grupo necessário **sem flags de consentimento** primeiro. O script diagnostica sem subprocessos de instalação e lista programa, gerenciador e tamanho aproximado quando conhecido. Havendo ações protegidas, sai com **4 antes de instalar qualquer grupo**. Apresente essa lista inteira ao usuário e obtenha uma confirmação única quando esse mesmo escopo ainda não estiver autorizado na sessão; use as flags correspondentes ao escopo já aceito, sem pedir confirmação repetida. Pedido explícito para não instalar prevalece: apenas informe a lista, sem tentar obter exceção.
 
 - `--allow-system`: programas via winget (inclui modo silencioso e aceite de termos), brew ou sudo apt-get, além do bootstrap `pip install --user uv`. A flag documenta consentimento, não concede privilégios nem substitui permissões do ambiente.
 - `--allow-large`: ComfyUI e torch/torchvision/torchaudio, inclusive sem checkpoints; estimativa CUDA de vários GB (3–10 GB, variável por SO/cache). Pode precisar também de `--allow-system` se faltar uv.
@@ -14,7 +14,7 @@ Exemplo, somente **após** consentimento da lista: `python scripts/setup_tools.p
 
 ## Grupos
 
-- `python scripts/setup_tools.py base`: FFmpeg/ffprobe e Node.
+- `python scripts/setup_tools.py base`: FFmpeg/ffprobe e Node.js 22.12+ (o lock atual exige esse mínimo; um Node 22 anterior não basta).
 - `python scripts/setup_tools.py hyperframes`: stack Node v2 com package.json/package-lock fixados, em ~/.video-viral/node-v2. Inclui o compositor e os módulos JS selecionados, mais infraestrutura de build/browser. Não sobrescreve um package.json estranho.
 - `python scripts/setup_tools.py voz`: edge-tts e dependências de rede em venv dedicada. Não instala Torch, pesos nem espeak-ng; a síntese é online. FFmpeg/ffprobe do grupo base convertem e montam WAVs.
 - `python scripts/setup_tools.py legendas`: faster-whisper; não instala outro transcritor/alinhador.

@@ -51,25 +51,26 @@ MIN_AUDIBLE_FRACTION = 0.5
 TIMING_TOLERANCE_SECONDS = 0.05
 OCCUPANCY_WIDTH, OCCUPANCY_HEIGHT = 90, 160
 OCCUPANCY_MAX_SAMPLES = 48
+JPEG_MAX_DIMENSION = 65500  # FFmpeg's MJPEG encoder limit for each image dimension.
 UNIFORM_COLOR_DELTA = 10
 UNIFORM_PERSISTENCE = 0.9
 UNIFORM_BAND_FRACTION = 0.3
 
 BARS = "▁▂▃▄▅▆▇█"
 RUBRIC = [
-    ("Gancho", "Quadro 0 legível e intrigante, até 6 palavras na tela, fala em até 0,5 s, imagem forte sem depender do som"),
-    ("Ritmo", "Evento visual a cada 1,5–3 s, nenhum trecho parado, cortes na palavra"),
+    ("Gancho", "Quadro 0 legível e assunto/promessa reconhecíveis sem som; mensagem principal curta, com entrada de fala/som adequada ao formato"),
+    ("Ritmo", "Progressão adequada à narrativa; cortes preservam palavras/sentido e pausas intencionais; mudanças visuais cumprem função, sem quota de efeitos"),
     ("Direção de arte", "Paleta, fontes e textura do direction em todas as cenas; nada com cara de padrão"),
-    ("Motion", "Curvas e durações do motion.md, um foco por vez, câmera sempre viva"),
+    ("Motion", "Curvas e durações do motion.md, foco claro e movimento por intenção; planos estáticos e pausas podem cumprir função"),
     ("Fala e imagem", "Cada plano mostra o que a narração diz naquele instante, acrescentando em vez de repetir"),
     ("Legibilidade", "Contraste, tamanho, área segura, legenda fora do assunto principal"),
-    ("Som", "Efeitos nas entradas, música que abaixa sob a voz e sobe no payoff, voz clara"),
-    ("Payoff", "Entrega a promessa do gancho; final em loop ou corte no ponto alto"),
+    ("Som", "Voz inteligível quando presente; música/ambiente/efeitos sustentam a intenção sem mascarar fala, ruído ou silêncio não intencional"),
+    ("Payoff", "Entrega a promessa do gancho com fechamento coerente; loop ou corte só quando adequados ao conteúdo"),
 ]
 RECORDED = {"gravacao", "corte", "ugc"}
 RECORDED_RUBRIC = [
-    ("Corte de fala", "Sem silêncio, vício ou retomada sobrando; corte no fim da palavra, sem estalo nem respiração cortada"),
-    ("Enquadramento", "Rosto no terço superior, nada cortado na cabeça; zoom alterna para esconder o jump cut; B-roll quando a fala cita algo"),
+    ("Corte de fala", "Remove sobras e retomadas sem alterar sentido; preserva palavras, respiração e pausas intencionais, sem estalos"),
+    ("Enquadramento", "Assunto/rosto enquadrados sem cortes involuntários; recorte, moldura e B-roll por função, preservando continuidade sem zoom obrigatório"),
 ]
 LONG_RUBRIC = [
     ("Retenção", "Promessa clara nos 30 s iniciais, virada ou novo gancho a cada 60–90 s, capítulos no ponto de mudança de assunto"),
@@ -116,16 +117,33 @@ def tile_size(m):
     return int(w * k) // 2 * 2, int(h * k) // 2 * 2
 
 
+class RoundLimitError(ValueError):
+    pass
+
+
 def next_round(proj):
     base = proj / "review"
     base.mkdir(exist_ok=True)
     nums = [int(p.name[1:]) for p in base.glob("r[0-9][0-9]") if p.is_dir()]
+    if nums and max(nums) >= MAX_ROUNDS:
+        raise RoundLimitError("LIMITE de três rodadas; preserve a revisão existente e entregue o melhor com limitações, sem declarar aprovação")
     d = base / f"r{(max(nums) + 1 if nums else 1):02d}"
     d.mkdir()
     return d
 
 
+def validate_grid(dur, every, tw, th):
+    """Reject impossible JPEG tiles before FFmpeg or a round directory is created."""
+    cols, padding = 8, 4
+    max_rows = (JPEG_MAX_DIMENSION + padding) // (th + padding)
+    if (not math.isfinite(every) or every <= 0 or max_rows < 1
+            or cols * tw + (cols - 1) * padding > JPEG_MAX_DIMENSION
+            or dur / every >= cols * max_rows):
+        raise ValueError(f"grade excede o limite JPEG de {JPEG_MAX_DIMENSION} pixels por dimensão; aumente --every")
+
+
 def frames(ff, video, out_dir, dur, fps, every, tw, th):
+    validate_grid(dur, every, tw, th)
     n = max(1, int(dur // every) + 1)
     cols = 8
     rows = math.ceil(n / cols)
@@ -225,6 +243,10 @@ def audio_activity(ff, video, dur, has_audio=True):
 
 def caption_ranges(proj, m):
     """ASS ou grupos JSON são intervalos de exibição; palavras ASR não são caixas de legenda."""
+    def valid(start, end):
+        return (type(start) in (int, float) and type(end) in (int, float)
+                and math.isfinite(start) and math.isfinite(end) and 0 <= start < end)
+
     ass = proj / "captions" / "captions.ass"
     if ass.exists():
         ranges = []
@@ -238,14 +260,22 @@ def caption_ranges(proj, m):
                     return int(h) * 3600 + int(minute) * 60 + float(sec)
                 try:
                     if fields[9].strip():
-                        ranges.append((seconds(fields[1]), seconds(fields[2])))
+                        start, end = seconds(fields[1]), seconds(fields[2])
+                        if not valid(start, end):
+                            return None
+                        ranges.append((start, end))
                 except ValueError:
                     return None
         return ranges
     groups = proj / "captions" / "captions.json"
     if groups.exists():
         try:
-            return [(float(g["start"]), float(g["end"])) for g in json.loads(groups.read_text(encoding="utf-8"))]
+            cues = json.loads(groups.read_text(encoding="utf-8"))
+            if (not isinstance(cues, list) or any(not isinstance(g, dict)
+                    or not valid(g.get("start"), g.get("end"))
+                    or not isinstance(g.get("text"), str) or not g["text"].strip() for g in cues)):
+                return None
+            return [(g["start"], g["end"]) for g in cues]
         except (ValueError, KeyError, TypeError):
             return None
     if (m.get("captions") or {}).get("enabled") is False or not expects_speech(m):
@@ -495,7 +525,7 @@ def reviewer_preflight(capabilities, producer_id, required=CHANNELS):
     """Validate the recorded capability check; this does not authenticate tools or people."""
     if not isinstance(producer_id, str) or not producer_id.strip():
         raise ValueError("informe o ID do autor com --producer-id")
-    if not isinstance(capabilities, dict) or capabilities.get("schema") != 1:
+    if not isinstance(capabilities, dict) or type(capabilities.get("schema")) is not int or capabilities["schema"] != 1:
         raise ValueError("preflight do revisor ausente ou inválido")
     reviewer = capabilities.get("reviewer_id")
     if not isinstance(reviewer, str) or not reviewer.strip() or reviewer.strip().casefold() == producer_id.strip().casefold():
@@ -664,11 +694,11 @@ def verdict(proj):
         return 2
     last = rounds[-1]
     n = int(last.name[1:])
-    report = (last / "report.md").read_text(encoding="utf-8") if (last / "report.md").exists() else ""
     mpath = last / "metrics.json"
     try:
+        report = (last / "report.md").read_text(encoding="utf-8") if (last / "report.md").exists() else ""
         met = json.loads(mpath.read_text(encoding="utf-8"))
-        if met["schema"] != 2:
+        if type(met["schema"]) is not int or met["schema"] != 2:
             raise ValueError("métricas antigas; gere uma nova revisão")
         if type(met.get("has_audio")) is not bool or type(met.get("duration")) not in (int, float) or not math.isfinite(met["duration"]) or met["duration"] <= 0:
             raise ValueError("duração/modalidade de áudio inválida")
@@ -682,13 +712,14 @@ def verdict(proj):
         if manifest_sha256(manifest) != met["manifest_sha256"]:
             raise ValueError("o manifesto mudou depois da revisão")
         keys = [k for k, _ in rubric_for(manifest, met["duration"])]
-        if keys != met["rubric"] or not isinstance(met["blockers"], list):
+        if (keys != met["rubric"] or not isinstance(met["blockers"], list)
+                or any(not isinstance(b, str) or not b.strip() for b in met["blockers"])):
             raise ValueError("métricas ou critérios inconsistentes")
         for name in ("hook.jpg", "grid.jpg"):
             if file_sha256(last / name) != met["frame_sha256"][name]:
                 raise ValueError(f"{name} mudou depois da análise")
         receipt = json.loads((proj / "out" / "delivery.json").read_text(encoding="utf-8"))
-        if receipt["schema"] != 1 or receipt["manifest_sha256"] != met["manifest_sha256"]:
+        if type(receipt["schema"]) is not int or receipt["schema"] != 1 or receipt["manifest_sha256"] != met["manifest_sha256"]:
             raise ValueError("a entrega técnica pertence a outro manifesto; rode deliver.py novamente")
         if receipt["video_sha256"] != digest or Path(receipt["video"]).resolve() != video.resolve():
             raise ValueError("a entrega técnica pertence a outro vídeo")
@@ -699,15 +730,19 @@ def verdict(proj):
         if file_sha256(request_path) != met["review_request_sha256"]:
             raise ValueError("o pacote de revisão mudou; gere uma nova revisão")
         request = json.loads(request_path.read_text(encoding="utf-8"))
-        if request["schema"] != 1 or request["video_sha256"] != digest or request["manifest_sha256"] != met["manifest_sha256"]:
+        if type(request["schema"]) is not int or request["schema"] != 1 or request["video_sha256"] != digest or request["manifest_sha256"] != met["manifest_sha256"]:
             raise ValueError("pacote de revisão incompatível com o render/manifesto")
         clip_name = request["artifacts"]["video"]
         if not isinstance(clip_name, str) or Path(clip_name).name != clip_name or file_sha256(last / "input" / clip_name) != digest:
             raise ValueError("vídeo do pacote independente ausente ou alterado")
+        if (last / "input" / clip_name).samefile(video):
+            raise ValueError("vídeo do pacote precisa ser uma cópia independente, sem hard link")
         if {path.name for path in (last / "input").iterdir()} != {clip_name, "request.json", "hook.jpg", "grid.jpg"}:
             raise ValueError("o pacote independente contém arquivos não previstos; não inclua notas do autor")
         if request["technical"]["has_audio"] is not met["has_audio"] or request["technical"]["duration"] != met["duration"]:
             raise ValueError("modalidades/duração divergem do pacote de revisão")
+        if request["technical"]["blockers"] != met["blockers"]:
+            raise ValueError("bloqueantes divergem do pacote de revisão")
         for name in ("hook.jpg", "grid.jpg"):
             if file_sha256(last / "input" / name) != met["frame_sha256"][name]:
                 raise ValueError("imagens do pacote independente foram alteradas")
@@ -731,7 +766,10 @@ def verdict(proj):
             if status not in ("observed", "instrumented") or not isinstance(item["method"], str) or not item["method"].strip():
                 raise ValueError(f"registre como {channel} foi inspecionado em assessment.json")
             ranges = item["ranges"]
-            if not ranges or any(len(r) != 2 or not 0 <= r[0] < r[1] <= met["duration"] + 0.05 for r in ranges):
+            if (not isinstance(ranges, list) or not ranges
+                    or any(not isinstance(r, (list, tuple)) or len(r) != 2
+                           or any(type(value) not in (int, float) or not math.isfinite(value) for value in r)
+                           or not 0 <= r[0] < r[1] <= met["duration"] + 0.05 for r in ranges)):
                 raise ValueError(f"registre os intervalos inspecionados de {channel}")
             if status == "observed" and not capabilities["channels"][channel]["available"]:
                 raise ValueError(f"observação de {channel} contradiz o preflight do revisor")
@@ -754,9 +792,14 @@ def verdict(proj):
         cells = [c.strip().strip("*") for c in line.strip().strip("|").split("|")]
         if len(cells) < 2 or cells[0].lower() not in names:
             continue
-        nota = next((c for c in cells[1:] if re.fullmatch(r"(?:[1-4]([.,]\d)?|5([.,]0)?)", c)), None)
-        if nota:
-            scores[names[cells[0].lower()]] = float(nota.replace(",", "."))
+        key = names[cells[0].lower()]
+        # The generated table has exactly: criterion, definition, score, evidence.
+        # Numbers in definitions/observations must never stand in for a missing score.
+        if (key in scores or len(cells) != 4 or not cells[3]
+                or not re.fullmatch(r"(?:[1-4]([.,]\d)?|5([.,]0)?)", cells[2])):
+            print(f"REVISÃO INCOMPLETA: nota/evidência ausente, inválida ou duplicada para {key}.")
+            return 2
+        scores[key] = float(cells[2].replace(",", "."))
     missing = [k for k in keys if k not in scores]
     if missing:
         print(f"{last.name}: preencha a nota (1 a 5) de {', '.join(missing)} em {last.name}/report.md "
@@ -794,6 +837,8 @@ def main():
     ap.add_argument("--verdict", action="store_true",
                     help="não gera rodada; lê as notas da última e diz se o vídeo pode ser declarado pronto")
     a = ap.parse_args()
+    if a.every is not None and (not math.isfinite(a.every) or a.every <= 0):
+        ap.error("--every precisa ser um número finito maior que zero")
 
     if a.check_reviewer:
         try:
@@ -845,10 +890,18 @@ def main():
 
     long_ = is_long(m, dur)
     rubric = rubric_for(m, dur)
-    a.every = a.every or (1.0 if dur <= 48 else round(dur / 48, 1))
+    a.every = a.every if a.every is not None else (1.0 if dur <= 48 else round(dur / 48, 1))
     afps = min(fps, 10) if dur > 180 else fps  # análise mais leve em vídeo longo
     tw, th = tile_size(m)
-    out_dir = next_round(proj)
+    try:
+        validate_grid(dur, a.every, tw, th)
+    except ValueError as exc:
+        ap.error(str(exc))
+    try:
+        out_dir = next_round(proj)
+    except RoundLimitError as exc:
+        print(exc)
+        sys.exit(3)
     print(f"Revisão {out_dir.name}: {video.name}, {dur:.1f} s")
     n_frames = frames(ff, video, out_dir, dur, fps, a.every, tw, th)
     cuts, energy, freezes = analyze(ff, video, out_dir, afps, tw, th)

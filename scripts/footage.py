@@ -36,7 +36,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _common import add_asset, ffprobe_json, load_manifest, need, project_dir, run, save_manifest  # noqa: E402
+from _common import add_asset, ffprobe_json, file_sha256, load_manifest, need, project_dir, run, save_manifest  # noqa: E402
 
 CLEAN = ("highpass=f=70,afftdn=nf=-25:tn=1,"
          "acompressor=threshold=-20dB:ratio=3:attack=5:release=120:makeup=2")
@@ -49,8 +49,14 @@ def secs(v):
     if v is None:
         return None
     t = 0.0
-    for part in str(v).strip().split(":"):
-        t = t * 60 + float(part)
+    try:
+        parts = [float(part) for part in str(v).strip().split(":")]
+    except ValueError:
+        raise ValueError(f"Tempo inválido: {v}") from None
+    if not 1 <= len(parts) <= 3 or any(not math.isfinite(p) or p < 0 for p in parts) or any(p >= 60 for p in parts[1:]):
+        raise ValueError(f"Tempo inválido: {v}")
+    for part in parts:
+        t = t * 60 + part
     return t
 
 
@@ -66,7 +72,14 @@ def load_edl(proj):
     p = proj / "edit" / "edl.json"
     if not p.exists():
         sys.exit("Falta edit/edl.json. Rode 'footage.py cut' antes.")
-    return json.loads(p.read_text(encoding="utf-8"))
+    edl = json.loads(p.read_text(encoding="utf-8"))
+    for s in edl["segments"]:
+        if not s.get("keep", True):
+            continue
+        start, end = float(s["in"]), float(s["out"])
+        if not math.isfinite(start) or not math.isfinite(end) or not 0 <= start < end:
+            sys.exit("EDL inválida: cada trecho mantido exige 0 <= in < out, com tempos finitos.")
+    return edl
 
 
 def save_edl(proj, edl):
@@ -78,6 +91,8 @@ def source_of(proj, m):
     if not src.get("footage"):
         sys.exit("O projeto não tem gravação. Rode 'footage.py import' antes.")
     path = Path(src["footage"])
+    if not path.is_absolute():
+        path = proj / path
     if not path.exists():
         sys.exit(f"Gravação não encontrada: {path}")
     return path, src
@@ -101,10 +116,28 @@ def cmd_import(proj, m, a):
     if not vs:
         sys.exit(f"{path.name} não tem faixa de vídeo.")
     dur = float(info["format"]["duration"])
-    t0 = secs(a.from_) or 0.0
-    t1 = min(secs(a.to) or dur, dur)
+    try:
+        t0 = secs(a.from_) if a.from_ is not None else 0.0
+        t1 = min(secs(a.to), dur) if a.to is not None else dur
+    except ValueError as exc:
+        sys.exit(str(exc))
     if t1 <= t0:
         sys.exit("--to precisa ser depois de --from.")
+    source_hash = file_sha256(path)
+    previous = m.get("source") or {}
+    if previous.get("footage"):
+        old_path = Path(previous["footage"]).expanduser()
+        if not old_path.is_absolute():
+            old_path = proj / old_path
+        changed = (old_path.resolve() != path
+                   or previous.get("range") != [round(t0, 3), round(t1, 3)]
+                   or bool(previous.get("cleaned")) != (has_audio and not a.no_clean)
+                   or previous.get("sha256") != source_hash)
+        if changed and any(p.is_file() for name in ("captions", "edit", "render", "out", "review")
+                           for p in (proj / name).rglob("*")):
+            sys.exit("A fonte, o trecho ou a limpeza mudou, ou o manifesto antigo não registra o hash da fonte, "
+                     "e este projeto já tem derivados. "
+                     "Crie um novo projeto para importar essa gravação, preservando o projeto atual.")
     w, h = int(vs["width"]), int(vs["height"])
     rot = int(float((vs.get("tags") or {}).get("rotate", 0) or 0))
     for sd in vs.get("side_data_list", []) or []:
@@ -124,7 +157,7 @@ def cmd_import(proj, m, a):
     else:
         print("Aviso: a gravação não tem áudio; cortes por silêncio não vão funcionar.")
 
-    m["source"] = {"footage": str(path), "range": [round(t0, 3), round(t1, 3)],
+    m["source"] = {"footage": str(path), "sha256": source_hash, "range": [round(t0, 3), round(t1, 3)],
                    "audio": "audio/source.wav" if has_audio else "", "width": w, "height": h,
                    "fps": round(fps, 3), "duration": round(t1 - t0, 3), "cleaned": has_audio and not a.no_clean}
     if m.get("format") in (None, "narrado"):
@@ -172,12 +205,20 @@ def subtract(keep, holes):
 
 
 def cmd_cut(proj, m, a):
+    if (not all(math.isfinite(v) for v in (a.noise, a.min_silence, a.pad, a.zoom))
+            or a.min_silence <= 0 or a.pad < 0 or a.zoom < 1
+            or (a.max_shot is not None and (not math.isfinite(a.max_shot) or a.max_shot < 0))):
+        sys.exit("Parâmetros de corte inválidos: silêncio > 0, pad >= 0, zoom >= 1 e max-shot >= 0, todos finitos.")
+    if a.max_shot is not None and 0 < a.max_shot < 1.2:
+        sys.exit("--max-shot deve ser 0 (desliga) ou pelo menos 1.2 s, o intervalo mínimo entre cortes.")
     ff = need("ffmpeg")
     _, src = source_of(proj, m)
     dur = float(src["duration"])
-    wav = proj / (src.get("audio") or "audio/source.wav")
+    wav = proj / src["audio"] if src.get("audio") else None
     holes = []
-    if wav.exists():
+    if src.get("audio") and not wav.is_file():
+        sys.exit(f"Áudio da gravação não encontrado: {wav}. Importe a gravação novamente.")
+    if wav is not None:
         for s, e in silences(ff, wav, a.noise, a.min_silence):
             e = dur if e is None else e
             if e - s > 2 * a.pad:
@@ -327,6 +368,8 @@ def cmd_frames(proj, m, a):
     fdir.mkdir(parents=True)
     fnt = font()
     segs = [s for s in edl["segments"] if s.get("keep", True)]
+    if not segs:
+        sys.exit("Nenhum trecho com keep=true no edit/edl.json.")
     for i, s in enumerate(segs):
         x, y, cw, ch = crop_box(sw, sh, W, H, s, edl.get("fit", "crop"))
         grid = ",".join(f"drawbox=x={int(tw * g / 10)}:y=0:w={3 if g == 5 else 1}:h={th}:color=white@0.6:t=fill"
@@ -407,6 +450,8 @@ def cmd_render(proj, m, a):
     fit = edl.get("fit", "crop")
     wav = proj / (src.get("audio") or "")
     use_wav = bool(src.get("audio")) and wav.is_file()
+    if src.get("audio") and not use_wav:
+        sys.exit(f"Áudio da gravação não encontrado: {wav}. Importe a gravação novamente.")
     segs = [s for s in edl["segments"] if s.get("keep", True)]
     if not segs:
         sys.exit("Nenhum trecho com keep=true no edit/edl.json.")
@@ -511,7 +556,7 @@ def main():
     ap.add_argument("--no-zoom", action="store_true")
     ap.add_argument("--max-shot", type=float, default=None,
                     help="cut: divide trechos sem pausa em planos de ~N s com zoom alternado "
-                         "(padrão 2.6 no vertical, 6 no 16:9; 0 desliga)")
+                         "(mínimo 1.2; padrão 2.6 no vertical, 6 no 16:9; 0 desliga)")
     ap.add_argument("--reset", action="store_true", help="cut: descarta inserções, enquadramento e descartes do corte anterior")
     ap.add_argument("--crf", type=int, default=18)
     a = ap.parse_args()

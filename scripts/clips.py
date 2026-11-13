@@ -14,6 +14,7 @@ transcrever de novo). Depois siga o fluxo da gravação: footage.py cut, frames,
 """
 import argparse
 import json
+import math
 import re
 import subprocess
 import sys
@@ -21,7 +22,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _common import load_manifest, project_dir, save_manifest  # noqa: E402
-from footage import FILLER_RE, norm  # noqa: E402
+from footage import FILLER_RE, norm, secs  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 HOOK_WORDS = ["por que", "porque ninguém", "como", "segredo", "erro", "errado", "ninguém", "nunca", "pare", "cuidado",
@@ -36,13 +37,6 @@ NUM = re.compile(r"\d|\b(um|dois|três|quatro|cinco|seis|sete|oito|nove|dez|cem|
 def fmt(t):
     t = int(round(t))
     return f"{t // 3600}:{t % 3600 // 60:02d}:{t % 60:02d}" if t >= 3600 else f"{t // 60}:{t % 60:02d}"
-
-
-def secs(v):
-    t = 0.0
-    for part in str(v).strip().split(":"):
-        t = t * 60 + float(part)
-    return t
 
 
 def sentences(words):
@@ -99,6 +93,8 @@ def score(win):
 
 
 def cmd_suggest(proj, m, a):
+    if not math.isfinite(a.min) or not math.isfinite(a.max) or not 0 < a.min <= a.max or a.top < 1:
+        sys.exit("Use 0 < --min <= --max (finitos) e --top >= 1.")
     p = proj / "captions" / "source_words.json"
     if not p.exists():
         sys.exit("Falta captions/source_words.json. Rode captions.py transcribe (ou import --file legenda.srt).")
@@ -157,10 +153,16 @@ def cmd_make(proj, m, a):
         t0, t1 = c["from"], c["to"]
     elif a.from_ and a.to:
         off = float((src.get("range") or [0])[0])
-        t0, t1 = secs(a.from_) - off, secs(a.to) - off  # --from/--to no tempo do vídeo original
+        try:
+            t0, t1 = secs(a.from_) - off, secs(a.to) - off  # --from/--to no tempo do vídeo original
+        except ValueError as exc:
+            sys.exit(str(exc))
     else:
         sys.exit("Use --rank N ou --from/--to.")
-    t0, t1 = max(t0 - 0.15, 0.0), t1 + 0.25  # folga para não cortar a primeira e a última sílaba
+    available = float(src.get("duration", (src.get("range") or [0, t1])[1] - (src.get("range") or [0])[0]))
+    if not 0 <= t0 < t1 <= available:
+        sys.exit("O corte deve ter início antes do fim e ficar dentro do trecho importado.")
+    t0, t1 = max(t0 - 0.15, 0.0), min(t1 + 0.25, available)  # folga sem sair do trecho importado
     off = float((src.get("range") or [0])[0])
     parent = Path(a.dir).resolve() if a.dir else proj.parent
     py = sys.executable

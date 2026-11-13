@@ -1,0 +1,738 @@
+{
+  "schema": 1,
+  "reviewer_id": "reviewer:independent_visual_review",
+  "producer_id": "agent:productions",
+  "request_producer_id": "validation:productions",
+  "status": "completed_partial_visual_review",
+  "reviewed_at": "2026-11-13 19:26:09 UTC",
+  "scope": "Somente request.json, video.mp4, hook.jpg e grid.jpg dos inputs autorizados; nenhum relatório do autor consultado.",
+  "method": {
+    "native_video_playback": false,
+    "audio_listening": false,
+    "motion": "unverified",
+    "audio": "unverified",
+    "visual": "Imagens hook/grid abertas com view_image; frames extraídos localmente com FFmpeg select por índice n em vídeo 15 fps e abertos com view_image. Não é reprodução. Campos technical.warnings do request não usados como evidência.",
+    "sampling": "FFmpeg select por índices: n=0,30,60,... para curtos, mais n=15 e último frame; long em n=0,15,450,900,1350,1800,2250,2700,2714, mais n=2753 nas versões estendidas. Tempos n/15; sem cobertura contínua entre amostras. Product r03 também n=172 (11.467 s).",
+    "ffprobe_only": "360x640,15fps,stream de áudio presente nos quatro primeiros vídeos; presença de stream não verifica qualidade sonora.",
+    "grading": "Sem notas perceptuais nem aprovação integral; cores observadas visualmente, sem medição colorimétrica ou fonte identificada."
+  },
+  "cases": [
+    {
+      "id": "narrated",
+      "duration": 14,
+      "sampled_seconds": [
+        0,
+        1,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        13.933333333333334
+      ],
+      "sampled_span": [
+        0,
+        13.933333333333334
+      ],
+      "observations": [
+        "Em 0 s há círculo/anel e legenda, mas não o título; em 1 s o título Gastos invisíveis aparece legível. Antecipar título para cumprir quadro 0.",
+        "Nas amostras títulos superiores, círculo central, rodapé e progressão ficam separados; legenda branca/amarela com contorno preto cruza a borda inferior do círculo. Se o círculo representar assunto importante, descer legenda ou reposicionar o assunto.",
+        "Em 10 e 12 s lê-se TE MOSTRAR TRÊS GASTOS INVISÍVEIS, mas só há círculo abstrato; último frame mantém Observe o seu extrato e não mostra três exemplos. Inserir exemplos visuais e fechar a promessa antes do término.",
+        "Gradiente verde/ciano e fundo azul escuro consistentes entre amostras; não há exemplos de extrato/assinatura visíveis."
+      ]
+    },
+    {
+      "id": "product",
+      "duration": 12,
+      "sampled_seconds": [
+        0,
+        1,
+        2,
+        4,
+        6,
+        8,
+        10,
+        11.933333333333334
+      ],
+      "sampled_span": [
+        0,
+        11.933333333333334
+      ],
+      "observations": [
+        "Quadro 0 contém forma abstrata e rodapé, sem título; título legível em 1 s. Em 4 e 8 s título também está ausente; preservar rótulo durante troca de cena.",
+        "Forma central muda de orientação entre amostras e não corta margens; título, rodapé e progressão permanecem separados.",
+        "Mesmo no último frame, Conceito de temporizador acompanha apenas quadrilátero arredondado, sem números/controle/ação de uso. Tornar o temporizador visualmente reconhecível para explicar o produto.",
+        "Paleta e gradação permanecem consistentes; não há legenda nas amostras e não se pode inferir fala ou sincronismo."
+      ]
+    },
+    {
+      "id": "recording",
+      "duration": 27.733333,
+      "sampled_seconds": [
+        0,
+        1,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        18,
+        20,
+        22,
+        24,
+        26,
+        27.666666666666668
+      ],
+      "sampled_span": [
+        0,
+        27.666666666666668
+      ],
+      "observations": [
+        "Quadro 0 mostra legenda de 8 palavras (VOCÊ ESTÁ PERDENDO DINHEIRO TODO MÊS SEM PERCEBER), excedendo até 6 palavras na tela pedido no gancho; título não aparece até a amostra de 1 s.",
+        "Figura geométrica à direita tem cabeça retangular cortada pela borda direita e corpo cortado embaixo em todas as amostras. Não há rosto humano verificável no terço superior; reenquadrar se o requisito de rosto se aplicar ao material final.",
+        "Legenda branca/amarela contornada permanece legível e não cobre o pequeno traço facial, mas sobrepõe torso; título e rodapé ficam separados.",
+        "Cenário e figura praticamente idênticos em amostras de 0–27.667 s; textos evoluem para assinaturas, taxas e delivery, mas não há B-roll desses objetos nas amostras. Inserir planos correspondentes para cumprir critério visual de enquadramento.",
+        "Final em 27.667 s tem CTA Comenta aqui qual desses pesa mais pra você. Corte sonoro, retomadas e eventual loop não verificados."
+      ]
+    },
+    {
+      "id": "story",
+      "duration": 12,
+      "sampled_seconds": [
+        0,
+        1,
+        2,
+        4,
+        6,
+        8,
+        10,
+        11.933333333333334
+      ],
+      "sampled_span": [
+        0,
+        11.933333333333334
+      ],
+      "observations": [
+        "Quadro 0 sem título; em 1 s lê-se Uma ideia começa pequena. Em 4 e 8 s o título também está ausente. Antecipar título e evitar ausência durante transição.",
+        "Círculo/anel, gradação e fundo mantêm identidade entre amostras; título, figura, rodapé e progressão não colidem.",
+        "A progressão textual Uma ideia começa pequena / Cada passo abre um caminho / O próximo passo é seu acompanha o mesmo motivo abstrato. Nenhum personagem, cenário narrativo ou ação concreta visível; adicionar ações/planos para demonstrar continuidade narrativa além de identidade gráfica.",
+        "Último frame legível e sem corte de texto; loop e desfecho audiovisual não verificados."
+      ]
+    },
+    {
+      "id": "long",
+      "duration": 181,
+      "sampled_seconds": [
+        0,
+        1,
+        30,
+        60,
+        90,
+        120,
+        150,
+        180,
+        180.93333333333334
+      ],
+      "sampled_span": [
+        0,
+        180.93333333333334
+      ],
+      "observations": [
+        "Quadro 0 não apresenta título/promessa; em 1 s aparece 01 · A pergunta, um nome de capítulo genérico. Tornar a promessa clara já na abertura.",
+        "Em 1 s a legenda encobre parte do rodapé DEMONSTRAÇÃO TÉCNICA · LONG; em 150 s também há colisão. Em 60, 90, 180 e 180.933 s a legenda alcança/encobre a barra de progresso. Separar verticalmente legenda, rodapé e barra.",
+        "Cabeça geométrica inteira visível, mas corpo chega ao limite inferior. Figura e cenário persistem nas amostras, sem B-roll de assinatura, taxa, delivery ou investimento; textos de capítulo mudam e mantêm contraste.",
+        "Grid com timestamps apresenta frases sobre investimento na seção de conclusão; último frame traz O RESULTADO DOBRA sobre a mesma figura, sem fechamento visual específico. Revisar progressão de capítulos e construir payoff visual.",
+        "Vídeo 640x360,15fps; stream de áudio presente sem escuta. Paleta azul escuro, torso azul e cabeça bege, sem gradação variável perceptível entre amostras. Ritmo contínuo, pausas, retakes, sincronia e mixagem não verificados."
+      ]
+    }
+  ],
+  "hashes": [
+    {
+      "case": "narrated",
+      "file": "request.json",
+      "sha256": "8a978b3ce21aefe9858c8bdd54d1fd4ae472d5cfc4c85838bd0e15371f5a5c3c",
+      "round": "r01"
+    },
+    {
+      "case": "narrated",
+      "file": "video.mp4",
+      "sha256": "e572bbe955a308c0ea191f3542db782244d227a5aef97e69586908ebf7ab58d2",
+      "round": "r01"
+    },
+    {
+      "case": "narrated",
+      "file": "hook.jpg",
+      "sha256": "383e9938f03d78af31ef86c1a67d4a79d0b9ceed0f1dcaeda8250111da09762d",
+      "round": "r01"
+    },
+    {
+      "case": "narrated",
+      "file": "grid.jpg",
+      "sha256": "ddbf430be8ae2a27bbb40877622eaf6c526a6d3d7dba540f82466f5dcef7ae58",
+      "round": "r01"
+    },
+    {
+      "case": "product",
+      "file": "request.json",
+      "sha256": "73a4986587a7bc89c2221ca7eb6d5f2735a621f8e8a7cc672da9a04d753822ca",
+      "round": "r01"
+    },
+    {
+      "case": "product",
+      "file": "video.mp4",
+      "sha256": "3c12c37d522b6815d9a3dfcddf304b53e736a672000937741c641616f672e394",
+      "round": "r01"
+    },
+    {
+      "case": "product",
+      "file": "hook.jpg",
+      "sha256": "b46b84504e46fbb8dcb78189b95dfe010f789525a224d6451ba7be19eb286db0",
+      "round": "r01"
+    },
+    {
+      "case": "product",
+      "file": "grid.jpg",
+      "sha256": "fe598f2ccacb0e75029090a7883c69e6d7e8763087f1ac1b1d7dd737a4e98d28",
+      "round": "r01"
+    },
+    {
+      "case": "recording",
+      "file": "request.json",
+      "sha256": "3f5a9f087da6f7e29bdc9469b0abcf7f027310b9af71c54a1d5caed39255c508",
+      "round": "r01"
+    },
+    {
+      "case": "recording",
+      "file": "video.mp4",
+      "sha256": "f71b40c29cab27e3e9769798c4427a8c369946b9e0401b91503e301b4ff02751",
+      "round": "r01"
+    },
+    {
+      "case": "recording",
+      "file": "hook.jpg",
+      "sha256": "f5651baa596e1eef3552130e5caae7b5f0b3f243033cd29b1386923847c08676",
+      "round": "r01"
+    },
+    {
+      "case": "recording",
+      "file": "grid.jpg",
+      "sha256": "01ab006bda23d9bd39f121a68472c93a7b80f250d653e185b550e60feae0407f",
+      "round": "r01"
+    },
+    {
+      "case": "story",
+      "file": "request.json",
+      "sha256": "aa419a652befa69aad1ab7f448b9ed6678d4f85ab4adcbcf3cb073333459a8ce",
+      "round": "r01"
+    },
+    {
+      "case": "story",
+      "file": "video.mp4",
+      "sha256": "8f821cfdce3901ace699f6a91b3229f52dc3215c7143d1af574ed183cbfd1a4b",
+      "round": "r01"
+    },
+    {
+      "case": "story",
+      "file": "hook.jpg",
+      "sha256": "b03bf473d54ead3331747617a8984166c4762bab10b24f7f074e8bb2d4586b87",
+      "round": "r01"
+    },
+    {
+      "case": "story",
+      "file": "grid.jpg",
+      "sha256": "b6ffa4e8fcdf51660f44c2f7a3bad12f54800993875d50d51a74b4a5bb6baae5",
+      "round": "r01"
+    },
+    {
+      "case": "long",
+      "file": "request.json",
+      "sha256": "14e5827be895640462d7ed82177850394456c1e03583dcd2ca74d4b8d92ec6fc",
+      "round": "r01"
+    },
+    {
+      "case": "long",
+      "file": "video.mp4",
+      "sha256": "55bb479c9146b3d60cfcc725c8b2394cbfc35021321816005c5b7c1180cfbb9d",
+      "round": "r01"
+    },
+    {
+      "case": "long",
+      "file": "hook.jpg",
+      "sha256": "458f0aa2d9ee4cd8fc263f2d7c131180433eaed1f93bd5a7ee84ef2af4d6bed8",
+      "round": "r01"
+    },
+    {
+      "case": "long",
+      "file": "grid.jpg",
+      "sha256": "f41168546e6fd40d8d9d32cdde577d4e3c46f3e1f9fc09a3dee62e9e3f4723d5",
+      "round": "r01"
+    },
+    {
+      "case": "narrated",
+      "round": "r02",
+      "file": "request.json",
+      "sha256": "ff558e1d4da9fbd7d948a35988fe1cc2b35b2ca08a216250d3f7dfdb33ac5c5b"
+    },
+    {
+      "case": "narrated",
+      "round": "r02",
+      "file": "video.mp4",
+      "sha256": "e10bde4ec15c1339a723d017b564e507343addfb91efbaeb61ea7ac4c7f651a7"
+    },
+    {
+      "case": "narrated",
+      "round": "r02",
+      "file": "hook.jpg",
+      "sha256": "62f44dbdc93c90b1aad3fe9e3a05102df05e87e6ea1396fad3ae06b9a7bf675a"
+    },
+    {
+      "case": "narrated",
+      "round": "r02",
+      "file": "grid.jpg",
+      "sha256": "b66417b3b18f94b0b2256e5f05537d85833866437f552c84a006ffd613832d55"
+    },
+    {
+      "case": "product",
+      "round": "r02",
+      "file": "request.json",
+      "sha256": "d71506d75be6aa132e2768786368f788f8fb0ed7482882ebd893df1416d71121"
+    },
+    {
+      "case": "product",
+      "round": "r02",
+      "file": "video.mp4",
+      "sha256": "74782acf1f5a2b0f06b261f981dd988ee29450b3a755ef56cd4e570970d8469b"
+    },
+    {
+      "case": "product",
+      "round": "r02",
+      "file": "hook.jpg",
+      "sha256": "d4dd2775fa8851a44434392e9d997363891bd81975d21018942d2e1b3f7b76e6"
+    },
+    {
+      "case": "product",
+      "round": "r02",
+      "file": "grid.jpg",
+      "sha256": "41e4dda433c41a50291617d58e623149ae70d7d2236d4e68d0251418ceee4859"
+    },
+    {
+      "case": "recording",
+      "round": "r02",
+      "file": "request.json",
+      "sha256": "e3816c9fe92de228bfea8a5a890eb76d9680f1600a152c94d9aa7c5b5c2c02a5"
+    },
+    {
+      "case": "recording",
+      "round": "r02",
+      "file": "video.mp4",
+      "sha256": "daa507fbe156e4738a5bd67101b80ff637b75d1acafec3fd89fa5945d5f85e7b"
+    },
+    {
+      "case": "recording",
+      "round": "r02",
+      "file": "hook.jpg",
+      "sha256": "bbd07c2b8023d8b27bfe3ceabd1644b7d638df55415f84736a5efc6466a91c47"
+    },
+    {
+      "case": "recording",
+      "round": "r02",
+      "file": "grid.jpg",
+      "sha256": "111bd8f3141d301595447e4a76d8e50ebdc5f483e4f6b00c70bc452ea5120464"
+    },
+    {
+      "case": "story",
+      "round": "r02",
+      "file": "request.json",
+      "sha256": "09ad3e1cf6335e94ec1e0451ad9c5b7b7783acc2be765a4f021fb7717b0bfcac"
+    },
+    {
+      "case": "story",
+      "round": "r02",
+      "file": "video.mp4",
+      "sha256": "af044535c612857e597f2ff859b937802436d01efdc3604f2995bac9d2f0d39f"
+    },
+    {
+      "case": "story",
+      "round": "r02",
+      "file": "hook.jpg",
+      "sha256": "51b701a9678193957fc5e00eeafb4cd995a01f31453e5111b1aa3d4dee013884"
+    },
+    {
+      "case": "story",
+      "round": "r02",
+      "file": "grid.jpg",
+      "sha256": "db56478311c9523e0b40be60c5623e122fbfdd6e1f6c19ee8a871bd2f7e61428"
+    },
+    {
+      "case": "long",
+      "round": "r02",
+      "file": "request.json",
+      "sha256": "f11721f6bb92867047edda4ccf48901e29ec2993a27be795283c75a83e091b18"
+    },
+    {
+      "case": "long",
+      "round": "r02",
+      "file": "video.mp4",
+      "sha256": "3ab1cb3c1852a9e00de84e861f5ad06f32fc115a900f8829694768b704ff6afc"
+    },
+    {
+      "case": "long",
+      "round": "r02",
+      "file": "hook.jpg",
+      "sha256": "029d92921bebfaff700ee2ea99203e38549bb5d6ea8022d69a866f9961991a1c"
+    },
+    {
+      "case": "long",
+      "round": "r02",
+      "file": "grid.jpg",
+      "sha256": "a6d8b6a5e93f0685e1afa3ffd6cdeb022911f121b20e30fb934bbf01d1188a91"
+    },
+    {
+      "case": "narrated",
+      "round": "r03",
+      "file": "request.json",
+      "sha256": "29f121ea98a29b07791b4565d36a3979a023e70da2aa81d5c854fc921a928f5c"
+    },
+    {
+      "case": "narrated",
+      "round": "r03",
+      "file": "video.mp4",
+      "sha256": "c5e6d52997bc31fa948ae673ddc4759aeeac77aac7c2418c11e7ffad78941cb9"
+    },
+    {
+      "case": "narrated",
+      "round": "r03",
+      "file": "hook.jpg",
+      "sha256": "e579718bc6a610d150cc11b5db89d1074012681663220927d7623b6a3175fb50"
+    },
+    {
+      "case": "narrated",
+      "round": "r03",
+      "file": "grid.jpg",
+      "sha256": "c4bb79354ed89b9030cb1b707092038ac7facdfd5f40c2447031b49cc2af4980"
+    },
+    {
+      "case": "product",
+      "round": "r03",
+      "file": "request.json",
+      "sha256": "94f87a6475b8be84cf0db228da44430526dfdb35d55bd9bc64a96b54b39ae048"
+    },
+    {
+      "case": "product",
+      "round": "r03",
+      "file": "video.mp4",
+      "sha256": "17370c2529e3db1a8d0254a914be1022520bd7fa48a0bbc039facac65c0017bb"
+    },
+    {
+      "case": "product",
+      "round": "r03",
+      "file": "hook.jpg",
+      "sha256": "e12046d9f3dabb753ac0932b9367240c302749df2922f9e8fa53612d1c523c42"
+    },
+    {
+      "case": "product",
+      "round": "r03",
+      "file": "grid.jpg",
+      "sha256": "c348ffd55e5f5772a2c03558a20878a62317488ffc226ec1a91680637d783a1f"
+    },
+    {
+      "case": "recording",
+      "round": "r03",
+      "file": "request.json",
+      "sha256": "bb7b6711874a1b4cce2fb034ff180a06ea81499db3cbd6d5826c62ea2dba9ab4"
+    },
+    {
+      "case": "recording",
+      "round": "r03",
+      "file": "video.mp4",
+      "sha256": "3f7ec58c0e59e6ccc1461b7bca89b558b89d567a036ba4d342b9ff9f98ba2b9b"
+    },
+    {
+      "case": "recording",
+      "round": "r03",
+      "file": "hook.jpg",
+      "sha256": "c5967f98a99c576385b81dca732223ebd0cbda52bc5a43090bac7b50db93d4be"
+    },
+    {
+      "case": "recording",
+      "round": "r03",
+      "file": "grid.jpg",
+      "sha256": "b3c2f86e9d5c461177fb21fec286c7330914d2fd37c2b8a788cb5f487d2c8ce5"
+    },
+    {
+      "case": "long",
+      "round": "r03",
+      "file": "request.json",
+      "sha256": "751fe847f8436a42d92d0380acde0fe388961a46a38972a4bf3f94465e67669c"
+    },
+    {
+      "case": "long",
+      "round": "r03",
+      "file": "video.mp4",
+      "sha256": "28740e1dd9a24aacd0ef52d2104307c46f2da17afc7fca1d44ca459063ce1951"
+    },
+    {
+      "case": "long",
+      "round": "r03",
+      "file": "hook.jpg",
+      "sha256": "8a55b92eba11ebc8c0af66037dd06c5ee8be98901d07948cc7a5e4a023fce1cc"
+    },
+    {
+      "case": "long",
+      "round": "r03",
+      "file": "grid.jpg",
+      "sha256": "11821727f611f3c45d006376961768a64294e1dd00589706a2423e75cc7483f9"
+    }
+  ],
+  "pending": [],
+  "comparison_r02": {
+    "method": "Novos request.json, hook.jpg, grid.jpg e frames do MP4 r02 consultados; comparação visual com mesmos instantes r01, sem usar relato do produtor como evidência.",
+    "cases": [
+      {
+        "id": "narrated",
+        "sampled_seconds": [
+          0,
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          13.933333333333334
+        ],
+        "improvements": [
+          "Em 0 s título Gastos invisíveis agora visível, com contraste e margem iguais a 1 s; ausência inicial corrigida na amostra.",
+          "Em 10,12 e 13.933 s o título lista Assinaturas · taxas · delivery, ausente em r01: passou a nomear três exemplos."
+        ],
+        "remaining": [
+          "Entrega da promessa apenas textual nas amostras; figura continua círculo/anel sem imagens específicas dos três gastos. Legenda aos 10/12 s ainda anuncia TE MOSTRAR TRÊS GASTOS INVISÍVEIS.",
+          "Legenda segue sobre a borda inferior do círculo; sincronismo com fala e payoff audiovisual não verificados."
+        ]
+      },
+      {
+        "id": "product",
+        "sampled_seconds": [
+          0,
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          11.933333333333334
+        ],
+        "improvements": [
+          "Título presente em 0 s; em 4 s Organize o próximo passo e em 8 s Conceito de temporizador permanecem visíveis, corrigindo ausência r01 nesses instantes."
+        ],
+        "remaining": [
+          "Temporizador permanece forma abstrata sem números/controle/ação de uso nas amostras até 11.933 s.",
+          "Motion/audio e sincronismo permanecem unverified."
+        ]
+      },
+      {
+        "id": "recording",
+        "sampled_seconds": [
+          0,
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          18,
+          20,
+          22,
+          24,
+          26,
+          27.666666666666668
+        ],
+        "improvements": [
+          "Título Três gastos invisíveis presente em 0 s; ausência inicial corrigida."
+        ],
+        "remaining": [
+          "Cabeça geométrica ainda truncada na borda direita em todas as mesmas amostras, inclusive 0,1 e 27.667 s; reenquadramento não comprovado.",
+          "Legenda inicial de 8 palavras permanece, agora somada ao título de 3 palavras: critério até 6 palavras não atendido visualmente no quadro 0.",
+          "Figura/cenário permanecem sem exemplos visuais de objetos citados nas legendas nas amostras; corte de fala, áudio e ritmo contínuo unverified."
+        ]
+      },
+      {
+        "id": "story",
+        "sampled_seconds": [
+          0,
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          11.933333333333334
+        ],
+        "improvements": [
+          "Título presente em 0 s; Cada passo abre um caminho visível em 4 s e O próximo passo é seu em 8 s, corrigindo ausências r01."
+        ],
+        "remaining": [
+          "Mesmo círculo/anel, sem personagem/ação/cenário narrativo concretos nas amostras; continuidade demonstrada apenas na identidade gráfica.",
+          "Motion/audio unverified."
+        ]
+      },
+      {
+        "id": "long",
+        "duration": 183.6,
+        "sampled_seconds": [
+          0,
+          1,
+          30,
+          60,
+          90,
+          120,
+          150,
+          180,
+          180.93333333333334,
+          183.53333333333333
+        ],
+        "improvements": [
+          "Título 01 · A pergunta agora presente em 0 s.",
+          "Nos mesmos 1,60,90,150,180 e 180.933 s legenda não colide mais com rodapé inferior/barra: etiqueta foi movida para topo, barra para margem inferior.",
+          "Último frame estendido, 183.533 s, exibe O RESULTADO DOBRA e título Resultado: o valor dobra · exemplo ilustrativo; frase visual completa."
+        ],
+        "remaining": [
+          "Etiqueta DEMONSTRAÇÃO TÉCNICA · LONG no topo agora colide com timecode já embutido, visível em 0,1,60,90,150,180 e último183.533 s.",
+          "Em 150,180,180.933 e 183.533 s caixa de título de duas linhas cobre o topo da cabeça e a linha dos olhos da figura; reduzir altura/mover assunto para cumprir nada cortado na cabeça.",
+          "Figura/cenário constantes nas amostras, sem B-roll; capítulo inicial A pergunta segue genérico sem promessa específica no título0.",
+          "Última frase visual completa não valida corte/som/loop. Motion/audio unverified."
+        ]
+      }
+    ],
+    "pending": []
+  },
+  "comparison_r03": {
+    "pending": [],
+    "cases": [
+      {
+        "id": "narrated",
+        "duration": 14,
+        "sampled_seconds": [
+          0,
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          13.933333333333334
+        ],
+        "improvements": [
+          "Em 10,12 e 13.933 s existem três cartões separados com ícones e nomes Assinaturas, Taxas e Delivery, mais descrições renovação recorrente / movimentação do extrato / pedido e comprovante: exemplos visuais agora apresentados.",
+          "Cartões não colidem com título nem legenda nas amostras; retirada do círculo elimina antiga sobreposição legenda/círculo.",
+          "Título permanece visível no quadro0; legenda inicial agora dividida, não toda a frase inicial simultânea."
+        ],
+        "remaining": [
+          "Em 0,1,2,4 e 6 s não há imagem específica do assunto nas amostras, apenas título/legenda e fundo; gancho visual concreto não demonstrado.",
+          "Textos descritivos dos cartões são pequenos a360x640; nomes e ícones mais legíveis. Validar leitura no aparelho de destino.",
+          "Motion/audio, sincronismo, fala e payoff audiovisual seguem unverified."
+        ]
+      },
+      {
+        "id": "product",
+        "duration": 12,
+        "sampled_seconds": [
+          0,
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          11.466666666666667,
+          11.933333333333334
+        ],
+        "improvements": [
+          "Temporizador reconhecível: contagem 00:25 em1s,00:13 em6s,00:00 e Tarefa concluída · exemplo em11.467/11.933s; anel, tarefa e botão visíveis.",
+          "Título legível no quadro0 e em4/8s; números grandes são o foco central, fora do rodapé/progressão."
+        ],
+        "remaining": [
+          "Texto pequeno Ilustração · tempo acelerado toca/intersecta o arco na parte inferior do anel nas amostras (inclusive0/1/6s); mover abaixo do anel ou ampliar margem.",
+          "Botão Iniciar permanece durante contagem e conclusão; interface é explicitamente ilustrativa, mas estados do botão não acompanham estados da tarefa.",
+          "Frame solicitado11.5s não existe a15fps; amostra próxima realmente inspecionada é n172=11.467s.",
+          "Motion/audio e sincronismo unverified."
+        ]
+      },
+      {
+        "id": "recording",
+        "duration": 27.733333,
+        "sampled_seconds": [
+          0,
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          18,
+          20,
+          22,
+          24,
+          26,
+          27.666666666666668
+        ],
+        "improvements": [
+          "Cabeça geométrica inteira e dois olhos agora visíveis em faixa horizontal central, sem truncamento lateral nos mesmos0,1,2…26,27.667s; fundo desfocado expande quadro vertical.",
+          "Título separado acima, legenda abaixo da faixa; não cobre o rosto nas amostras.",
+          "Legenda inicial dividida: VOCÊ ESTÁ PERDENDO DINHEIRO em0s (4palavras), em vez de8 simultâneas."
+        ],
+        "remaining": [
+          "Mesmo ignorando rótulo técnico/timecode, título Três gastos invisíveis(3)+legenda inicial(4)=7palavras no quadro0; limite6ainda excedido.",
+          "Figura pequena em faixa central; topo da cabeça próximo ao limite do terço superior, sem equivalência a rosto humano real. Sem B-roll dos objetos citados nas amostras.",
+          "Timecode visível na faixa pertence ao conteúdo e difere do tempo decorrido do MP4; tempos deste relatório derivam de índices n/15 do MP4.",
+          "Motion/audio e corte de fala unverified."
+        ]
+      },
+      {
+        "id": "long",
+        "duration": 183.6,
+        "sampled_seconds": [
+          0,
+          1,
+          30,
+          60,
+          90,
+          120,
+          150,
+          180,
+          180.93333333333334,
+          183.53333333333333
+        ],
+        "improvements": [
+          "Nos mesmos0,1,60,90,150,180,180.933 e183.533s título e etiqueta estão na coluna esquerda; timecode no topo ficou livre e não há colisão com cabeça/olhos à direita.",
+          "Em150/180/final título Exemplo didático resultado em dobro quebra em duas linhas sem cobrir a figura.",
+          "Legenda, barra inferior e etiqueta seguem separadas nas amostras; último183.533s mostra O RESULTADO DOBRA sem truncamento de texto."
+        ],
+        "remaining": [
+          "Título inicial01 · A pergunta é genérico; promessa específica no quadro0 continua não demonstrada.",
+          "Mesma figura/cenário nas amostras e grid, sem B-roll específico ou demonstração numérica do resultado em dobro; progressão audiovisual contínua não foi verificada.",
+          "Rótulo técnico pequeno; cabeça geométrica começa perto do limite do terço superior. Trata-se de fixture, sem avaliação de expressão/atuação humana.",
+          "Motion/audio, cortes de fala, pausas, retenção e payoff sonoro unverified."
+        ]
+      }
+    ]
+  },
+  "final_rounds": {
+    "narrated": "r03",
+    "product": "r03",
+    "recording": "r03",
+    "story": "r02",
+    "long": "r03"
+  }
+}

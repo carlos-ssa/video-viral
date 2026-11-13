@@ -5,10 +5,13 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from argparse import Namespace
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from captions import caption_lines, functional_tail, group_words, script_spelling, write_ass
+import captions
 
 
 def timed(text, step=0.5):
@@ -17,6 +20,32 @@ def timed(text, step=0.5):
 
 
 class CaptionTests(unittest.TestCase):
+    def test_final_subtitle_import_does_not_use_source_silence(self):
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp)
+            (project / 'audio').mkdir()
+            (project / 'audio/source.wav').touch()
+            source = project / 'final.srt'
+            source.write_text('1\n00:00:00,000 --> 00:00:01,000\nOlá\n', encoding='utf-8')
+            with patch.object(captions, 'run') as execute:
+                words = captions.cmd_import(project, {'source': {'footage': 'x', 'range': [10, 20]}},
+                                            Namespace(file=str(source), final=True))
+                execute.assert_not_called()
+            self.assertEqual((words[0]['start'], words[0]['end']), (0, 1))
+
+    def test_silent_source_import_ignores_stale_source_wav(self):
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp)
+            (project / 'audio').mkdir()
+            (project / 'audio/source.wav').write_bytes(b'stale')
+            source = project / 'source.srt'
+            source.write_text('1\n00:00:00,000 --> 00:00:01,000\nOlá\n', encoding='utf-8')
+            with patch.object(captions, 'run') as execute:
+                words = captions.cmd_import(project, {'source': {'footage': 'x', 'audio': '', 'range': [0, 2]}},
+                                            Namespace(file=str(source), final=False))
+                execute.assert_not_called()
+            self.assertEqual((words[0]['start'], words[0]['end']), (0, 1))
+
     def test_sentences_never_share_a_block_and_no_orphan_tail(self):
         for text in ('Isso facilita o acesso. Recorte só o necessário.',
                      'Nina trouxe a semente,', 'DOIS CARRINHOS AUMENTAM CAIXAS.',

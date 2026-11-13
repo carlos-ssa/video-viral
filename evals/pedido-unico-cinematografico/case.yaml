@@ -2,6 +2,6 @@ schema_version: "1.1"
 name: pedido-unico-cinematografico
 expected_outcome: |
   Sem parar para perguntar o que tem padrão, cria o projeto, preenche a direção (estilo documentário com paleta, fontes,
-  movimento, transições e sons), escreve 5 ganchos com nota e escolhe um, monta roteiro de planos por cena com evento
-  visual a cada 1,5–3 s e efeitos sonoros, e roda a revisão (review.py e notas) antes de declarar pronto. Se faltar
+  movimento, transições e sons), escreve 5 ganchos com nota e escolhe um, monta roteiro de planos por cena com eventos
+  visuais e efeitos sonoros que sustentem a narrativa, usando 1,5–3 s apenas como referência inicial, e roda a revisão (review.py e notas) antes de declarar pronto. Se faltar
   ferramenta para renderizar, diz quais etapas ficaram bloqueadas e não afirma que o vídeo está pronto.

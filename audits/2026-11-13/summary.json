@@ -1,0 +1,1714 @@
+{
+  "baseline_commit": "52d567d4d26f8bd2c563abf7352ce1738f73af74",
+  "branch": "codex/audit-video-viral",
+  "base_files_audited": 158,
+  "runtime_files_audited": 162,
+  "python_tests": 174,
+  "node_tests": 14,
+  "python_passed": true,
+  "node_passed": true,
+  "benchmark": {
+    "stage": "30s mono 44100Hz browser-to-Node Float32 transport",
+    "pairs": 5,
+    "before_ms": [
+      614.3149000000001,
+      662.6967,
+      667.2282,
+      665.1221000000005,
+      658.6986999999999
+    ],
+    "after_ms": [
+      193.11860000000024,
+      194.43550000000005,
+      205.7832000000003,
+      205.16939999999977,
+      199.89809999999943
+    ],
+    "median_before_ms": 662.6967,
+    "median_after_ms": 199.89809999999943,
+    "reduction_percent": 69.8356578507182,
+    "exact_samples": true,
+    "browser": "Chrome/157.0.8103.51",
+    "node": "v26.12.0"
+  },
+  "independent_eval": {
+    "scope": "Independent read-only audit of manual exercise artifacts; not a fresh-agent benchmark or audiovisual approval.",
+    "contract": "faixa2 sol/medium provisório; sem métricas de custo/capacidade/latência",
+    "initial": {
+      "timestamp": "2026-11-13T16:15:27.166811",
+      "graders": [
+        {
+          "case": "animacao-personagem",
+          "grader": "01-outcome",
+          "status": "fail",
+          "evidence": [
+            "response.md: Bíblia Bia, rig reutilizado, seed não prova continuidade; três quadros/seek e reserva D=30 seed191",
+            "projeto/video.json: tool_plan contém só montagem genérica; shots repetem sujeito/enquadramento por intenção; assets=[]"
+          ],
+          "reason": "História e continuidade estão propostas, mas não há plano por shot de atuação/ferramenta nem critérios concretos de acabamento e registro da função sonora conforme exigido. Menção genérica a quadros/seek não inclui tempos de estilo e protocolo completo de pixels/fronteiras. Escopo de plano respeitado."
+        },
+        {
+          "case": "avatar-ugc",
+          "grader": "01-outcome",
+          "status": "fail",
+          "evidence": [
+            "response.md: vídeo falante/lip-sync bloqueado; robô imóvel seria animatic; início/meio/fim",
+            "projeto/video.json: s02 Entender o uso real do app; s03 Fecho que responde à pergunta; shots genéricos; direction.style=tipografia-cinetica"
+          ],
+          "reason": "Bloqueio e ausência de pago/depoimento estão corretos; porém o preparo disponível não define performance, gestos, comparação de passagem com formato-alvo, checks de boca/voz ou acabamento/fecho concretos. Honestidade não substitui todos os requisitos do plano."
+        },
+        {
+          "case": "composicao-hyperframes",
+          "grader": "01-main-render",
+          "status": "fail",
+          "evidence": [
+            "commands.json: stack.py hyperframes -- --version exit1 sob NO_INSTALL",
+            "response.md: Render principal não executado; voz/WAV ausente",
+            "projeto/video.json é único artefato de projeto disponível"
+          ],
+          "reason": "Faltam composição principal, cena2D integrada, master e teste real três quadros/seek/pixels. Rubrica explicitamente diz bloqueio honesto não prova caminho de render concluído."
+        },
+        {
+          "case": "composicao-hyperframes",
+          "grader": "02-delivery-evidence",
+          "status": "fail",
+          "evidence": [
+            "response.md: Sem master não há entrega técnica aprovada, ficha gerada ou veredito0",
+            "não existem delivery.json, review, assessment ou ficha humana"
+          ],
+          "reason": "Não há cadeia master→deliver→review com hashes nem ficha independente em branco. Não há fabricação de escuta/render, mas isso não satisfaz artefatos exigidos."
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "grader": "01-long-project",
+          "status": "pass",
+          "evidence": [
+            "commands.json: new_project --format gravacao --aspect16:9; footage.py import exit0; captions.py import --file gravacao_longa.srt exit0",
+            "projeto/video.json: source.duration197.267; captions/source_words.json301palavras"
+          ],
+          "reason": "Projeto longo e importações reais demonstrados."
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "grader": "02-suggests-clips",
+          "status": "pass",
+          "evidence": [
+            "commands.json: clips.py suggest --top5 exit0; edit/clips.json e clips.md",
+            "response.md: rank1 1:19–1:54 pergunta contextual; rank2 0:55–1:17 assunto identificável; rank3 0:09–0:32 lista coesa"
+          ],
+          "reason": "Três candidatos com tempos e justificativa editorial, incluindo limites, apresentados."
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "grader": "03-makes-best-clip",
+          "status": "pending",
+          "evidence": [
+            "commands.json: clips.py make rank1 exit0; corte-selecionado/video.json source.range8.48–32.67; aspecto9:16 formato corte",
+            "render sendo executado; ainda sem final inspecionável na leitura inicial"
+          ],
+          "reason": "Criação comprovada; render, legendas, acabamento e proveniência finais aguardam processamento e inspeção."
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "grader": "04-chapters-and-publish",
+          "status": "pending",
+          "evidence": [
+            "projeto/video.json: publish.title/description; chapters00:00,00:47,02:02",
+            "response.md declara capítulos provisórios no relógio original"
+          ],
+          "reason": "Estrutura e espaçamento corretos, mas rubrica exige tempos conferidos no MP4 final; render longo não demonstrado."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "01-recording-project",
+          "status": "pass",
+          "evidence": [
+            "commands.json: new_project gravacao9:16 --not-monetized exit0; footage.py import gravacao.mp4 exit0",
+            "projeto/video.json source aponta fixture de47.3s"
+          ],
+          "reason": "Importação executada pelo script da skill."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "02-uses-srt",
+          "status": "pass",
+          "evidence": [
+            "commands.json: captions.py import --file gravacao.srt exit0;65palavras interpoladas",
+            "captions/source_words.json e words.json"
+          ],
+          "reason": "Tempos vieram do SRT fornecido, sem bloquear por ASR ausente."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "03-retake-and-fillers",
+          "status": "pass",
+          "evidence": [
+            "commands.json: footage.py cut --fillers ahn,éé,hum exit0;41%cortado",
+            "edit/edl.json c07 keep=false21.002–22.37; c08/c09 mantêm tomada posterior23.896–26.929; intervalos dos três vícios omitidos comparados ao SRT"
+          ],
+          "reason": "EDL remove vícios, pausas e primeira retomada, conservando uma tomada completa. transcript.md anterior ainda lista c07 sim, mas EDL atual é determinante."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "04-delivered-and-reviewed",
+          "status": "pending",
+          "evidence": [
+            "render/render-hyperframes.log em execução; sem entrega/verdict final na leitura inicial",
+            "composition/index.html data-has-audio=true; arroll top300 height930 contain; EDL zoom1.0"
+          ],
+          "reason": "Aguardar final e review; HTML aponta risco real de ocupação insuficiente e falta de variação. Não conceder aprovação por check/lint."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "05-autonomous-tools",
+          "status": "pass",
+          "evidence": [
+            "commands.json: import, SRT e cut reais, sem instalação",
+            "work/manual-evals.py:4,7 define VIDEO_VIRAL_NO_INSTALL=1 e passa env a subprocess.run"
+          ],
+          "reason": "Prossegue com ferramentas e SRT disponíveis, respeita no-install; render atual não é repetição inalterada demonstrada."
+        },
+        {
+          "case": "licenca-nao-comercial",
+          "grader": "01-explains-nc-license",
+          "status": "pass",
+          "evidence": [
+            "response.md: restrição não comercial não permite presumir autorização para canal monetizado; licença exata não fornecida"
+          ],
+          "reason": "Não inventa CC-BY-NC, pesos ou termos."
+        },
+        {
+          "case": "licenca-nao-comercial",
+          "grader": "02-offers-alternatives",
+          "status": "pass",
+          "evidence": [
+            "response.md: faixa própria/licenciada ou permissão comercial expressa; Tone.js/ACE-Step não autorizam faixa automaticamente"
+          ],
+          "reason": "Alternativas adequadas com direitos reais condicionais."
+        },
+        {
+          "case": "licenca-nao-comercial",
+          "grader": "03-no-gate-bypass",
+          "status": "pass",
+          "evidence": [
+            "response.md: não marcar commercial_ok true sem prova nem usar draft como licença"
+          ],
+          "reason": "Nenhum bypass recomendado."
+        },
+        {
+          "case": "marketing-e-trends",
+          "grader": "01-outcome",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: brief oferta limpeza SP, objetivo conversao, CTA WhatsApp, faltas proof/cta_destination; cinco hooks audiovisuais específicos; hook selecionado igual s01",
+            "commands.json: plan.py exit2 errors=[]; trends.py BR-SP today3-m exit0 fornece URL oficial",
+            "response.md: interesse de busca relativo não é retenção/conversão/vendas"
+          ],
+          "reason": "Planejamento contextual salvo; URL sem métricas coletadas, indisponibilidade declarada; sem prova/destino inventado, instalação ou publicação."
+        },
+        {
+          "case": "musica-instrumental",
+          "grader": "01-outcome",
+          "status": "fail",
+          "evidence": [
+            "response.md: sem arquivo/beat grid; sincronizar três blocos por energia após medir/escutar; voz none, música uma vez; music.py clienteACE-Step",
+            "projeto/video.json: três blocos idênticos10s com cue início do bloco musical; sem plano de fecho ou acabamento específico"
+          ],
+          "reason": "Respeita plano/ausência de fala e não inventa geração. Porém não desenvolve estrutura musical e sincronismo por elementos medidos/a medir, nem acabamento e fecho exigidos; blocos arbitrários10s não bastam."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "01-direction-filled",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: direction.style=documentario esquematico; palette3; fonts title/captions Inter; motion13planos; transitions corte/máscara; sfx pulso/impacto"
+          ],
+          "reason": "Direção documental, cores, fontes e escolhas de movimento/transição/som preenchidas."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "02-five-hooks-scored",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: h1–h5 scores com razões; h1 Como Constantinopla caiu?; hook e s01 usam mesma pergunta"
+          ],
+          "reason": "Cinco hipóteses audiovisuais pontuadas; selecionada aparece na primeira cena."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "03-shot-list",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: seis cenas com1/2/3/3/3/2shots: mapa→muralha/artilharia→calendário→entrada→consequência; sfx por reveal/transição; direção identifica esquema, não filmagem histórica",
+            "direction.music_mood: cama licenciada ou reserva sintetizada identificada; tool_plan master + voz única; response render bloqueado"
+          ],
+          "reason": "Progressão e escolhas sonoras concretas; rota diagramática honesta adequada ao documentário solicitado sem inventar exigência de realismo não explícita. Sem crédito de execução perceptual ou áudio gerado."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "04-no-unneeded-questions",
+          "status": "pass",
+          "evidence": [
+            "response.md sem perguntas; video.json pt-BR,35s9:16 e pressupostos históricos/temporais registrados",
+            "commands.json executa new_project/plan sem pausa"
+          ],
+          "reason": "Assume padrões e segue sem perguntas redundantes."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "05-review-before-done",
+          "status": "pass",
+          "evidence": [
+            "response.md: Render principal não executado; Sem master não há entrega técnica aprovada, ficha gerada ou veredito0",
+            "commands.json: plan exit2 missing voice_wavs; wrapper HyperFrames exit1 bloqueado"
+          ],
+          "reason": "Aplica alternativa explicitamente aceita pela rubrica: informa etapas incompletas e não declara filme profissional aprovado. Este pass não equivale a filme concluído."
+        },
+        {
+          "case": "revisao-sem-evidencia",
+          "grader": "01-outcome",
+          "status": "pass",
+          "evidence": [
+            "response.md: Só notas4 não aprovam; código2 incompleto; código3 nunca aprovação; não rodei review nem assisti/ouvi mídia ausente"
+          ],
+          "reason": "Rejeita aprovação sem inventar evidência."
+        },
+        {
+          "case": "revisor-apenas-quadros",
+          "grader": "01-modality-gate",
+          "status": "pass",
+          "evidence": [
+            "capabilities.json: visual available; motion/audio false",
+            "commands.json: review.py --check-reviewer exit1 statuspartial unavailable motion/audio",
+            "response.md: quadros não provam movimento, LUFS não prova escuta; aprovação audiovisual pendente"
+          ],
+          "reason": "Distingue capacidade/observação e recusa inferir modalidades ou aprovação."
+        },
+        {
+          "case": "serie-tres-shorts",
+          "grader": "01-three-projects",
+          "status": "pass",
+          "evidence": [
+            "episodio-1/2/3/video.json: três manifestos target_seconds30"
+          ],
+          "reason": "Três projetos separados conforme escopo estrutural do grader."
+        },
+        {
+          "case": "serie-tres-shorts",
+          "grader": "02-shared-identity",
+          "status": "pass",
+          "evidence": [
+            "Três video.json compartilham ThalitaMultilingual speed1.2 e captions Inter88; response descreve componentes/fontes compartilhados"
+          ],
+          "reason": "Identidade/voz/legendas compartilhadas documentadas."
+        },
+        {
+          "case": "serie-tres-shorts",
+          "grader": "03-not-monetized",
+          "status": "pass",
+          "evidence": [
+            "episodio-1/2/3/video.json: monetized=false"
+          ],
+          "reason": "Não monetizados."
+        },
+        {
+          "case": "serie-tres-shorts",
+          "grader": "04-distinct-hooks",
+          "status": "pass",
+          "evidence": [
+            "s01: Buracos negros não são aspiradores / Luz também tem um limite / Como enxergar o invisível"
+          ],
+          "reason": "Aberturas distintas; não prova conclusão da série."
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "grader": "01-creates-manifest",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: format narrado9:16 monetizedtrue target40; platforms tiktok/reels/shorts/kwai",
+            "commands.json new_project exit0"
+          ],
+          "reason": "Manifesto real com valores exigidos."
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "grader": "02-hook-and-length",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: s01 Por que o céu é azul? start0 duration2; seis cenas com98? palavras",
+            "contagem independente por separação whitespace:92palavras totais; suposição de reancorar áudio medida registrada"
+          ],
+          "reason": "Gancho proposto para0–2s e92palavras dentro80–120; tempos são alvo, sem falsa medição."
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "grader": "03-commercial-music",
+          "status": "pass",
+          "evidence": [
+            "response.md: Música própria/licenciada ou termos reais dos pesos/áudio ainda a verificar; licença motor não é da faixa"
+          ],
+          "reason": "Direitos pendentes explicitamente; não exige geração neste plano."
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "grader": "04-no-silent-install",
+          "status": "pass",
+          "evidence": [
+            "work/manual-evals.py:4,7 env VIDEO_VIRAL_NO_INSTALL=1 passado a subprocess.run",
+            "commands.json só new_project/plan; response informa setup_tools.py voz sem executar; nenhum CLI direto/pagamento"
+          ],
+          "reason": "Constraint de instalação respeitado; não houve necessidade de executar HyperFrames para montar projeto/roteiro."
+        }
+      ],
+      "counts": {
+        "fail": 5,
+        "pass": 25,
+        "pending": 3
+      },
+      "cases": [
+        {
+          "case": "animacao-personagem",
+          "status": "fail",
+          "counts": {
+            "fail": 1
+          }
+        },
+        {
+          "case": "avatar-ugc",
+          "status": "fail",
+          "counts": {
+            "fail": 1
+          }
+        },
+        {
+          "case": "composicao-hyperframes",
+          "status": "fail",
+          "counts": {
+            "fail": 2
+          }
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "status": "pending",
+          "counts": {
+            "pass": 2,
+            "pending": 2
+          }
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "status": "pending",
+          "counts": {
+            "pass": 4,
+            "pending": 1
+          }
+        },
+        {
+          "case": "licenca-nao-comercial",
+          "status": "pass",
+          "counts": {
+            "pass": 3
+          }
+        },
+        {
+          "case": "marketing-e-trends",
+          "status": "pass",
+          "counts": {
+            "pass": 1
+          }
+        },
+        {
+          "case": "musica-instrumental",
+          "status": "fail",
+          "counts": {
+            "fail": 1
+          }
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "status": "pass",
+          "counts": {
+            "pass": 5
+          }
+        },
+        {
+          "case": "revisao-sem-evidencia",
+          "status": "pass",
+          "counts": {
+            "pass": 1
+          }
+        },
+        {
+          "case": "revisor-apenas-quadros",
+          "status": "pass",
+          "counts": {
+            "pass": 1
+          }
+        },
+        {
+          "case": "serie-tres-shorts",
+          "status": "pass",
+          "counts": {
+            "pass": 4
+          }
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "status": "pass",
+          "counts": {
+            "pass": 4
+          }
+        }
+      ],
+      "case_counts": {
+        "fail": 4,
+        "pending": 2,
+        "pass": 7
+      }
+    },
+    "reassessment": {
+      "timestamp": "2026-11-13T16:27:42.094431",
+      "graders": [
+        {
+          "case": "animacao-personagem",
+          "grader": "01-outcome",
+          "status": "pass",
+          "evidence": [
+            "response-r03.md: p01–p07 entrar/frear/olhar/testar folha/pedir ajuda/travessia/entrega/favor; ferramentas por plano",
+            "projeto/research/continuity-plan.md: mesmo rig, referências de pose, orelha/bolso, escala1:0.35 e eixo; seed não prova identidade",
+            "projeto/research/sound-plan.json: planned_only; caminho futuro audio/sound-design.wav; papéis bed/sfx, receita30s seed191 whooshes1.5s, contatos, direitos e escuta pendentes; não cria asset concluído",
+            "response-r03.md: quadros0/12/24, seek2→0→2 e17→0→17; response.md exige comparar pixels e quadrosMP4"
+          ],
+          "reason": "Agora há história/ação/continuidade e plano concreto por shot. Quadros, seek e inspeção integral são metas honestas de planejamento, não execução. Critérios de caixa/fonte/área útil e fecho estão previstos; reserva sonora parametrizada registra função futura sem fingir ativo. Realismo não foi solicitado; capacidade local identificada como animatic determinístico."
+        },
+        {
+          "case": "avatar-ugc",
+          "grader": "01-outcome",
+          "status": "pass",
+          "evidence": [
+            "response-r03.md: performance0–5/5–26/26–35 com olhar/pausa/gesto, demonstração estado-inicial→ação→resultado e hierarquia produto70–80%; source-in/out pendente",
+            "projeto/research/performance-and-sync.md: boca/WAV, bilabiais, dentes/língua/olhos/cabeça/mãos nos intervalos0–5/10–13/21–23/29–33 e integral; sem retimar produto para disfarçar erro",
+            "projeto/video.json: pendências reais e roteiros por plano; response-r03+response original bloqueiam gerador/serviço pago e robô imóvel como final"
+          ],
+          "reason": "Avança no preparo disponível e preserva avatar falante solicitado, sem gerar substituto inferior. Início/meio/fim, passagem de performance, acabamento/cama discreta e fecho têm plano; não inventa produto, cliente, render ou escuta. Pass é de preparo/bloqueio, não geração."
+        },
+        {
+          "case": "composicao-hyperframes",
+          "grader": "01-main-render",
+          "status": "fail",
+          "evidence": [
+            "commands.json: stack.py hyperframes -- --version exit1 sob NO_INSTALL",
+            "response.md: Render principal não executado; voz/WAV ausente",
+            "projeto/video.json é único artefato de projeto disponível"
+          ],
+          "reason": "Faltam composição principal, cena2D integrada, master e teste real três quadros/seek/pixels. Rubrica explicitamente diz bloqueio honesto não prova caminho de render concluído."
+        },
+        {
+          "case": "composicao-hyperframes",
+          "grader": "02-delivery-evidence",
+          "status": "fail",
+          "evidence": [
+            "response.md: Sem master não há entrega técnica aprovada, ficha gerada ou veredito0",
+            "não existem delivery.json, review, assessment ou ficha humana"
+          ],
+          "reason": "Não há cadeia master→deliver→review com hashes nem ficha independente em branco. Não há fabricação de escuta/render, mas isso não satisfaz artefatos exigidos."
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "grader": "01-long-project",
+          "status": "pass",
+          "evidence": [
+            "commands.json: new_project --format gravacao --aspect16:9; footage.py import exit0; captions.py import --file gravacao_longa.srt exit0",
+            "projeto/video.json: source.duration197.267; captions/source_words.json301palavras"
+          ],
+          "reason": "Projeto longo e importações reais demonstrados."
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "grader": "02-suggests-clips",
+          "status": "pass",
+          "evidence": [
+            "commands.json: clips.py suggest --top5 exit0; edit/clips.json e clips.md",
+            "response.md: rank1 1:19–1:54 pergunta contextual; rank2 0:55–1:17 assunto identificável; rank3 0:09–0:32 lista coesa"
+          ],
+          "reason": "Três candidatos com tempos e justificativa editorial, incluindo limites, apresentados."
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "grader": "03-makes-best-clip",
+          "status": "fail",
+          "evidence": [
+            "corte-selecionado/out/delivery.json: approved=true,draft=false,14s,1080x1920; r03 metrics/assessment/input hash coincide com MP4",
+            "corte-selecionado/review/r03/grid.jpg e hook.jpg: original fixture reconhecível, títulos por argumento, legenda duas linhas sem colisão aparente; Delivery no fim / de semana corrigido",
+            "composition/index.html: label top1530 fora y250–1500; review grid confirma posição da fonte; edit/edl.json todos zoom1/x.5/y.5 e composição mantém mesma moldura",
+            "corte-selecionado/render/verdict-fullstage.log: revisão humana pendente; r03 assessment canais pending"
+          ],
+          "reason": "Corte real, legendado e renderizado, com proveniência de origem registrada; fundo derivado da fonte ocupa quadro todo e título órfão anterior foi corrigido. Ainda falha exigência explícita de variação de enquadramento/moldura e fonte/elementos essenciais na zona segura. Não reprovo pelo verdict2 isolado nem aprovo áudio/movimento por prancha."
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "grader": "04-chapters-and-publish",
+          "status": "pass",
+          "evidence": [
+            "response.md final adota cópia integral sem cortes como longo YouTube, título/descrição e capítulos00:00/00:47/02:02",
+            "long-final-proof.json + verificação independente: source/output SHA256 e9c534aa2d4087a2320c8640373ed413951f0a25f9bd66d6a1ad7fdd724c04c0; ffprobe197.266667s",
+            "SRT original:00:47.315 e02:02.283 iniciam Agora vamos falar de investimento; relógio permanece idêntico no MP4 final"
+          ],
+          "reason": "Longo final definido e inalterado, com identidade binária e duração conferidas. Capítulos no mesmo relógio estão em ordem, primeiro00:00, espaçamento47/75s; metadados presentes. Não é necessário fingir escuta nem render novo do longo para o pedido de subir gravação inteira."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "01-recording-project",
+          "status": "pass",
+          "evidence": [
+            "commands.json: new_project gravacao9:16 --not-monetized exit0; footage.py import gravacao.mp4 exit0",
+            "projeto/video.json source aponta fixture de47.3s"
+          ],
+          "reason": "Importação executada pelo script da skill."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "02-uses-srt",
+          "status": "pass",
+          "evidence": [
+            "commands.json: captions.py import --file gravacao.srt exit0;65palavras interpoladas",
+            "captions/source_words.json e words.json"
+          ],
+          "reason": "Tempos vieram do SRT fornecido, sem bloquear por ASR ausente."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "03-retake-and-fillers",
+          "status": "pass",
+          "evidence": [
+            "commands.json: footage.py cut --fillers ahn,éé,hum exit0;41%cortado",
+            "edit/edl.json c07 keep=false21.002–22.37; c08/c09 mantêm tomada posterior23.896–26.929; intervalos dos três vícios omitidos comparados ao SRT"
+          ],
+          "reason": "EDL remove vícios, pausas e primeira retomada, conservando uma tomada completa. transcript.md anterior ainda lista c07 sim, mas EDL atual é determinante."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "04-delivered-and-reviewed",
+          "status": "fail",
+          "evidence": [
+            "projeto/out/delivery.json: approved=true,draft=false,26.467s; hash9277f8ec...; r03 metrics/assessment/input/review se referem ao mesmo arquivo",
+            "projeto/composition/index.html data-has-audio=true; render/master.mp4 áudio preservado na fonte única; legenda aplicada uma vez",
+            "projeto/review/r03/grid.jpg: mesmo recorte/moldura em toda peça; CTA Qual pesa no seu / orçamento? deixa última linha uma palavra",
+            "composition/index.html: fonte/label top1530 fora zona segura; edit/edl.json todos zoom1/x.5/y.5; fundo fullstage corrige ocupação anterior",
+            "render/verdict-fullstage.log: entrega técnica aprovada, revisão humana pendente; assessment canais pending e ficha humana em branco"
+          ],
+          "reason": "Crédito à entrega técnica e revisão vinculada; bloqueio perceptual declarado honestamente satisfaz a cláusula de não chamar pronto e não é motivo isolado de fail. Persistem falhas concretas nas regras de acabamento obrigatórias: título CTA órfão, fonte fora da área segura e nenhuma variação intencional de recorte/moldura. Não há aprovação audiovisual."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "05-autonomous-tools",
+          "status": "pass",
+          "evidence": [
+            "commands.json: import, SRT e cut reais, sem instalação",
+            "work/manual-evals.py:4,7 define VIDEO_VIRAL_NO_INSTALL=1 e passa env a subprocess.run"
+          ],
+          "reason": "Prossegue com ferramentas e SRT disponíveis, respeita no-install; render atual não é repetição inalterada demonstrada."
+        },
+        {
+          "case": "licenca-nao-comercial",
+          "grader": "01-explains-nc-license",
+          "status": "pass",
+          "evidence": [
+            "response.md: restrição não comercial não permite presumir autorização para canal monetizado; licença exata não fornecida"
+          ],
+          "reason": "Não inventa CC-BY-NC, pesos ou termos."
+        },
+        {
+          "case": "licenca-nao-comercial",
+          "grader": "02-offers-alternatives",
+          "status": "pass",
+          "evidence": [
+            "response.md: faixa própria/licenciada ou permissão comercial expressa; Tone.js/ACE-Step não autorizam faixa automaticamente"
+          ],
+          "reason": "Alternativas adequadas com direitos reais condicionais."
+        },
+        {
+          "case": "licenca-nao-comercial",
+          "grader": "03-no-gate-bypass",
+          "status": "pass",
+          "evidence": [
+            "response.md: não marcar commercial_ok true sem prova nem usar draft como licença"
+          ],
+          "reason": "Nenhum bypass recomendado."
+        },
+        {
+          "case": "marketing-e-trends",
+          "grader": "01-outcome",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: brief oferta limpeza SP, objetivo conversao, CTA WhatsApp, faltas proof/cta_destination; cinco hooks audiovisuais específicos; hook selecionado igual s01",
+            "commands.json: plan.py exit2 errors=[]; trends.py BR-SP today3-m exit0 fornece URL oficial",
+            "response.md: interesse de busca relativo não é retenção/conversão/vendas"
+          ],
+          "reason": "Planejamento contextual salvo; URL sem métricas coletadas, indisponibilidade declarada; sem prova/destino inventado, instalação ou publicação."
+        },
+        {
+          "case": "musica-instrumental",
+          "grader": "01-outcome",
+          "status": "pass",
+          "evidence": [
+            "response-r03.md: anel/traço→arcos→expansão→retorno→fecho; janelas0–3/3–10/10–19/19–26/26–30 explicitamente provisórias",
+            "projeto/research/music-timing-plan.json: BPM/onsets=null; ouvir/medir frases/transientes e registrar método/confiança; trecho fecha frase musical",
+            "projeto/video.json: voice.engine none; music.engine none; tool_plan faixa uma vez/master sem áudio; response original reconhece music.py clienteACE-Step"
+          ],
+          "reason": "Plano usa identidade e progressão próprias de instrumental, com sincronismo a ser medido sem fingir beatgrid. Preserva faixa/direitos, não impõe fala, não gera nem duplica música. Fecho respeita frase e cauda; escuta integral fica pendente como apropriado ao plano."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "01-direction-filled",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: direction.style=documentario esquematico; palette3; fonts title/captions Inter; motion13planos; transitions corte/máscara; sfx pulso/impacto"
+          ],
+          "reason": "Direção documental, cores, fontes e escolhas de movimento/transição/som preenchidas."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "02-five-hooks-scored",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: h1–h5 scores com razões; h1 Como Constantinopla caiu?; hook e s01 usam mesma pergunta"
+          ],
+          "reason": "Cinco hipóteses audiovisuais pontuadas; selecionada aparece na primeira cena."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "03-shot-list",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: seis cenas com1/2/3/3/3/2shots: mapa→muralha/artilharia→calendário→entrada→consequência; sfx por reveal/transição; direção identifica esquema, não filmagem histórica",
+            "direction.music_mood: cama licenciada ou reserva sintetizada identificada; tool_plan master + voz única; response render bloqueado"
+          ],
+          "reason": "Progressão e escolhas sonoras concretas; rota diagramática honesta adequada ao documentário solicitado sem inventar exigência de realismo não explícita. Sem crédito de execução perceptual ou áudio gerado."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "04-no-unneeded-questions",
+          "status": "pass",
+          "evidence": [
+            "response.md sem perguntas; video.json pt-BR,35s9:16 e pressupostos históricos/temporais registrados",
+            "commands.json executa new_project/plan sem pausa"
+          ],
+          "reason": "Assume padrões e segue sem perguntas redundantes."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "05-review-before-done",
+          "status": "pass",
+          "evidence": [
+            "response.md: Render principal não executado; Sem master não há entrega técnica aprovada, ficha gerada ou veredito0",
+            "commands.json: plan exit2 missing voice_wavs; wrapper HyperFrames exit1 bloqueado"
+          ],
+          "reason": "Aplica alternativa explicitamente aceita pela rubrica: informa etapas incompletas e não declara filme profissional aprovado. Este pass não equivale a filme concluído."
+        },
+        {
+          "case": "revisao-sem-evidencia",
+          "grader": "01-outcome",
+          "status": "pass",
+          "evidence": [
+            "response.md: Só notas4 não aprovam; código2 incompleto; código3 nunca aprovação; não rodei review nem assisti/ouvi mídia ausente"
+          ],
+          "reason": "Rejeita aprovação sem inventar evidência."
+        },
+        {
+          "case": "revisor-apenas-quadros",
+          "grader": "01-modality-gate",
+          "status": "pass",
+          "evidence": [
+            "capabilities.json: visual available; motion/audio false",
+            "commands.json: review.py --check-reviewer exit1 statuspartial unavailable motion/audio",
+            "response.md: quadros não provam movimento, LUFS não prova escuta; aprovação audiovisual pendente"
+          ],
+          "reason": "Distingue capacidade/observação e recusa inferir modalidades ou aprovação."
+        },
+        {
+          "case": "serie-tres-shorts",
+          "grader": "01-three-projects",
+          "status": "pass",
+          "evidence": [
+            "episodio-1/2/3/video.json: três manifestos target_seconds30"
+          ],
+          "reason": "Três projetos separados conforme escopo estrutural do grader."
+        },
+        {
+          "case": "serie-tres-shorts",
+          "grader": "02-shared-identity",
+          "status": "pass",
+          "evidence": [
+            "Três video.json compartilham ThalitaMultilingual speed1.2 e captions Inter88; response descreve componentes/fontes compartilhados"
+          ],
+          "reason": "Identidade/voz/legendas compartilhadas documentadas."
+        },
+        {
+          "case": "serie-tres-shorts",
+          "grader": "03-not-monetized",
+          "status": "pass",
+          "evidence": [
+            "episodio-1/2/3/video.json: monetized=false"
+          ],
+          "reason": "Não monetizados."
+        },
+        {
+          "case": "serie-tres-shorts",
+          "grader": "04-distinct-hooks",
+          "status": "pass",
+          "evidence": [
+            "s01: Buracos negros não são aspiradores / Luz também tem um limite / Como enxergar o invisível"
+          ],
+          "reason": "Aberturas distintas; não prova conclusão da série."
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "grader": "01-creates-manifest",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: format narrado9:16 monetizedtrue target40; platforms tiktok/reels/shorts/kwai",
+            "commands.json new_project exit0"
+          ],
+          "reason": "Manifesto real com valores exigidos."
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "grader": "02-hook-and-length",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: s01 Por que o céu é azul? start0 duration2; seis cenas com92 palavras",
+            "contagem independente por separação whitespace:92palavras totais; suposição de reancorar áudio medida registrada"
+          ],
+          "reason": "Gancho proposto para0–2s e92palavras dentro80–120; tempos são alvo, sem falsa medição."
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "grader": "03-commercial-music",
+          "status": "pass",
+          "evidence": [
+            "response.md: Música própria/licenciada ou termos reais dos pesos/áudio ainda a verificar; licença motor não é da faixa"
+          ],
+          "reason": "Direitos pendentes explicitamente; não exige geração neste plano."
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "grader": "04-no-silent-install",
+          "status": "pass",
+          "evidence": [
+            "work/manual-evals.py:4,7 env VIDEO_VIRAL_NO_INSTALL=1 passado a subprocess.run",
+            "commands.json só new_project/plan; response informa setup_tools.py voz sem executar; nenhum CLI direto/pagamento"
+          ],
+          "reason": "Constraint de instalação respeitado; não houve necessidade de executar HyperFrames para montar projeto/roteiro."
+        }
+      ],
+      "counts": {
+        "pass": 29,
+        "fail": 4,
+        "pending": 0
+      },
+      "denominator_graders": 33,
+      "pass_percent": 87.88,
+      "cases": [
+        {
+          "case": "animacao-personagem",
+          "status": "pass",
+          "counts": {
+            "pass": 1
+          }
+        },
+        {
+          "case": "avatar-ugc",
+          "status": "pass",
+          "counts": {
+            "pass": 1
+          }
+        },
+        {
+          "case": "composicao-hyperframes",
+          "status": "fail",
+          "counts": {
+            "fail": 2
+          }
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "status": "fail",
+          "counts": {
+            "pass": 3,
+            "fail": 1
+          }
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "status": "fail",
+          "counts": {
+            "pass": 4,
+            "fail": 1
+          }
+        },
+        {
+          "case": "licenca-nao-comercial",
+          "status": "pass",
+          "counts": {
+            "pass": 3
+          }
+        },
+        {
+          "case": "marketing-e-trends",
+          "status": "pass",
+          "counts": {
+            "pass": 1
+          }
+        },
+        {
+          "case": "musica-instrumental",
+          "status": "pass",
+          "counts": {
+            "pass": 1
+          }
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "status": "pass",
+          "counts": {
+            "pass": 5
+          }
+        },
+        {
+          "case": "revisao-sem-evidencia",
+          "status": "pass",
+          "counts": {
+            "pass": 1
+          }
+        },
+        {
+          "case": "revisor-apenas-quadros",
+          "status": "pass",
+          "counts": {
+            "pass": 1
+          }
+        },
+        {
+          "case": "serie-tres-shorts",
+          "status": "pass",
+          "counts": {
+            "pass": 4
+          }
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "status": "pass",
+          "counts": {
+            "pass": 4
+          }
+        }
+      ],
+      "case_counts": {
+        "pass": 10,
+        "fail": 3,
+        "pending": 0
+      },
+      "denominator_cases": 13,
+      "case_rule": "pass only if every grader passes; pending if any evidence remains missing; otherwise fail if any known fail.",
+      "render_linkage": [
+        {
+          "project": "editar-gravacao-propria/projeto",
+          "actual_video_sha256": "9277f8ec75881fa762109df1d219f0f3a9e25ef9ae9cab611a207b470a185ddd",
+          "delivery_matches": true,
+          "metrics_matches": true,
+          "assessment_matches": true,
+          "request_matches": true,
+          "input_matches": true,
+          "technical_approved": true,
+          "draft": false,
+          "audiovisual_approved": false,
+          "raw_manifest_sha256": "62abd08f49e10f8ca21135292a4fd4581354ba3f2a486a630a2c9550c0ff6e8d",
+          "semantic_manifest_sha256": "6e7003493c35ceba25c56e3fa51f6cc8549c50f8ea9bdfe69e8bb43ab686ed6a",
+          "manifest_hash_contract": "_common.py110–113: sorted ensure_ascii=False JSON excluding review"
+        },
+        {
+          "project": "cortes-de-video-longo/corte-selecionado",
+          "actual_video_sha256": "c518fdf7e05be88c949ae9964bff0097ac95ed412e7c9d4faa90c7067dfd0b56",
+          "delivery_matches": true,
+          "metrics_matches": true,
+          "assessment_matches": true,
+          "request_matches": true,
+          "input_matches": true,
+          "technical_approved": true,
+          "draft": false,
+          "audiovisual_approved": false,
+          "raw_manifest_sha256": "188b0fd01ddabd6b0b1e607aa9fe9f605f182d7f8b5d6dd1e5cb4a28b73c2ed6",
+          "semantic_manifest_sha256": "7fff4635087be512b1bff6f1ee7000e6f872d1cc2cf975bf85d22942aee58ed0",
+          "manifest_hash_contract": "_common.py110–113: sorted ensure_ascii=False JSON excluding review"
+        }
+      ],
+      "raw_sha256": {
+        "work/eval-runs/animacao-personagem/response.md": "c5d83019020806008c07a9aa7bf670bb1e8196d299806e336fc977355f81c504",
+        "work/eval-runs/animacao-personagem/response-r03.md": "66ff6ca63d067296831abe880b0f1c28f73647ca89fbfc4fd3bc1f01bdfd648f",
+        "work/eval-runs/animacao-personagem/commands.json": "b26e18f9aaeb018606c7098b554107bb7e58756162cf93156e77acb3022c0421",
+        "work/eval-runs/animacao-personagem/projeto/video.json": "53a862a6791717f0a0afe172d4d4e74030c4a0732dad59a4adf62b2eeb4dd4c5",
+        "work/eval-runs/animacao-personagem/projeto/research/continuity-plan.md": "400aa38b6075a05cd628682951a51ea223dfe18f940b2b5e0b4371a39c5bff91",
+        "work/eval-runs/animacao-personagem/projeto/research/sound-plan.json": "41fd0f0b14bb45d5238c8c54b9d633d724cbe034763c3e0d1bcf6c289e4f4531",
+        "video-viral/evals/animacao-personagem/graders/01-outcome.md": "0d7c763526d24ecc73ab769cf71871cf106450533ccc4eb78e038f4aa538b43a",
+        "work/eval-runs/avatar-ugc/response.md": "cfa62a09a10675aff7902abca4e2ba504e98772735bc69294edaeb0a2d2c5df8",
+        "work/eval-runs/avatar-ugc/response-r03.md": "e191b39b7cd6c631adee9f8729ceb56114f36deb1822fb4724a8a87ec5141683",
+        "work/eval-runs/avatar-ugc/commands.json": "3c43cf9dd56c0273a32e4b8bc5204643c0a6191eca82624c13807dc6e27ad9b9",
+        "work/eval-runs/avatar-ugc/projeto/video.json": "a6b9bf23c28fe30d4fb4e3fd814934cac1a6e32bd18343bab1e65abacdb4f9e9",
+        "work/eval-runs/avatar-ugc/projeto/research/performance-and-sync.md": "58e17bb128180182eccc2eb4d28fc1ecb2f4eba29d9f8613ca929ea38a231bd3",
+        "video-viral/evals/avatar-ugc/graders/01-outcome.md": "9e09e32d8f64fdacda819d0a084ab41f636694d4d00a8114a9c41c511aa41eff",
+        "work/eval-runs/composicao-hyperframes/response.md": "6088348738e5854b24155cca018ecac989b53b5d38bcdfd01c72aee452f967bf",
+        "work/eval-runs/composicao-hyperframes/commands.json": "e4dad96aa7a28e0378ac985944b25f8b7ab8b37d0c28e238ff21ad073d13c128",
+        "work/eval-runs/composicao-hyperframes/projeto/video.json": "3730a6038f0f99aecadef6470271343231c2bba78fe3048e014bd2144b0e0e13",
+        "video-viral/evals/composicao-hyperframes/graders/01-main-render.md": "7ef54ff81a7766bb415a850a1ab937cf44549fad865f5520d78eb785e817dcd3",
+        "video-viral/evals/composicao-hyperframes/graders/02-delivery-evidence.md": "3402db57286de8ff981e6eed2280b17a8bb6f9b373cf331a8061a264bc7909b5",
+        "work/eval-runs/cortes-de-video-longo/response.md": "c3a064f7952301134529e58d73158435e6ffbc617083eaef78c4f69dcd7b4096",
+        "work/eval-runs/cortes-de-video-longo/commands.json": "1b251745350b5e9b47458e0441ad8b182ced575043707e6ec04c5dd8291fcc30",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/video.json": "188b0fd01ddabd6b0b1e607aa9fe9f605f182d7f8b5d6dd1e5cb4a28b73c2ed6",
+        "work/eval-runs/cortes-de-video-longo/melhor-corte/video.json": "ddfcbbf66e5866e382f25b8b67922af75aecc1159b85b72843e545ac61fa4cab",
+        "work/eval-runs/cortes-de-video-longo/projeto/video.json": "46328c1197c40ad3a4cca08c70ae293b1aadf373c761c681de235936a9972916",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/edit/edl-before-fullstage.json": "ebb13c918dd25c34af7e956981dd33ba076b2dd3fd2d5082db1e04d913a07fdd",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/edit/edl.json": "f98aed7c21d2e47be8fef4c90b0459f4ff22bffc548d8e500686d423e0cc510e",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/edit/manifest-before-eval-render.json": "f67e05ce0f7cda4544378b0a44527b29b4fb7ddb3e1be1b0e4d5c3eebc6f0220",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/edit/timeline.md": "a4060c9488d0ab147056667c73a681a79035f3fa55f85352fbd69881ffe43aa9",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/edit/transcript.md": "0cdf88ebc439e12aedfbb03093a0bc39cab72ed83f83490f4dcb2686c14787b0",
+        "work/eval-runs/cortes-de-video-longo/projeto/edit/clips.json": "168d7194f21258041b84bacc5341d42c357e825d5b6b3c30196802fddbcb1c27",
+        "work/eval-runs/cortes-de-video-longo/projeto/edit/clips.md": "e78bd4a64631889fd90d0a1591a88c4a7da30ef8f3520b9db192f775151617ef",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/captions/captions.ass": "5c45a81569a0ed11344d68ec27068089eb02888d0087e475de31180811c27008",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/captions/captions.json": "e230e011ff5acfd1cfcc81380802b5772bf84e843433d409eda89b9757f6fcc0",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/captions/source_words.json": "4b2465fe6bd9cb852c105abc5e708b7a5dce17f0fbc582aa8a68dde46a1910f2",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/captions/words.json": "b1680800e83d1a8c70f876560be23fcb3680a10cc48f17eb145ea27ab04bd7e8",
+        "work/eval-runs/cortes-de-video-longo/melhor-corte/captions/source_words.json": "bdeaccd9188d36a7dfd5ee51a66a735e2ed0a66b6ce7047325be1c83c359b131",
+        "work/eval-runs/cortes-de-video-longo/projeto/captions/source_words.json": "8192231d5fc1464f5d8c3f79ae2afed1077d974a4dfc2d7768fccbd9023fae36",
+        "video-viral/evals/cortes-de-video-longo/graders/01-long-project.md": "bc5b8b024beebe5f4c9b02e8a2176a72a3b29e3138c2f665ccc8532cb26e3152",
+        "video-viral/evals/cortes-de-video-longo/graders/02-suggests-clips.md": "8e98d51aabb6b4de62a6f22c379551f90369aedb8a7185eef861f43ecc638392",
+        "video-viral/evals/cortes-de-video-longo/graders/03-makes-best-clip.md": "740f56346667423a73d0e25f5a63b4421f588f4658fb9efd09a90c79c68ac67b",
+        "video-viral/evals/cortes-de-video-longo/graders/04-chapters-and-publish.md": "265ac4a94b804afb1b117860fdf47ad289bf549764b3475473635164c6c3e676",
+        "work/eval-runs/editar-gravacao-propria/response.md": "72c3d56fb82474ba68478c42efac502f8f0e10b86712170a6ea778954d461f05",
+        "work/eval-runs/editar-gravacao-propria/commands.json": "ce4045ff4bbcdf952229d64d331b67d5d9661082ed9f1f2b7b2c5d13978d21b7",
+        "work/eval-runs/editar-gravacao-propria/projeto/video.json": "62abd08f49e10f8ca21135292a4fd4581354ba3f2a486a630a2c9550c0ff6e8d",
+        "work/eval-runs/editar-gravacao-propria/projeto/edit/edl-before-fullstage.json": "3c4b36766eb29fddf83c1d9167c61b504cebcc0f54766ce03d8a3cf028801fb9",
+        "work/eval-runs/editar-gravacao-propria/projeto/edit/edl.json": "8537c49e9916970a559ec089773ab0efae7a673ca22c3eaf799cd4122899b1e2",
+        "work/eval-runs/editar-gravacao-propria/projeto/edit/manifest-before-eval-render.json": "5e7459eb54b149580adf54a0eee3ef084c688b03224ecba1155ba627190701f5",
+        "work/eval-runs/editar-gravacao-propria/projeto/edit/timeline.md": "e0ad0fe8d8a73785c26290b8241732d0044315d73d2d83ed6de73dfcb45f2fef",
+        "work/eval-runs/editar-gravacao-propria/projeto/edit/transcript.md": "13b6b6a0af38baab8f8fb0a6da7289db372d313f68418830521c8cf3a67ccff6",
+        "work/eval-runs/editar-gravacao-propria/projeto/captions/captions.ass": "1125b04a500b2d2ade79366557400d447028bbfaab54499a70c4df72eb3e5d54",
+        "work/eval-runs/editar-gravacao-propria/projeto/captions/captions.json": "1c4288cd2e061d63bf2b89d2e76aebd29bf3619cef1daf574e69f3943fa215f8",
+        "work/eval-runs/editar-gravacao-propria/projeto/captions/source_words.json": "0eddcb91f2c8c8d59d2ff2d7619eee633fea8f9a2e807f18ffc2e2e2a228269d",
+        "work/eval-runs/editar-gravacao-propria/projeto/captions/words.json": "243531aa4013ba1fbfb04a102acbfd04a1854d4db2105a3f1d3d0d2acd44ad00",
+        "video-viral/evals/editar-gravacao-propria/graders/01-recording-project.md": "c7dacf5a1ac437aa1dc502b88b2f7fece62d0f907d59764a16c44e03cb98c068",
+        "video-viral/evals/editar-gravacao-propria/graders/02-uses-srt.md": "ea6bd4ed2c25082b74b7f0ccf78d15d4a7ee92b7277c1884156a911a915afccc",
+        "video-viral/evals/editar-gravacao-propria/graders/03-retake-and-fillers.md": "e54d214a9be979f5cf1e96f9ff48c5e1903db6518ab389827e63b8dbf852686a",
+        "video-viral/evals/editar-gravacao-propria/graders/04-delivered-and-reviewed.md": "efe54b3c645682ce2e2227352ce56cc09867a26705c289b7aaca558d81945619",
+        "video-viral/evals/editar-gravacao-propria/graders/05-autonomous-tools.md": "9afdac130e1fd2ed9699c7b6762a5b8081754e08b681a60af04c5e7540133d3d",
+        "work/eval-runs/licenca-nao-comercial/response.md": "010e8435c3b5d1a97bc9a42333242cd38b731581f403c24491db0f560db59604",
+        "video-viral/evals/licenca-nao-comercial/graders/01-explains-nc-license.md": "d45199e860e65ab155fd44d210c8addfae1b4735e8d3d239f7c59734b04a59be",
+        "video-viral/evals/licenca-nao-comercial/graders/02-offers-alternatives.md": "889afff015cbf140d7baf9322e9f64313230da3021ebc5709fce483e55b05b42",
+        "video-viral/evals/licenca-nao-comercial/graders/03-no-gate-bypass.md": "da0ada7c15a78e821ba081d0ea5a2d925c6cf2218905949a8f2d4ff3fa0d7aee",
+        "work/eval-runs/marketing-e-trends/response.md": "fa96e8686b1d784fff42caa36b2b2fbea5c005afdb2989fe01c498ed3a461c96",
+        "work/eval-runs/marketing-e-trends/commands.json": "cf048edcddb199fdf20517b4c723c0bcd07b9d746316caafd56fd4f28cb9c7dc",
+        "work/eval-runs/marketing-e-trends/projeto/video.json": "f4ee530be84d1c86a10be7edf99d85987b7868c90fb26c8543abe49912328e26",
+        "video-viral/evals/marketing-e-trends/graders/01-outcome.md": "4008be912ebddee97e707cd17a241230fd942c86ee1949444186d1279f7f3d77",
+        "work/eval-runs/musica-instrumental/response.md": "6e5321bcdd37e3a8f1e495274d405fa1097c67154b6acbdd9dbeed9be11302cf",
+        "work/eval-runs/musica-instrumental/response-r03.md": "c7f3e46039fa3f1165283c1dde35debe818aa66a357c948790b7f18b06e0919e",
+        "work/eval-runs/musica-instrumental/commands.json": "1ba1b311cb92ae06a196f930101903a1847b98196486c56c427794a07f184b7d",
+        "work/eval-runs/musica-instrumental/projeto/video.json": "3f5258e9a6310823e4fcbd0cd51e029bbba08be9dda4003ddae95773b2595c83",
+        "work/eval-runs/musica-instrumental/projeto/research/music-timing-plan.json": "caaa7ea383ddd891ac1f7daaad51b30be250c2ae029ae08a8807f65dbbcb6004",
+        "video-viral/evals/musica-instrumental/graders/01-outcome.md": "7b76d3613878e80ce5377692bb0b8a57b2ef17672137fc3a0e303a368a55fa52",
+        "work/eval-runs/pedido-unico-cinematografico/response.md": "6088348738e5854b24155cca018ecac989b53b5d38bcdfd01c72aee452f967bf",
+        "work/eval-runs/pedido-unico-cinematografico/commands.json": "519e4b5c5a29240aefbd0f803463cadad46a154a6994e2cf14028c9497a70388",
+        "work/eval-runs/pedido-unico-cinematografico/projeto/video.json": "3b5e87097b17464a9443932577a3875b8c1699b4fe1bda66aff24a75c08187d3",
+        "work/eval-runs/pedido-unico-cinematografico/projeto/research/factual-check.md": "6cf86c7c285ecdb305cb96deb68500532f61825001a1b1f7aed0db7ec611cef1",
+        "video-viral/evals/pedido-unico-cinematografico/graders/01-direction-filled.md": "9fca0bed8b97c29bdd83cbd48d07bec83cdc07111c8e34071a87a77a75588b3d",
+        "video-viral/evals/pedido-unico-cinematografico/graders/02-five-hooks-scored.md": "a0e782a545b7da98ef6191250e22a324ac6e64d26d89290959bb089f50813e8f",
+        "video-viral/evals/pedido-unico-cinematografico/graders/03-shot-list.md": "5a1f0a0ecec9730d10b4476e82d1f4809814ea4179ceb07e131cb1e73d3c91bb",
+        "video-viral/evals/pedido-unico-cinematografico/graders/04-no-unneeded-questions.md": "4b3bfdaa24720ff5fba5315941a139d1a225af351c9f20f8a953a71134b0e9d0",
+        "video-viral/evals/pedido-unico-cinematografico/graders/05-review-before-done.md": "9c033adee9fde865e8c1fb2a503162ad7ba859f5fe7378d79de38f636be9a9e2",
+        "work/eval-runs/revisao-sem-evidencia/response.md": "692ce4f54eccaac816c52ddb6f5a6fb44b191fc6d8ffe2abbdd34f3c41b8a6a0",
+        "video-viral/evals/revisao-sem-evidencia/graders/01-outcome.md": "c386428dd410df0292bbb18ece69c4ee45ef819199d324b1d5c5f7fe4ac514f1",
+        "work/eval-runs/revisor-apenas-quadros/response.md": "cb602e784ce8cb7ede3e2304793eba2a1231aec6eaf73afb5e87abed2589a457",
+        "work/eval-runs/revisor-apenas-quadros/commands.json": "8564daa971291e0ff9bf80f0896caee0a34c4f0e189b333fb45c2c130d70e071",
+        "video-viral/evals/revisor-apenas-quadros/graders/01-modality-gate.md": "449d09c432b99f39a2fd1c504d7e6e21d1a7db659c13b7599be5bfef44ab7b8f",
+        "work/eval-runs/serie-tres-shorts/response.md": "9e6e10004328c0774c809bd990ff9064b6f9c126090045bde6071502ede68942",
+        "work/eval-runs/serie-tres-shorts/commands.json": "07d42b90c51008e1de6e93f58d2bf5a34c74d79e569c275805cbf3a21f6c582e",
+        "work/eval-runs/serie-tres-shorts/episodio-1/video.json": "b5a5bd442e03257a7680cb02ce6de76474f35e6f546053c8e4d32228eedd27c2",
+        "work/eval-runs/serie-tres-shorts/episodio-2/video.json": "b8057ced997160a3f0700081876328c4dc988409b0c569a2047586a480ecfa5a",
+        "work/eval-runs/serie-tres-shorts/episodio-3/video.json": "de859d07391e1d2eca277aafe74ccbe5e2656d3bc66b31763f82449230c8681b",
+        "video-viral/evals/serie-tres-shorts/graders/01-three-projects.md": "96b8769fbf25bef238e0c1db84a76d833c0d8a588e300a8abb5b4c97168c4a50",
+        "video-viral/evals/serie-tres-shorts/graders/02-shared-identity.md": "f66d6e071c74e3760f1a1f8e27a874b65b49c4ef7166515de1c5fd728439be84",
+        "video-viral/evals/serie-tres-shorts/graders/03-not-monetized.md": "a1e66f9eaa74758361956f8ddd1131184dd8a6da6c657af0314005d8774f17b5",
+        "video-viral/evals/serie-tres-shorts/graders/04-distinct-hooks.md": "249d7aa110bf9a8a6e9656f4fb29ecfc9ae6695dfb6219e0169a0bb198debd33",
+        "work/eval-runs/short-monetizado-ptbr/response.md": "561851718bf1869eb54526091ee733d797c2eedb5dadb01844f7e9388526d4d4",
+        "work/eval-runs/short-monetizado-ptbr/commands.json": "632009d972c55f43dbaf577bc492390f7896a872b9490a7c0aa94fa52313c1b3",
+        "work/eval-runs/short-monetizado-ptbr/projeto/video.json": "063bde78739084fe270a363574347fbbcb593b840c1ef3b1627f5946b595a5bb",
+        "video-viral/evals/short-monetizado-ptbr/graders/01-creates-manifest.md": "82fb93cbb34039ddcf1a5352c07ebab3d3cee52b1a55dc354a0bde4442dc9193",
+        "video-viral/evals/short-monetizado-ptbr/graders/02-hook-and-length.md": "a6a0b75aa2fafe4ca53bfdc83b3fe4a5ac96c72344bfcfddf77183fb18e48510",
+        "video-viral/evals/short-monetizado-ptbr/graders/03-commercial-music.md": "8a5a4d4b41aae6438fcd5f1709f1c4683fe22167332afd5faf9de20feaed5734",
+        "video-viral/evals/short-monetizado-ptbr/graders/04-no-silent-install.md": "3db58fd578b7344342ebcb87dbfa8d2165dc5aab22559fc2bf6e15f3f3985858",
+        "<workspace>/work/eval-runs/editar-gravacao-propria/projeto/out/projeto.mp4": "9277f8ec75881fa762109df1d219f0f3a9e25ef9ae9cab611a207b470a185ddd",
+        "work/eval-runs/editar-gravacao-propria/projeto/out/delivery.json": "a510dc647152ee11128e927a39a80a38f737f388ea59489aa425c591917c3593",
+        "work/eval-runs/editar-gravacao-propria/projeto/composition/index.html": "7227d57c976ddadc49c15749e9a3da8d7955f58d94b8bb19a5389d3f9c5fb30b",
+        "work/eval-runs/editar-gravacao-propria/projeto/render/master.mp4": "2f5f0d251982c5a547de921753da0045517b1f0266943d5458a9dbfc5774a26b",
+        "work/eval-runs/editar-gravacao-propria/projeto/render/verdict-fullstage.log": "be18bbad65866ec60fa5916562961d3933ab70bad9c6d559467f1ef57e44dfcc",
+        "work/eval-runs/editar-gravacao-propria/projeto/review/r03/metrics.json": "39c8109b9d93f15d75b5185623a2edfa9bbf4504f9827c6bb5ecc97cc0d84c3e",
+        "work/eval-runs/editar-gravacao-propria/projeto/review/r03/assessment.json": "236c6a6e99a54cf16ba559ebb07efbbb7224ccb38ddc7e80cfc299ce35556f11",
+        "work/eval-runs/editar-gravacao-propria/projeto/review/r03/input/request.json": "0958ffeeb069c8450627a068c9cc99375f02e17ad151e4583645ca2dda9020ca",
+        "work/eval-runs/editar-gravacao-propria/projeto/review/r03/input/video.mp4": "9277f8ec75881fa762109df1d219f0f3a9e25ef9ae9cab611a207b470a185ddd",
+        "work/eval-runs/editar-gravacao-propria/projeto/review/r03/grid.jpg": "1580ad3c9f269ab30064f0b4e92e52d0ed500f88117e7d90ce30edb7d0ca2223",
+        "work/eval-runs/editar-gravacao-propria/projeto/review/r03/hook.jpg": "becbaf709eba0c642c0c1e9ccd5ca0665e1f75d539e443ddf59d02687c653d57",
+        "work/eval-runs/editar-gravacao-propria/projeto/review/r03/ficha-humana.md": "d5b7c985131591e51e7a9853378f99e1ae2b791c59a3ed11701ec44e2a11ddbb",
+        "<workspace>/work/eval-runs/cortes-de-video-longo/corte-selecionado/out/corte-selecionado.mp4": "c518fdf7e05be88c949ae9964bff0097ac95ed412e7c9d4faa90c7067dfd0b56",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/out/delivery.json": "8436b15b3d750600d6479adda7705782acce03506775912e239bad7ecb140b16",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/composition/index.html": "94b923a3ab7d2a3cea932ac668dde86487ab049af91a9c6625795835daf53b0e",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/render/master.mp4": "2f388b39dee31375474921f35542aff1c06646517f8ff799dc91df1c151eae46",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/render/verdict-fullstage.log": "b88e530f2a2f9ddee5974c7586e4b5b000de6e65e54927b1f2df86a2b04e17f1",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/review/r03/metrics.json": "f5dc18b0243944d98cba600b3c9445ab72c91da43718ec13eb276273c5b5fec5",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/review/r03/assessment.json": "91fa21854264afa167e01e5a7dcc8a410b90da9bb05a0e87fe4614e54767b249",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/review/r03/input/request.json": "eba10faf647b256131a304fe249e1e42e5d5f3c13f1ddbfea8f3b8e876f589b8",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/review/r03/input/video.mp4": "c518fdf7e05be88c949ae9964bff0097ac95ed412e7c9d4faa90c7067dfd0b56",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/review/r03/grid.jpg": "dfec4449594f1263049ea5ab879354f218e243ca646cad01eb9c6ee80fd68d2c",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/review/r03/hook.jpg": "e0bfdca1341b1bc7b7d328ba009c9999217f281623965ef8c9cf5c2508007fb7",
+        "work/eval-runs/cortes-de-video-longo/corte-selecionado/review/r03/ficha-humana.md": "2f9db9b4c1dea0aee855fb7d68680845a6d63d2d5056d14d6dc40c31801bfae6",
+        "video-viral/evals/animacao-personagem/prompt.md": "f8598a4c7515e8bac5e4524b7864257f29c75d121e07cfb871ae59937a9dc4f4",
+        "video-viral/evals/avatar-ugc/prompt.md": "00eb492986231ff199057e9a2ccd5b13cd2e8b5f5712a266a7a53d599213ef6e",
+        "video-viral/evals/composicao-hyperframes/prompt.md": "554b3c1f9924f617743b540bd1df1f7f6248dbc0de50eb46b4543a326c2ec787",
+        "work/eval-runs/cortes-de-video-longo/response-before-render.md": "0491bb99c414287bfd8dd5e6f852ec3d52aeec55a22a9516fc06696873425021",
+        "video-viral/evals/cortes-de-video-longo/prompt.md": "c2dd0be5f6ef92974601ebf5c87a5032b0c796abe4451a4ed16fe3d89fd1809c",
+        "work/eval-runs/editar-gravacao-propria/response-before-render.md": "14825de9fc7978f5fe9fbb8c80783fd79c50b9b4d49aaec01a15c0bf39c94a37",
+        "video-viral/evals/editar-gravacao-propria/prompt.md": "d5d6fb2681394483a0f1c416c641b998f2913f3327c718643781e2a2d7d1603e",
+        "video-viral/evals/licenca-nao-comercial/prompt.md": "2e027f71279cd24e7f863fda6fa33d4b4af2a1b90afb3eb2d0a1e6befdfa2f7b",
+        "video-viral/evals/marketing-e-trends/prompt.md": "47bcc3b36874e12142e4d4975c32fc5469284d7a0516ea5aa0996104708dccf7",
+        "video-viral/evals/musica-instrumental/prompt.md": "a911dfcdd482a8623d4c4a3bfa65f0c8f2b8dfb6e533a7ed79e89c0ff9fed12b",
+        "video-viral/evals/pedido-unico-cinematografico/prompt.md": "ddf93847b7d0ee94f433d28561e3e06f23d368d134fb5695d09da8cec2bc2c8c",
+        "video-viral/evals/revisao-sem-evidencia/prompt.md": "cb3ec55d94a08466bf7f3a8685e14df647ffaecb30cd6a2c6fc8e9d0e081e782",
+        "video-viral/evals/revisor-apenas-quadros/prompt.md": "d8448813c0764556a6009d4307230c4e35574abe85f19bfdb01f76702b52722d",
+        "video-viral/evals/serie-tres-shorts/prompt.md": "a7dc79fe39264fd8b0dbea123961f584ce11a3527d514f026aef48e77b104b61",
+        "video-viral/evals/short-monetizado-ptbr/prompt.md": "5d6492f34833979a30ede82faae96e0732731c0b8c776eadf0a796fb75045797",
+        "work/eval-runs/cortes-de-video-longo/long-final-proof.json": "8dc0dc6d7dfb730176c79d65702e25588ab492bd858aecd58073e777cdeaf1c9",
+        "work/eval-runs/cortes-de-video-longo/projeto/out/original-para-youtube.mp4": "e9c534aa2d4087a2320c8640373ed413951f0a25f9bd66d6a1ad7fdd724c04c0",
+        "video-viral/evals/cortes-de-video-longo/files/gravacao_longa.mp4": "e9c534aa2d4087a2320c8640373ed413951f0a25f9bd66d6a1ad7fdd724c04c0",
+        "video-viral/evals/cortes-de-video-longo/files/gravacao_longa.srt": "9bda73b5ea4e08813ebf8e82b12eb696e19be0a4439b8cec683456f6f6c5d386"
+      },
+      "limits": [
+        "Same manual authoring exercise revised after feedback; not fresh/blind agents and not independent perceptual approval.",
+        "No cost/capacity/latency measurements. No temporal playback or perceptual listening claimed.",
+        "Initial grades preserved byte-for-byte as JSON data; raw hashes describe final eligible files, not a fabricated pre-edit hash snapshot.",
+        "Original frozen r03 request criteria retained; later review.py RUBRIC edits not used to retroactively change scores."
+      ],
+      "residual_failures": [
+        "composicao-hyperframes/01: no principal composition/render/style+seek proof",
+        "composicao-hyperframes/02: no master/delivery/review hash chain or blank independent human form",
+        "cortes-de-video-longo/03: same framing/layout throughout; source label top1530 outside essential-safe y<=1500",
+        "editar-gravacao-propria/04: unchanged framing/layout; label top1530; final CTA last line one word orçamento?"
+      ]
+    },
+    "limitations": [
+      "Only listed eligible prompts, graders, execution trace, artifacts and references inspected; forbidden conclusions/results not consulted.",
+      "Two render workflows active; initial state preserved here.",
+      "Pass case means every grader passes; grader fallback accepted exactly where expressly allowed.",
+      "No perceptual playback/listening performed."
+    ],
+    "forward_reassessment": {
+      "timestamp": "2026-11-13T16:40:30.289425",
+      "graders": [
+        {
+          "case": "animacao-personagem",
+          "grader": "01-outcome",
+          "status": "pass",
+          "evidence": [
+            "response-r03.md: p01–p07 entrar/frear/olhar/testar folha/pedir ajuda/travessia/entrega/favor; ferramentas por plano",
+            "projeto/research/continuity-plan.md: mesmo rig, referências de pose, orelha/bolso, escala1:0.35 e eixo; seed não prova identidade",
+            "projeto/research/sound-plan.json: planned_only; caminho futuro audio/sound-design.wav; papéis bed/sfx, receita30s seed191 whooshes1.5s, contatos, direitos e escuta pendentes; não cria asset concluído",
+            "response-r03.md: quadros0/12/24, seek2→0→2 e17→0→17; response.md exige comparar pixels e quadrosMP4"
+          ],
+          "reason": "Agora há história/ação/continuidade e plano concreto por shot. Quadros, seek e inspeção integral são metas honestas de planejamento, não execução. Critérios de caixa/fonte/área útil e fecho estão previstos; reserva sonora parametrizada registra função futura sem fingir ativo. Realismo não foi solicitado; capacidade local identificada como animatic determinístico."
+        },
+        {
+          "case": "avatar-ugc",
+          "grader": "01-outcome",
+          "status": "pass",
+          "evidence": [
+            "response-r03.md: performance0–5/5–26/26–35 com olhar/pausa/gesto, demonstração estado-inicial→ação→resultado e hierarquia produto70–80%; source-in/out pendente",
+            "projeto/research/performance-and-sync.md: boca/WAV, bilabiais, dentes/língua/olhos/cabeça/mãos nos intervalos0–5/10–13/21–23/29–33 e integral; sem retimar produto para disfarçar erro",
+            "projeto/video.json: pendências reais e roteiros por plano; response-r03+response original bloqueiam gerador/serviço pago e robô imóvel como final"
+          ],
+          "reason": "Avança no preparo disponível e preserva avatar falante solicitado, sem gerar substituto inferior. Início/meio/fim, passagem de performance, acabamento/cama discreta e fecho têm plano; não inventa produto, cliente, render ou escuta. Pass é de preparo/bloqueio, não geração."
+        },
+        {
+          "case": "composicao-hyperframes",
+          "grader": "01-main-render",
+          "status": "fail",
+          "evidence": [
+            "commands.json: stack.py hyperframes -- --version exit1 sob NO_INSTALL",
+            "response.md: Render principal não executado; voz/WAV ausente",
+            "projeto/video.json é único artefato de projeto disponível"
+          ],
+          "reason": "Faltam composição principal, cena2D integrada, master e teste real três quadros/seek/pixels. Rubrica explicitamente diz bloqueio honesto não prova caminho de render concluído."
+        },
+        {
+          "case": "composicao-hyperframes",
+          "grader": "02-delivery-evidence",
+          "status": "fail",
+          "evidence": [
+            "response.md: Sem master não há entrega técnica aprovada, ficha gerada ou veredito0",
+            "não existem delivery.json, review, assessment ou ficha humana"
+          ],
+          "reason": "Não há cadeia master→deliver→review com hashes nem ficha independente em branco. Não há fabricação de escuta/render, mas isso não satisfaz artefatos exigidos."
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "grader": "01-long-project",
+          "status": "pass",
+          "evidence": [
+            "pedido2-longo/video.json formatgravacao16:9;source197.267s SHAe9c534aa...",
+            "commands.log footage.py import gravacao_longa.mp4 EXIT0 e captions.py import gravacao_longa.srt EXIT0;301palavras"
+          ],
+          "reason": "Projeto longo com fonte e SRT reais importados. Fonte sintética declarada e autorizada."
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "grader": "02-suggests-clips",
+          "status": "pass",
+          "evidence": [
+            "commands.log clips.py suggest --min20 --max45 --top5 EXIT0; três candidatos automáticos com tempos/razões",
+            "pedido2-longo/edit/selecao-editorial.md:00:00.500–00:46.515 lista completa/CTA;00:54.939–01:18.309 reserva/risco;01:29.234–01:55.152 constância; razões e limites factuais",
+            "pedido2-corte/out/resposta-final.md aponta arquivo editorial para usuário"
+          ],
+          "reason": "Apresenta pelo menos três candidatos com intervalos e justificativa; decisão editorial lê conteúdo e supera rank1 dependente de contexto, sem converter nota heurística em audiência."
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "grader": "03-makes-best-clip",
+          "status": "pass",
+          "evidence": [
+            "commands.log clips.py make --from0:00.5 --to0:46.515 --slug pedido2-corte EXIT0; formato corte9:16;cut/render/deliver reais",
+            "pedido2-corte/out/pedido2-corte.mp4:26.633333s1080x1920/30,H264/AAC;legenda integrada no HTML e export --no-captions",
+            "pedido2-corte/review/r02/grid.jpg observado: zoom1→1.06→1real; títulos argumentais1/2/3,headline e CTA seguros; legenda2linhas sem crédito sobreposto, acentos/numeral400 legíveis",
+            "pedido2-corte/video.json publish.ai_label=true;source original hash preservado;brief registra autoria declarada não prova terceiros;research/editorial.md e response-final identificam fonte sintética autorizada",
+            "r02 receipt/metrics/assessment/request/input têm hashes coerentes; verdict2 é explicitamente pendente sem alegar profissionalmente aprovado"
+          ],
+          "reason": "Corte coeso do próprio original, com fala única, variação de enquadramento e títulos por argumento. Proveniência/IA preservadas no projeto e resposta; fonte visual não foi substituída por placeholder. Acabamento estático observado corrige falhas anteriores. Não credita performance de avatar nem filmagem real; audio/movimento permanecem sem aprovação perceptual."
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "grader": "04-chapters-and-publish",
+          "status": "pass",
+          "evidence": [
+            "pedido2-longo/out/youtube-publicacao.md e video.json: título,descrição e capítulos00:00/00:47/01:29/02:02/02:44",
+            "commands.log import relata MP4 original197.3s;source.sha256=e9c534aa... confirmado independentemente contra arquivo; notas declaram longo sem edição e preservado para subir inteiro",
+            "SRT do mesmo relógio:47.315investimento,89.234constância,122.283retomada,164.202constância; capítulos em ordem e intervalos47/42/33/42s"
+          ],
+          "reason": "Longo final adotado é o próprio MP4 original inalterado indicado pelo projeto, não o master do corte; não existe cópia nova em out e ela não é necessária para preservar o arquivo inteiro. Tempos conferem com duração/hash e SRT, sem escuta inventada. Não há composição longa ou rota narrada a exigir master intermediário separado."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "01-recording-project",
+          "status": "pass",
+          "evidence": [
+            "work/forward-eval-r01/pedido1/video.json:format gravacao,aspect9:16,source gravacao.mp4 SHA2e0e813...",
+            "commands.log footage.py import pedido1 fonte original EXIT0;47.3s1280x720"
+          ],
+          "reason": "Projeto real e importação pelo script da skill; edição do próprio input sintético foi expressamente autorizada, sem alegar filmagem real."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "02-uses-srt",
+          "status": "pass",
+          "evidence": [
+            "commands.log captions.py import --file gravacao.srt EXIT0;65palavras",
+            "pedido1/captions/source_words.json e words.json; palavra estimated=true informa interpolação do SRT, não ASR/alinhamento"
+          ],
+          "reason": "SRT fornecido realmente importado e tempos remapeados após corte; não bloqueia por modelo ausente."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "03-retake-and-fillers",
+          "status": "pass",
+          "evidence": [
+            "commands.log footage.py cut --fillers ahn,éé,hum EXIT0;3vícios removidos",
+            "pedido1/edit/edl.json c07keep=false21.002–22.37; c08/c09 mantêm repetição posterior23.896–26.929; intervalos dos vícios6.145–7.896,19.163–20.496,33.956–35.226 omitidos",
+            "pedido1/captions/words.json59de65palavras;14trechos finais"
+          ],
+          "reason": "Silêncios/vícios e retomada inicial removidos no EDL final, mantendo a tomada completa posterior. Verificação factual por tempos/texto, sem fingir escuta."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "04-delivered-and-reviewed",
+          "status": "pass",
+          "evidence": [
+            "pedido1/out/pedido1.mp4;delivery.json approved=true,draft=false26.467s;commands.log deliver --video render/master.mp4 --no-captions EXIT0;review r02 e verdict EXIT2",
+            "pedido1/review/r02/grid.jpg observado: ator sintético original ocupa quadro; títulos por assunto e CTA de uma linha; legenda de duas linhas em área própria; acentos legíveis; sem rodapé inseguro",
+            "pedido1/edit/edl.json zoom1.00→1.06→1.00 em mudanças de assunto; x.645 preserva cabeça; composition/index.html data-has-audio=true,localInter54/52px,caption1280–1500,label275",
+            "commands.log HyperFrames audioCount1; captions já no HTML, deliver --no-captions; response-final.md explicita revisão independente pendente sem escuta/playback; ficha humana vazia",
+            "pedido1/research/seek-result.json2→0→2=0pixels diferentes;decoded-comparison.json compara snapshot1s com MP4 final sem alegar playback"
+          ],
+          "reason": "Entrega técnica vinculada por hashes ao pacote r02. Defeitos específicos da execução anterior foram corrigidos nesta nova execução: recorte varia, textos ficam na área segura, CTA não tem órfã. Rubrica permite bloqueio perceptual identificado sem chamar pronto; aplica-se essa cláusula, portanto não exijo verdict0 onde a resposta declara explicitamente revisão audiovisual pendente. Pass deste grader não é aprovação audiovisual; fonte efetiva não foi confirmada em painelGUI e sincronia/áudio ainda exigem revisão humana."
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "grader": "05-autonomous-tools",
+          "status": "pass",
+          "evidence": [
+            "commands.log import/SRT/cut/frames/render/captions/HyperFrames wrapper/deliver/review realmente executados; sem instalação/downloads",
+            "execute.py/compose.py selecionam ferramentas locais, Chrome existente e cache local; response-final.md relata sem instalação/publicação",
+            "segunda renderização altera títulos, visível no HTML e r02; não é repetição sem mudança"
+          ],
+          "reason": "Usa ferramentas disponíveis e SRT autonomamente. Escopo autorizado para editar inputs sintéticos preservado; sem catálogo instalado ou serviço pago. No-install de outro caso não foi transplantado como bloqueio à CLI deste cenário."
+        },
+        {
+          "case": "licenca-nao-comercial",
+          "grader": "01-explains-nc-license",
+          "status": "pass",
+          "evidence": [
+            "response.md: restrição não comercial não permite presumir autorização para canal monetizado; licença exata não fornecida"
+          ],
+          "reason": "Não inventa CC-BY-NC, pesos ou termos."
+        },
+        {
+          "case": "licenca-nao-comercial",
+          "grader": "02-offers-alternatives",
+          "status": "pass",
+          "evidence": [
+            "response.md: faixa própria/licenciada ou permissão comercial expressa; Tone.js/ACE-Step não autorizam faixa automaticamente"
+          ],
+          "reason": "Alternativas adequadas com direitos reais condicionais."
+        },
+        {
+          "case": "licenca-nao-comercial",
+          "grader": "03-no-gate-bypass",
+          "status": "pass",
+          "evidence": [
+            "response.md: não marcar commercial_ok true sem prova nem usar draft como licença"
+          ],
+          "reason": "Nenhum bypass recomendado."
+        },
+        {
+          "case": "marketing-e-trends",
+          "grader": "01-outcome",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: brief oferta limpeza SP, objetivo conversao, CTA WhatsApp, faltas proof/cta_destination; cinco hooks audiovisuais específicos; hook selecionado igual s01",
+            "commands.json: plan.py exit2 errors=[]; trends.py BR-SP today3-m exit0 fornece URL oficial",
+            "response.md: interesse de busca relativo não é retenção/conversão/vendas"
+          ],
+          "reason": "Planejamento contextual salvo; URL sem métricas coletadas, indisponibilidade declarada; sem prova/destino inventado, instalação ou publicação."
+        },
+        {
+          "case": "musica-instrumental",
+          "grader": "01-outcome",
+          "status": "pass",
+          "evidence": [
+            "response-r03.md: anel/traço→arcos→expansão→retorno→fecho; janelas0–3/3–10/10–19/19–26/26–30 explicitamente provisórias",
+            "projeto/research/music-timing-plan.json: BPM/onsets=null; ouvir/medir frases/transientes e registrar método/confiança; trecho fecha frase musical",
+            "projeto/video.json: voice.engine none; music.engine none; tool_plan faixa uma vez/master sem áudio; response original reconhece music.py clienteACE-Step"
+          ],
+          "reason": "Plano usa identidade e progressão próprias de instrumental, com sincronismo a ser medido sem fingir beatgrid. Preserva faixa/direitos, não impõe fala, não gera nem duplica música. Fecho respeita frase e cauda; escuta integral fica pendente como apropriado ao plano."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "01-direction-filled",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: direction.style=documentario esquematico; palette3; fonts title/captions Inter; motion13planos; transitions corte/máscara; sfx pulso/impacto"
+          ],
+          "reason": "Direção documental, cores, fontes e escolhas de movimento/transição/som preenchidas."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "02-five-hooks-scored",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: h1–h5 scores com razões; h1 Como Constantinopla caiu?; hook e s01 usam mesma pergunta"
+          ],
+          "reason": "Cinco hipóteses audiovisuais pontuadas; selecionada aparece na primeira cena."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "03-shot-list",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: seis cenas com1/2/3/3/3/2shots: mapa→muralha/artilharia→calendário→entrada→consequência; sfx por reveal/transição; direção identifica esquema, não filmagem histórica",
+            "direction.music_mood: cama licenciada ou reserva sintetizada identificada; tool_plan master + voz única; response render bloqueado"
+          ],
+          "reason": "Progressão e escolhas sonoras concretas; rota diagramática honesta adequada ao documentário solicitado sem inventar exigência de realismo não explícita. Sem crédito de execução perceptual ou áudio gerado."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "04-no-unneeded-questions",
+          "status": "pass",
+          "evidence": [
+            "response.md sem perguntas; video.json pt-BR,35s9:16 e pressupostos históricos/temporais registrados",
+            "commands.json executa new_project/plan sem pausa"
+          ],
+          "reason": "Assume padrões e segue sem perguntas redundantes."
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "grader": "05-review-before-done",
+          "status": "pass",
+          "evidence": [
+            "response.md: Render principal não executado; Sem master não há entrega técnica aprovada, ficha gerada ou veredito0",
+            "commands.json: plan exit2 missing voice_wavs; wrapper HyperFrames exit1 bloqueado"
+          ],
+          "reason": "Aplica alternativa explicitamente aceita pela rubrica: informa etapas incompletas e não declara filme profissional aprovado. Este pass não equivale a filme concluído."
+        },
+        {
+          "case": "revisao-sem-evidencia",
+          "grader": "01-outcome",
+          "status": "pass",
+          "evidence": [
+            "response.md: Só notas4 não aprovam; código2 incompleto; código3 nunca aprovação; não rodei review nem assisti/ouvi mídia ausente"
+          ],
+          "reason": "Rejeita aprovação sem inventar evidência."
+        },
+        {
+          "case": "revisor-apenas-quadros",
+          "grader": "01-modality-gate",
+          "status": "pass",
+          "evidence": [
+            "capabilities.json: visual available; motion/audio false",
+            "commands.json: review.py --check-reviewer exit1 statuspartial unavailable motion/audio",
+            "response.md: quadros não provam movimento, LUFS não prova escuta; aprovação audiovisual pendente"
+          ],
+          "reason": "Distingue capacidade/observação e recusa inferir modalidades ou aprovação."
+        },
+        {
+          "case": "serie-tres-shorts",
+          "grader": "01-three-projects",
+          "status": "pass",
+          "evidence": [
+            "episodio-1/2/3/video.json: três manifestos target_seconds30"
+          ],
+          "reason": "Três projetos separados conforme escopo estrutural do grader."
+        },
+        {
+          "case": "serie-tres-shorts",
+          "grader": "02-shared-identity",
+          "status": "pass",
+          "evidence": [
+            "Três video.json compartilham ThalitaMultilingual speed1.2 e captions Inter88; response descreve componentes/fontes compartilhados"
+          ],
+          "reason": "Identidade/voz/legendas compartilhadas documentadas."
+        },
+        {
+          "case": "serie-tres-shorts",
+          "grader": "03-not-monetized",
+          "status": "pass",
+          "evidence": [
+            "episodio-1/2/3/video.json: monetized=false"
+          ],
+          "reason": "Não monetizados."
+        },
+        {
+          "case": "serie-tres-shorts",
+          "grader": "04-distinct-hooks",
+          "status": "pass",
+          "evidence": [
+            "s01: Buracos negros não são aspiradores / Luz também tem um limite / Como enxergar o invisível"
+          ],
+          "reason": "Aberturas distintas; não prova conclusão da série."
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "grader": "01-creates-manifest",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: format narrado9:16 monetizedtrue target40; platforms tiktok/reels/shorts/kwai",
+            "commands.json new_project exit0"
+          ],
+          "reason": "Manifesto real com valores exigidos."
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "grader": "02-hook-and-length",
+          "status": "pass",
+          "evidence": [
+            "projeto/video.json: s01 Por que o céu é azul? start0 duration2; seis cenas com92 palavras",
+            "contagem independente por separação whitespace:92palavras totais; suposição de reancorar áudio medida registrada"
+          ],
+          "reason": "Gancho proposto para0–2s e92palavras dentro80–120; tempos são alvo, sem falsa medição."
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "grader": "03-commercial-music",
+          "status": "pass",
+          "evidence": [
+            "response.md: Música própria/licenciada ou termos reais dos pesos/áudio ainda a verificar; licença motor não é da faixa"
+          ],
+          "reason": "Direitos pendentes explicitamente; não exige geração neste plano."
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "grader": "04-no-silent-install",
+          "status": "pass",
+          "evidence": [
+            "work/manual-evals.py:4,7 env VIDEO_VIRAL_NO_INSTALL=1 passado a subprocess.run",
+            "commands.json só new_project/plan; response informa setup_tools.py voz sem executar; nenhum CLI direto/pagamento"
+          ],
+          "reason": "Constraint de instalação respeitado; não houve necessidade de executar HyperFrames para montar projeto/roteiro."
+        }
+      ],
+      "denominator_graders": 33,
+      "counts": {
+        "pass": 31,
+        "fail": 2,
+        "pending": 0
+      },
+      "pass_percent": 93.94,
+      "cases": [
+        {
+          "case": "animacao-personagem",
+          "status": "pass",
+          "counts": {
+            "pass": 1,
+            "fail": 0,
+            "pending": 0
+          }
+        },
+        {
+          "case": "avatar-ugc",
+          "status": "pass",
+          "counts": {
+            "pass": 1,
+            "fail": 0,
+            "pending": 0
+          }
+        },
+        {
+          "case": "composicao-hyperframes",
+          "status": "fail",
+          "counts": {
+            "pass": 0,
+            "fail": 2,
+            "pending": 0
+          }
+        },
+        {
+          "case": "cortes-de-video-longo",
+          "status": "pass",
+          "counts": {
+            "pass": 4,
+            "fail": 0,
+            "pending": 0
+          }
+        },
+        {
+          "case": "editar-gravacao-propria",
+          "status": "pass",
+          "counts": {
+            "pass": 5,
+            "fail": 0,
+            "pending": 0
+          }
+        },
+        {
+          "case": "licenca-nao-comercial",
+          "status": "pass",
+          "counts": {
+            "pass": 3,
+            "fail": 0,
+            "pending": 0
+          }
+        },
+        {
+          "case": "marketing-e-trends",
+          "status": "pass",
+          "counts": {
+            "pass": 1,
+            "fail": 0,
+            "pending": 0
+          }
+        },
+        {
+          "case": "musica-instrumental",
+          "status": "pass",
+          "counts": {
+            "pass": 1,
+            "fail": 0,
+            "pending": 0
+          }
+        },
+        {
+          "case": "pedido-unico-cinematografico",
+          "status": "pass",
+          "counts": {
+            "pass": 5,
+            "fail": 0,
+            "pending": 0
+          }
+        },
+        {
+          "case": "revisao-sem-evidencia",
+          "status": "pass",
+          "counts": {
+            "pass": 1,
+            "fail": 0,
+            "pending": 0
+          }
+        },
+        {
+          "case": "revisor-apenas-quadros",
+          "status": "pass",
+          "counts": {
+            "pass": 1,
+            "fail": 0,
+            "pending": 0
+          }
+        },
+        {
+          "case": "serie-tres-shorts",
+          "status": "pass",
+          "counts": {
+            "pass": 4,
+            "fail": 0,
+            "pending": 0
+          }
+        },
+        {
+          "case": "short-monetizado-ptbr",
+          "status": "pass",
+          "counts": {
+            "pass": 4,
+            "fail": 0,
+            "pending": 0
+          }
+        }
+      ],
+      "denominator_cases": 13,
+      "case_counts": {
+        "pass": 12,
+        "fail": 1,
+        "pending": 0
+      },
+      "isolated_forward_test": {
+        "cases": 2,
+        "graders": 9,
+        "pass_graders": 9,
+        "fail_graders": 0,
+        "pending_graders": 0,
+        "pass_cases": 2,
+        "execution": "work/forward-eval-r01:pedido1 and pedido2-corte/pedido2-longo;r02",
+        "author_context": "New author context received SKILL/prompts/sources; no graders/prior outputs/conclusions, per parent dispatch. Later authorized clarification allowed editing supplied synthetic fixtures without claiming camera footage.",
+        "statistical_limit": "One fresh author run on two closely related synthetic editing fixtures; not random independent trials, no repeated seeds/authors, no estimate of general success probability."
+      },
+      "evidence_provenance": {
+        "editar-gravacao-propria": "forward-eval-r01/pedido1 r02",
+        "cortes-de-video-longo": "forward-eval-r01/pedido2-corte r02 + pedido2-longo original unchanged",
+        "other_11_cases": "Prior reassessment manual revised exercise, copied without changing any grade/evidence/reason."
+      },
+      "render_linkage": [
+        {
+          "project": "pedido1",
+          "video_sha256": "fb1bb385146eaded17af0c85027c8505742027a53ea3b720271dc1fb73652f21",
+          "semantic_manifest_sha256": "0fd3dbebc3d9aea6ad4e71dd6d2294a0db59ab9a50b5fa9b96a33493656b2840",
+          "raw_manifest_sha256": "3c67c946d481387c6d871663a1f117181d864497a2fe364a27e9019bb374cabd",
+          "receipt_matches": true,
+          "metrics_matches": true,
+          "assessment_matches": true,
+          "request_matches": true,
+          "input_matches": true,
+          "approved": true,
+          "draft": false,
+          "verdict": 2,
+          "audiovisual_approval": false
+        },
+        {
+          "project": "pedido2-corte",
+          "video_sha256": "de622d01f5cca3acd19f57b46ea206d56e55a07b1c54f330279716a46750b8d3",
+          "semantic_manifest_sha256": "65b044d522b5deeb3416304ef36d9108670c08b1220b31d932ad38806c47ab4b",
+          "raw_manifest_sha256": "a62d0259ce1b62e9cd78e170375f3705e88d8f1676262b8fd2e8782f8f9c8208",
+          "receipt_matches": true,
+          "metrics_matches": true,
+          "assessment_matches": true,
+          "request_matches": true,
+          "input_matches": true,
+          "approved": true,
+          "draft": false,
+          "verdict": 2,
+          "audiovisual_approval": false
+        }
+      ],
+      "raw_sha256": {
+        "<workspace>/work/forward-eval-r01/pedido1/out/pedido1.mp4": "fb1bb385146eaded17af0c85027c8505742027a53ea3b720271dc1fb73652f21",
+        "work/forward-eval-r01/pedido1/video.json": "3c67c946d481387c6d871663a1f117181d864497a2fe364a27e9019bb374cabd",
+        "work/forward-eval-r01/pedido1/composition/index.html": "2570132ec98314b70173a8203e4a01dfe3e110e60645935f1b2e8bb0888cd0bd",
+        "work/forward-eval-r01/pedido1/out/delivery.json": "d178821abaebd0a5759e6daaf152a90cd8db4d3635c4bd2772289f6369101d10",
+        "work/forward-eval-r01/pedido1/out/resposta-final.md": "71ef55599fd10d5793ca3d86549e2b5785da7434bdf8144a1b347a4b60e82bf1",
+        "work/forward-eval-r01/pedido1/review/r02/metrics.json": "bfcf337811cd2a61bd43bfc7cc1d287b5b51221835dd3d95e27c23d5c2cb11a7",
+        "work/forward-eval-r01/pedido1/review/r02/assessment.json": "cadb9286431db44dc12999217fdddaadae45ad7ed9e42a159d2473429026a40b",
+        "work/forward-eval-r01/pedido1/review/r02/input/request.json": "3d1b5d039e98b78c617825f8981316d28aa7165a24be607e799df1e37def51d8",
+        "work/forward-eval-r01/pedido1/review/r02/input/video.mp4": "fb1bb385146eaded17af0c85027c8505742027a53ea3b720271dc1fb73652f21",
+        "work/forward-eval-r01/pedido1/review/r02/grid.jpg": "29483fba1b3568d5246e9e0c1f1018cd9ed2adde3057d1cca0fd649201ead673",
+        "work/forward-eval-r01/pedido1/review/r02/hook.jpg": "52058b3b2aaa734b114579273748dcfb187ee62e420c7615e3fd663936d9a3e6",
+        "work/forward-eval-r01/pedido1/review/r02/ficha-humana.md": "8393a54439d2dd3756a386f27d088316c06118248e87bdbf224b99f3f04cd45e",
+        "work/forward-eval-r01/pedido1/edit/edl.json": "2d3493f0f6b76c4be63b854bfc6c510884c36b37b43d6fd1c127b460267a8d6e",
+        "work/forward-eval-r01/pedido1/captions/source_words.json": "0eddcb91f2c8c8d59d2ff2d7619eee633fea8f9a2e807f18ffc2e2e2a228269d",
+        "work/forward-eval-r01/pedido1/captions/words.json": "243531aa4013ba1fbfb04a102acbfd04a1854d4db2105a3f1d3d0d2acd44ad00",
+        "work/forward-eval-r01/pedido1/captions/captions.json": "b7c264673c7533548037c92c626a617f0e8c3265a8d04a1711673620266db5e4",
+        "work/forward-eval-r01/pedido1/captions/captions.ass": "93454debe4cb23ea5dbabb8971d793aa4625248c132dffaf3422fa44ed5d2388",
+        "work/forward-eval-r01/pedido1/research/seek-result.json": "f24aea6ae5cdaa4130d02c17cbd8a5abc8493c8da6878b30c538ab7f0f743f3e",
+        "work/forward-eval-r01/pedido1/research/decoded-comparison.json": "d04e35c6dc2976e3e51c5eb08673870c13ea7726d95e16b2e5f959748769e3ba",
+        "<workspace>/work/forward-eval-r01/pedido2-corte/out/pedido2-corte.mp4": "de622d01f5cca3acd19f57b46ea206d56e55a07b1c54f330279716a46750b8d3",
+        "work/forward-eval-r01/pedido2-corte/video.json": "a62d0259ce1b62e9cd78e170375f3705e88d8f1676262b8fd2e8782f8f9c8208",
+        "work/forward-eval-r01/pedido2-corte/composition/index.html": "48cfb070ee8f4b0582d8899cdda3ef8d0df9bd99882923f963d4cb8e70284f94",
+        "work/forward-eval-r01/pedido2-corte/out/delivery.json": "1aef4679b63a91bcf93c27e4a57b3b8f6675ba640cf1ebce7f45c67b177766b6",
+        "work/forward-eval-r01/pedido2-corte/out/resposta-final.md": "e9560ec09af48ca6b7a738d97631e1055249bcf3f7cdd87cbd89c8fa184c3081",
+        "work/forward-eval-r01/pedido2-corte/review/r02/metrics.json": "acdfae7ddaefeb7f0e7625c9c7e6415c793919caad5d63fe02ac8367e933398c",
+        "work/forward-eval-r01/pedido2-corte/review/r02/assessment.json": "d42bd0636ad5513ce5058f71c3af82a0f9e1e21769b21f1396a85e2c43acf068",
+        "work/forward-eval-r01/pedido2-corte/review/r02/input/request.json": "658dddd94976be907f0a3ef12f28efcf6fbba5aa3b409c09dc84172b0cc41a6d",
+        "work/forward-eval-r01/pedido2-corte/review/r02/input/video.mp4": "de622d01f5cca3acd19f57b46ea206d56e55a07b1c54f330279716a46750b8d3",
+        "work/forward-eval-r01/pedido2-corte/review/r02/grid.jpg": "cca214f32630953564c0e3d29f38c4c1714054d2077e9e740f77f2ead0a88ee7",
+        "work/forward-eval-r01/pedido2-corte/review/r02/hook.jpg": "68e1e92ee41f14905db8a565c38a207943f1b4d87ad42ac7a4a97bdf7d3c182c",
+        "work/forward-eval-r01/pedido2-corte/review/r02/ficha-humana.md": "701f3f4fcaf79c1a552855ed5a928b95fa3472d1d731509219166f1058cef431",
+        "work/forward-eval-r01/pedido2-corte/edit/edl.json": "e53af1ef601d762762b235515cf89f6a63ff3f1f3f778f1d441f25afe909108d",
+        "work/forward-eval-r01/pedido2-corte/captions/source_words.json": "187f8a8aec1d0a5ac598e06cded1e4f272319a99992389c073e88b97c3dbd702",
+        "work/forward-eval-r01/pedido2-corte/captions/words.json": "b20f519ba629ec517c8094dd38d05be336ebb73f95e5e3a427231bcabc26c58f",
+        "work/forward-eval-r01/pedido2-corte/captions/captions.json": "ca5b505e146382affadc01a2e9aa0947b32170e8d4ea669aa4c2394ba71501e0",
+        "work/forward-eval-r01/pedido2-corte/captions/captions.ass": "455ae4eced6e65260a4587ca0f4bd7d097483e709602ffffd29cde5c59548153",
+        "work/forward-eval-r01/pedido2-corte/research/seek-result.json": "4fcf18b8a82f8c7fe89ec796c855b5c084d9c09c47b2225c3f7735bd66ba8016",
+        "work/forward-eval-r01/pedido2-corte/research/decoded-comparison.json": "dff64aa44c6ab977bd470df09d29dc46005c521f3e3ad7104814fa54632bf1cd",
+        "work/forward-eval-r01/commands.log": "66f1c583737ff72311861257642352a4cf3dee6701ef1f8ecbbccca3c31d1afb",
+        "work/forward-eval-r01/execute.py": "978b8bfad73602cab455fd4a241a5174b9f72911054dca7964f6843c1d2791a5",
+        "work/forward-eval-r01/prepare.py": "4a43fd30b1f5c6ff18d74f92aa893697b0839fd51e2f227878b28ae96e2485ee",
+        "work/forward-eval-r01/metadata.py": "4ad55d42d46651805339a9d3562dcdf19c4ab83737c27b55b657a770e3c9e9fb",
+        "work/forward-eval-r01/pedido2-longo/video.json": "fd5f4e27741c397d4c1253ca83b5f186127928bd69586473519c3fd506e2e003",
+        "work/forward-eval-r01/pedido2-longo/out/youtube-publicacao.md": "d82f3d69d86bee9be0b93886bc0bde955866bd0f9621b6a0be93b407ed9b4ed4",
+        "work/forward-eval-r01/pedido2-longo/edit/selecao-editorial.md": "f9008c973c9a27ec20614cb7e2cdb93d9b66ef73135ad728be593743243929f3",
+        "work/forward-eval-r01/pedido2-longo/captions/source_words.json": "8192231d5fc1464f5d8c3f79ae2afed1077d974a4dfc2d7768fccbd9023fae36",
+        "video-viral/evals/editar-gravacao-propria/prompt.md": "d5d6fb2681394483a0f1c416c641b998f2913f3327c718643781e2a2d7d1603e",
+        "video-viral/evals/editar-gravacao-propria/graders/01-recording-project.md": "c7dacf5a1ac437aa1dc502b88b2f7fece62d0f907d59764a16c44e03cb98c068",
+        "video-viral/evals/editar-gravacao-propria/graders/02-uses-srt.md": "ea6bd4ed2c25082b74b7f0ccf78d15d4a7ee92b7277c1884156a911a915afccc",
+        "video-viral/evals/editar-gravacao-propria/graders/03-retake-and-fillers.md": "e54d214a9be979f5cf1e96f9ff48c5e1903db6518ab389827e63b8dbf852686a",
+        "video-viral/evals/editar-gravacao-propria/graders/04-delivered-and-reviewed.md": "efe54b3c645682ce2e2227352ce56cc09867a26705c289b7aaca558d81945619",
+        "video-viral/evals/editar-gravacao-propria/graders/05-autonomous-tools.md": "9afdac130e1fd2ed9699c7b6762a5b8081754e08b681a60af04c5e7540133d3d",
+        "video-viral/evals/editar-gravacao-propria/files/gravacao.mp4": "2e0e813b0a4ba94595b0728a54a55d314cb01b10173ea3c92d57e34f16338f54",
+        "video-viral/evals/editar-gravacao-propria/files/gravacao.srt": "5ae9bafa0e8e076c02774121ad7463291fa4e0e010eafec72460821353f47356",
+        "video-viral/evals/cortes-de-video-longo/prompt.md": "c2dd0be5f6ef92974601ebf5c87a5032b0c796abe4451a4ed16fe3d89fd1809c",
+        "video-viral/evals/cortes-de-video-longo/graders/01-long-project.md": "bc5b8b024beebe5f4c9b02e8a2176a72a3b29e3138c2f665ccc8532cb26e3152",
+        "video-viral/evals/cortes-de-video-longo/graders/02-suggests-clips.md": "8e98d51aabb6b4de62a6f22c379551f90369aedb8a7185eef861f43ecc638392",
+        "video-viral/evals/cortes-de-video-longo/graders/03-makes-best-clip.md": "740f56346667423a73d0e25f5a63b4421f588f4658fb9efd09a90c79c68ac67b",
+        "video-viral/evals/cortes-de-video-longo/graders/04-chapters-and-publish.md": "265ac4a94b804afb1b117860fdf47ad289bf549764b3475473635164c6c3e676",
+        "video-viral/evals/cortes-de-video-longo/files/gravacao_longa.mp4": "e9c534aa2d4087a2320c8640373ed413951f0a25f9bd66d6a1ad7fdd724c04c0",
+        "video-viral/evals/cortes-de-video-longo/files/gravacao_longa.srt": "9bda73b5ea4e08813ebf8e82b12eb696e19be0a4439b8cec683456f6f6c5d386"
+      },
+      "remaining_failures": [
+        "composicao-hyperframes/01-main-render",
+        "composicao-hyperframes/02-delivery-evidence"
+      ],
+      "limitations": [
+        "Aggregate31/33 combines11 older manual scenarios and2 forward-tested scenarios; not31/33 tests of fresh agents.",
+        "No audiovisual approval: verdict2, human forms blank; no temporal playback/listening by this evaluator.",
+        "Font local declaration/files/accents verified; effective browser-face GUI panel not observed. SRT word times interpolated; fine lip/audio sync remains human review.",
+        "Long source unchanged, original197.267s selected for full upload; no separate copy in new out.",
+        "No cost/capacity/latency measurement; local trace timings do not provide model comparison.",
+        "No reading of run-notes.md, author report scores/self-criticism or forbidden prior audit conclusions."
+      ]
+    }
+  },
+  "full_perceptual_review": false,
+  "ci_remote_executed": false,
+  "published": false,
+  "installed_skill_updated": false,
+  "publication_version": "2.4.1",
+  "publication_note": "Audit results are historical; publication/install are tracked by PRs and Git history."
+}

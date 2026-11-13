@@ -36,6 +36,22 @@ export function validateSamples(samples, duration) {
   // OfflineAudioContext arredonda o tamanho para frames inteiros (floor/round conforme o browser).
   if (!samples.length || Math.abs(samples.length - Math.ceil(duration * 44100)) > 1 || samples.some(n => !Number.isFinite(n) || Math.abs(n) > 1)) throw new Error('Rendered audio has invalid duration, samples or amplitude');
 }
+// Transfer IEEE-754 samples as bytes instead of millions of JSON numbers. The browser and
+// Node run on the same host; Float32Array preserves the rendered samples exactly.
+export async function renderSamples(page, spec) {
+  const encoded = await page.evaluate(async s => {
+    const samples = await window.renderSound(s);
+    const floats = samples instanceof Float32Array ? samples : Float32Array.from(samples);
+    const bytes = new Uint8Array(floats.buffer, floats.byteOffset, floats.byteLength);
+    let binary = '';
+    for (let i = 0; i < bytes.length; i += 32768)
+      binary += String.fromCharCode(...bytes.subarray(i, i + 32768));
+    return btoa(binary);
+  }, spec);
+  const bytes = Uint8Array.from(Buffer.from(encoded, 'base64'));
+  if (bytes.byteLength % 4) throw new Error('Invalid audio byte length');
+  return new Float32Array(bytes.buffer);
+}
 export async function generate(project, options = {}) {
   const root = await realpath(project);
   const specPath = await safePath(root, options.spec || 'edit/sound.json');
@@ -55,7 +71,7 @@ export async function generate(project, options = {}) {
     const page = await browser.newPage();
     await page.setRequestInterception(true); page.on('request', req => req.url().startsWith('file:') || req.url() === 'about:blank' ? req.continue() : req.abort());
     await page.goto('about:blank'); await page.addScriptTag({ content: await readFile(script, 'utf8') });
-    const samples = await page.evaluate(s => window.renderSound(s), spec);
+    const samples = await renderSamples(page, spec);
     validateSamples(samples, spec.duration);
     const audio = wav(samples);
     const receipt = { kind: 'sound-design-smoke', toneVersion: tonePackage.version, sampleRate: 44100, channels: 1, bitsPerSample: 16, duration: spec.duration, frames: samples.length, spec, specSha256: hash(source), wavSha256: hash(audio), note: 'Technical smoke; not aesthetic approval. Oscillator rendering can vary across browser versions and platforms.' };

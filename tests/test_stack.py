@@ -52,6 +52,34 @@ class StackTests(unittest.TestCase):
         self.assertTrue(run.call_args_list)
         self.assertTrue(all(call.args[0][1:3] == ['-I', '-c'] for call in run.call_args_list))
 
+    def test_check_env_broken_executables_are_not_ready(self):
+        from unittest.mock import patch
+        from types import SimpleNamespace
+        import subprocess
+        import check_env
+        with patch.object(check_env.shutil, 'which', return_value='broken'):
+            for failure in (SimpleNamespace(returncode=1, stdout='', stderr='failed'),
+                            OSError('cannot execute'), subprocess.TimeoutExpired('broken', 20)):
+                with self.subTest(failure=failure):
+                    args = {'side_effect': failure} if isinstance(failure, Exception) else {'return_value': failure}
+                    with patch.object(check_env.subprocess, 'run', **args):
+                        self.assertIsNone(check_env.cmd_version('ffmpeg'))
+
+    def test_doctor_reports_corrupt_package_and_continues(self):
+        import tempfile
+        from stack import doctor
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            package = root / 'node_modules/hyperframes/package.json'
+            package.parent.mkdir(parents=True)
+            for contents in ('{broken', '[]', '{}'):
+                package.write_text(contents, encoding='utf-8')
+                report = doctor(root)
+                first = report['modules'][0]
+                self.assertFalse(first['installed'])
+                self.assertIn('package.json', first['error'])
+                self.assertEqual(len(report['modules']), 16)
+
     def test_catalog_matches_chosen_stack(self):
         data = json.loads((ROOT / 'assets/stack.json').read_text(encoding='utf-8'))
         self.assertEqual(data['version'], '2.0.0')

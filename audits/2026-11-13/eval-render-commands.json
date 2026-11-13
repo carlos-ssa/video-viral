@@ -1,0 +1,574 @@
+[
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "plan-before",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/plan.py",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto"
+    ],
+    "code": 0,
+    "seconds": 0.077,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\plan-before.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "aroll",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/footage.py",
+      "render",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto"
+    ],
+    "code": 0,
+    "seconds": 3.763,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\aroll.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "captions",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/captions.py",
+      "ass",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+      "--words",
+      "5"
+    ],
+    "code": 0,
+    "seconds": 0.101,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\captions.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "lint",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/stack.py",
+      "hyperframes",
+      "--",
+      "lint",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\composition"
+    ],
+    "code": 0,
+    "seconds": 0.443,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\lint.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "check",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/stack.py",
+      "hyperframes",
+      "--",
+      "check",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\composition",
+      "--json"
+    ],
+    "code": 0,
+    "seconds": 7.72,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\check.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "render-hyperframes",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/stack.py",
+      "hyperframes",
+      "--screenshot",
+      "--",
+      "render",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\composition",
+      "--output",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\master.mp4",
+      "--fps",
+      "30",
+      "--workers",
+      "1",
+      "--quality",
+      "looks"
+    ],
+    "code": 0,
+    "seconds": 86.787,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\render-hyperframes.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "deliver",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/deliver.py",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+      "--video",
+      "render/master.mp4",
+      "--no-music"
+    ],
+    "code": 0,
+    "seconds": 7.453,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\deliver.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "review",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/review.py",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+      "--producer-id",
+      "node_setup:eval"
+    ],
+    "code": 0,
+    "seconds": 5.282,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\review.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "verdict",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/review.py",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+      "--verdict"
+    ],
+    "code": 2,
+    "seconds": 0.12,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\verdict.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "plan-before",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/plan.py",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado"
+    ],
+    "code": 0,
+    "seconds": 0.121,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\plan-before.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "aroll",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/footage.py",
+      "render",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado"
+    ],
+    "code": 0,
+    "seconds": 1.86,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\aroll.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "captions",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/captions.py",
+      "ass",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+      "--words",
+      "5"
+    ],
+    "code": 0,
+    "seconds": 0.086,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\captions.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "lint",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/stack.py",
+      "hyperframes",
+      "--",
+      "lint",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\composition"
+    ],
+    "code": 0,
+    "seconds": 0.45,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\lint.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "check",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/stack.py",
+      "hyperframes",
+      "--",
+      "check",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\composition",
+      "--json"
+    ],
+    "code": 0,
+    "seconds": 6.494,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\check.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "render-hyperframes",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/stack.py",
+      "hyperframes",
+      "--screenshot",
+      "--",
+      "render",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\composition",
+      "--output",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\master.mp4",
+      "--fps",
+      "30",
+      "--workers",
+      "1",
+      "--quality",
+      "looks"
+    ],
+    "code": 0,
+    "seconds": 47.863,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\render-hyperframes.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "deliver",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/deliver.py",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+      "--video",
+      "render/master.mp4",
+      "--no-music"
+    ],
+    "code": 0,
+    "seconds": 4.104,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\deliver.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "review",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/review.py",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+      "--producer-id",
+      "node_setup:eval"
+    ],
+    "code": 0,
+    "seconds": 2.27,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\review.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "verdict",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/review.py",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+      "--verdict"
+    ],
+    "code": 2,
+    "seconds": 0.093,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\verdict.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "deliver-utf8",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/deliver.py",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+      "--video",
+      "render/master.mp4",
+      "--no-music"
+    ],
+    "code": 0,
+    "seconds": 6.013,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\deliver-utf8.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "review-utf8",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/review.py",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+      "--producer-id",
+      "node_setup:eval"
+    ],
+    "code": 0,
+    "seconds": 3.569,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\review-utf8.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "verdict-utf8",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/review.py",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+      "--verdict"
+    ],
+    "code": 2,
+    "seconds": 0.102,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\verdict-utf8.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "deliver-utf8",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/deliver.py",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+      "--video",
+      "render/master.mp4",
+      "--no-music"
+    ],
+    "code": 0,
+    "seconds": 3.819,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\deliver-utf8.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "review-utf8",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/review.py",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+      "--producer-id",
+      "node_setup:eval"
+    ],
+    "code": 0,
+    "seconds": 2.379,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\review-utf8.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "verdict-utf8",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/review.py",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+      "--verdict"
+    ],
+    "code": 2,
+    "seconds": 0.102,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\verdict-utf8.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "aroll-fullstage",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/footage.py",
+      "render",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto"
+    ],
+    "code": 0,
+    "seconds": 14.422,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\aroll-fullstage.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "plan-fullstage",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/plan.py",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto"
+    ],
+    "code": 0,
+    "seconds": 0.099,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\plan-fullstage.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "check-fullstage",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/stack.py",
+      "hyperframes",
+      "--",
+      "check",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\composition",
+      "--json"
+    ],
+    "code": 0,
+    "seconds": 9.428,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\check-fullstage.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "render-fullstage",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/stack.py",
+      "hyperframes",
+      "--screenshot",
+      "--",
+      "render",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\composition",
+      "--output",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\master.mp4",
+      "--fps",
+      "30",
+      "--workers",
+      "1",
+      "--quality",
+      "looks"
+    ],
+    "code": 0,
+    "seconds": 82.763,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\render-fullstage.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "deliver-fullstage",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/deliver.py",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+      "--video",
+      "render/master.mp4",
+      "--no-music"
+    ],
+    "code": 0,
+    "seconds": 5.766,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\deliver-fullstage.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "review-fullstage",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/review.py",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+      "--producer-id",
+      "node_setup:eval"
+    ],
+    "code": 0,
+    "seconds": 3.177,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\review-fullstage.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "step": "verdict-fullstage",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/review.py",
+      "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+      "--verdict"
+    ],
+    "code": 2,
+    "seconds": 0.164,
+    "log": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\verdict-fullstage.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "aroll-fullstage",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/footage.py",
+      "render",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado"
+    ],
+    "code": 0,
+    "seconds": 7.063,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\aroll-fullstage.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "plan-fullstage",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/plan.py",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado"
+    ],
+    "code": 0,
+    "seconds": 0.077,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\plan-fullstage.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "check-fullstage",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/stack.py",
+      "hyperframes",
+      "--",
+      "check",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\composition",
+      "--json"
+    ],
+    "code": 0,
+    "seconds": 5.974,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\check-fullstage.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "render-fullstage",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/stack.py",
+      "hyperframes",
+      "--screenshot",
+      "--",
+      "render",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\composition",
+      "--output",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\master.mp4",
+      "--fps",
+      "30",
+      "--workers",
+      "1",
+      "--quality",
+      "looks"
+    ],
+    "code": 0,
+    "seconds": 45.671,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\render-fullstage.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "deliver-fullstage",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/deliver.py",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+      "--video",
+      "render/master.mp4",
+      "--no-music"
+    ],
+    "code": 0,
+    "seconds": 3.246,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\deliver-fullstage.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "review-fullstage",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/review.py",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+      "--producer-id",
+      "node_setup:eval"
+    ],
+    "code": 0,
+    "seconds": 2.121,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\review-fullstage.log"
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "step": "verdict-fullstage",
+    "command": [
+      "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+      "scripts/review.py",
+      "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+      "--verdict"
+    ],
+    "code": 2,
+    "seconds": 0.109,
+    "log": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\verdict-fullstage.log"
+  }
+]

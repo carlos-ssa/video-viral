@@ -8,11 +8,26 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from clips import cmd_make
+from clips import cmd_make, cmd_suggest
 from footage import remap_words
 
 
 class ClipsTests(unittest.TestCase):
+    def test_invalid_suggestion_limits_fail_before_reading_transcript(self):
+        for minimum, maximum, top in ((0, 30, 1), (40, 30, 1), (1, float('nan'), 1), (1, 30, 0)):
+            with self.subTest(minimum=minimum, maximum=maximum, top=top):
+                with self.assertRaisesRegex(SystemExit, '--min'):
+                    cmd_suggest(Path('unused'), {}, Namespace(min=minimum, max=maximum, top=top))
+
+    def test_invalid_ranges_do_not_create_child_projects(self):
+        for start, end in (('5', '4.9'), ('-1', '2'), ('1', '11')):
+            with self.subTest(start=start, end=end), tempfile.TemporaryDirectory() as temp:
+                args = Namespace(rank=None, from_=start, to=end)
+                with patch('clips.subprocess.run') as execute:
+                    with self.assertRaises((SystemExit, ValueError)):
+                        cmd_make(Path(temp), {'source': {'footage': 'source.mp4', 'range': [0, 10]}}, args)
+                    execute.assert_not_called()
+
     def test_make_preserves_source_license_provenance_and_ai_label(self):
         with tempfile.TemporaryDirectory() as temp:
             parent = Path(temp)

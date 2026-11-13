@@ -16,7 +16,7 @@ PNG = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4
 
 class ComfyTests(unittest.TestCase):
     def test_api_success_failure_and_source_integrity(self):
-        state = {'fail': False, 'wrong_image': False}
+        state = {'fail': False, 'wrong_image': False, 'no_output': False, 'malformed': False}
 
         class Handler(BaseHTTPRequestHandler):
             def log_message(self, *args):
@@ -32,8 +32,8 @@ class ComfyTests(unittest.TestCase):
                 self.send_response(200)
                 self.end_headers()
                 if self.path.startswith('/history/'):
-                    self.wfile.write(json.dumps({'test': {'status': {'status_str': 'error' if state['fail'] else 'success'},
-                        'outputs': {'9': {'images': [{'filename': 'output.png', 'subfolder': '', 'type': 'output'}]}}}}).encode())
+                    self.wfile.write(json.dumps({'test': {'status': [] if state['malformed'] else {'status_str': 'error' if state['fail'] else 'success'},
+                        'outputs': {} if state['no_output'] else {'9': {'images': [{'filename': 'output.png', 'subfolder': '', 'type': 'output'}]}}}}).encode())
                 else:
                     self.wfile.write(b'not image' if state['wrong_image'] else PNG)
 
@@ -52,7 +52,7 @@ class ComfyTests(unittest.TestCase):
                 self.assertEqual((proj / 'assets/image.png').read_bytes(), PNG)
                 self.assertIsNone(load_manifest(proj)['assets'][0]['commercial_ok'])
                 before = (proj / 'video.json').read_bytes()
-                for mode in ('fail', 'wrong_image'):
+                for mode in ('fail', 'wrong_image', 'no_output', 'malformed'):
                     state[mode] = True
                     with self.assertRaises(ComfyError):
                         execute(proj, workflow, '9', 'assets/image.png', endpoint)

@@ -35,25 +35,35 @@ print(json.dumps(out))
 
 def cmd_version(cmd, args=("-version",)):
     exe = shutil.which(cmd)
+    if not exe and cmd == "blender" and os.name == "nt":
+        exe = next(Path(os.environ.get("ProgramFiles", "C:/Program Files")).glob("Blender Foundation/*/blender.exe"), None)
     if not exe:
         return None
     try:
         r = subprocess.run([exe, *args], capture_output=True, text=True, timeout=20, errors="replace")
+        if r.returncode != 0:
+            return None
         return (r.stdout or r.stderr).strip().splitlines()[0] if (r.stdout or r.stderr) else "ok"
-    except Exception:
-        return "ok"
+    except (OSError, subprocess.SubprocessError):
+        return None
 
 
 def gpu():
     exe = shutil.which("nvidia-smi")
     if not exe:
         return None
-    r = subprocess.run([exe, "--query-gpu=name,memory.total,memory.used", "--format=csv,noheader,nounits"],
-                       capture_output=True, text=True, errors="replace")
+    try:
+        r = subprocess.run([exe, "--query-gpu=name,memory.total,memory.used", "--format=csv,noheader,nounits"],
+                           capture_output=True, text=True, errors="replace", timeout=20)
+    except (OSError, subprocess.SubprocessError):
+        return None
     if r.returncode != 0 or not r.stdout.strip():
         return None
-    name, total, used = [x.strip() for x in r.stdout.strip().splitlines()[0].split(",")]
-    return {"name": name, "vram_mb": int(total), "free_mb": int(total) - int(used)}
+    try:
+        name, total, used = [x.strip() for x in r.stdout.strip().splitlines()[0].rsplit(",", 2)]
+        return {"name": name, "vram_mb": int(total), "free_mb": int(total) - int(used)}
+    except ValueError:
+        return None
 
 
 def pythons(extra):
@@ -117,7 +127,8 @@ def main():
         return next((p["python"] for p in pys if all(p.get(m) for m in mods)), None)
 
     ff_ok = bool(tools["ffmpeg"]) and bool(tools["ffprobe"])
-    node_major = major(tools["node"], r"v(\d+)")
+    node_match = re.search(r"v(\d+)\.(\d+)\.(\d+)", tools["node"] or "")
+    node_ok = bool(node_match) and tuple(map(int, node_match.groups())) >= (22, 12, 0)
     voice_py = py_with("edge_tts")
     cap_py = py_with("faster_whisper")
     node_root = Path(os.environ.get("VIDEO_VIRAL_NODE_ROOT", str(Path.home() / ".video-viral/node-v2")))
@@ -126,7 +137,7 @@ def main():
         ("3 Voz (Edge TTS)", bool(voice_py) and ff_ok,
          f"{voice_py}; FFmpeg/ffprobe necessários; síntese online (rede/vozes não verificadas)" if voice_py else "setup_tools.py voz"),
         ("4 Legendas (faster-whisper)", bool(cap_py), cap_py or "setup_tools.py legendas"),
-        ("5 Visual (HyperFrames)", node_major >= 22 and ff_ok and hf_package.is_file(), f"node {tools['node'] or 'ausente'}; precisa 22+ (setup_tools.py base)"),
+        ("5 Visual (HyperFrames)", node_ok and ff_ok and hf_package.is_file(), f"node {tools['node'] or 'ausente'}; precisa 22.12+, FFmpeg e HyperFrames em {node_root} (setup_tools.py hyperframes)"),
         ("5 Visual (Blender, opcional)", bool(tools["blender"]), tools["blender"] or "setup_tools.py blender"),
         ("5 Visual (ComfyUI, opcional)", comfy, "rodando em 127.0.0.1:8188" if comfy else "não está rodando"),
         ("7 Entregar (FFmpeg)", ff_ok, tools["ffmpeg"] or "ffmpeg ausente"),
@@ -154,7 +165,7 @@ def main():
         fallbacks.append("voz: forneça WAVs e use voice.py --from-wavs; não há outro motor automático")
     if not cap_py:
         fallbacks.append("legendas: captions.py estimate (tempos aproximados)")
-    if node_major < 22:
+    if not node_ok or not hf_package.is_file():
         fallbacks.append("visual: ambiente HyperFrames indisponível; base FFmpeg é rascunho, não acabamento aprovado")
     if fallbacks and ff_ok:
         print("\nInstale somente o que a tarefa usa e é permitido: python scripts/setup_tools.py <grupo...>. "

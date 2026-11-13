@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { readFileSync, existsSync, mkdirSync, writeFileSync, renameSync, unlinkSync } from 'node:fs';
+import { readFileSync, existsSync, mkdirSync, writeFileSync, linkSync, unlinkSync } from 'node:fs';
 import { createHash, randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -10,7 +10,8 @@ export function optimize(input, output, nodeRoot) {
   const source = path.resolve(input), target = path.resolve(output);
   if (source === target || path.extname(source).toLowerCase() !== '.glb' || path.extname(target).toLowerCase() !== '.glb')
     throw new Error('Use entrada e saída GLB diferentes; a fonte é preservada.');
-  if (existsSync(target)) throw new Error('Saída já existe; escolha outro arquivo.');
+  const receiptPath = `${target}.receipt.json`;
+  if (existsSync(target) || existsSync(receiptPath)) throw new Error('Saída ou recibo já existe; escolha outro arquivo.');
   const data = readFileSync(source);
   if (data.subarray(0, 4).toString() !== 'glTF') throw new Error('Entrada não é GLB.');
   const require = createRequire(path.join(nodeRootFrom(nodeRoot), 'package.json'));
@@ -27,6 +28,8 @@ export function optimize(input, output, nodeRoot) {
   mkdirSync(path.dirname(target), { recursive: true });
   const temporary = path.join(path.dirname(target), `${randomUUID()}.glb`);
   const hash = (buffer) => createHash('sha256').update(buffer).digest('hex');
+  let published = false, receiptPublished = false;
+  const temporaryReceipt = `${temporary}.receipt.json`;
   try {
     // Conservative optimization keeps loading independent of Draco/Meshopt/KTX2 decoders.
     const result = spawnSync(process.execPath, [cli, 'optimize', source, temporary,
@@ -34,13 +37,20 @@ export function optimize(input, output, nodeRoot) {
     if (result.error || result.status !== 0) throw new Error(`glTF Transform falhou: ${(result.stderr || result.error?.message || '').slice(-600)}`);
     const optimized = readFileSync(temporary);
     if (optimized.subarray(0, 4).toString() !== 'glTF') throw new Error('Saída inválida.');
-    renameSync(temporary, target);
     const receipt = { tool: 'glTF Transform', input_sha256: hash(data), output_sha256: hash(optimized),
       input_bytes: data.length, output_bytes: optimized.length, source_preserved: true,
       compression: 'none; no decoder required', visual_quality_verified: false };
-    writeFileSync(`${target}.receipt.json`, JSON.stringify(receipt, null, 2));
+    writeFileSync(temporaryReceipt, JSON.stringify(receipt, null, 2), { flag: 'wx' });
+    // Exclusive hard links publish complete artifacts without replacing concurrent writers.
+    linkSync(temporary, target); published = true;
+    linkSync(temporaryReceipt, receiptPath); receiptPublished = true;
     return receipt;
-  } finally { if (existsSync(temporary)) unlinkSync(temporary); }
+  } catch (error) {
+    if (published && !receiptPublished) unlinkSync(target);
+    throw error;
+  } finally {
+    for (const file of [temporary, temporaryReceipt]) if (existsSync(file)) unlinkSync(file);
+  }
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

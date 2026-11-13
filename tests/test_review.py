@@ -1,6 +1,7 @@
 import contextlib
 import io
 import json
+import os
 from pathlib import Path
 import sys
 import subprocess
@@ -60,7 +61,7 @@ class VerdictTests(unittest.TestCase):
         self.write_json(self.round / "assessment.json", self.assessment)
 
     def write_scores(self, score="4"):
-        (self.round / "report.md").write_text("\n".join(f"| {k} | {score} |" for k in self.metrics["rubric"]), encoding="utf-8")
+        (self.round / "report.md").write_text("\n".join(f"| {k} | critério | {score} | evidência sintética 0–2 s |" for k in self.metrics["rubric"]), encoding="utf-8")
 
     def verdict(self):
         with contextlib.redirect_stdout(io.StringIO()):
@@ -76,6 +77,49 @@ class VerdictTests(unittest.TestCase):
 
     def test_complete_consistent_evidence_passes(self):
         self.assertEqual(self.verdict(), 0)
+
+    def test_scores_are_read_only_from_score_column_and_require_evidence(self):
+        for row in ('| {key} | 4 |  | 5 |', '| {key} | critério | 4 |  |',
+                    '| {key} | critério | 3 | evidência |\n| {key} | critério | 5 | evidência |'):
+            with self.subTest(row=row):
+                self.write_scores()
+                report = self.round / 'report.md'
+                lines = report.read_text(encoding='utf-8').splitlines()
+                lines[0] = row.format(key=self.metrics['rubric'][0])
+                report.write_text('\n'.join(lines), encoding='utf-8')
+                self.assertEqual(self.verdict(), 2)
+
+    def test_boolean_inspection_ranges_are_not_seconds(self):
+        self.assessment['motion']['ranges'] = [[False, 2]]
+        self.write_evidence()
+        self.assertEqual(self.verdict(), 2)
+
+    def test_analysis_blockers_cannot_be_removed_only_from_metrics(self):
+        self.metrics['blockers'] = ['render bloqueado']
+        self.write_evidence()
+        request_path = self.round / 'input/request.json'
+        request = json.loads(request_path.read_text(encoding='utf-8'))
+        request['technical']['blockers'] = ['render bloqueado']
+        self.write_json(request_path, request)
+        self.metrics['review_request_sha256'] = file_sha256(request_path)
+        self.metrics['blockers'] = []
+        self.write_json(self.round / 'metrics.json', self.metrics)
+        self.assertEqual(self.verdict(), 2)
+
+    def test_independent_video_cannot_be_a_hard_link(self):
+        clip = self.round / 'input/video.mp4'
+        clip.unlink()
+        os.link(self.video, clip)
+        self.assertEqual(self.verdict(), 2)
+
+    def test_malformed_report_returns_incomplete(self):
+        (self.round / 'report.md').write_bytes(b'\xff')
+        self.assertEqual(self.verdict(), 2)
+
+    def test_reviewer_schema_must_be_an_integer_not_boolean(self):
+        self.assessment['reviewer_preflight']['schema'] = True
+        self.write_evidence()
+        self.assertEqual(self.verdict(), 2)
 
     def test_missing_or_malformed_metrics_never_pass(self):
         (self.round / "metrics.json").unlink()
@@ -366,6 +410,23 @@ class GateTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.proj = Path(self.temp.name)
 
+    def test_fourth_round_is_blocked_without_modifying_previous_rounds(self):
+        for index in range(1, 4):
+            folder = review.next_round(self.proj)
+            self.assertEqual(folder.name, f'r{index:02d}')
+            (folder / 'evidence.bin').write_bytes(bytes([index]))
+        before = {p.relative_to(self.proj): p.read_bytes() for p in self.proj.rglob('*') if p.is_file()}
+        with self.assertRaises(review.RoundLimitError):
+            review.next_round(self.proj)
+        self.assertEqual(before, {p.relative_to(self.proj): p.read_bytes() for p in self.proj.rglob('*') if p.is_file()})
+        self.assertFalse((self.proj / 'review/r04').exists())
+
+    def test_jpeg_budget_accepts_supported_grid_and_rejects_overflow(self):
+        review.validate_grid(1000, 1, 180, 320)
+        for every in (0, -1, float('nan'), float('inf'), 1e-300):
+            with self.subTest(every=every), self.assertRaises(ValueError):
+                review.validate_grid(4, every, 180, 320)
+
     def test_freeze_at_end_has_same_threshold_as_middle(self):
         for span in (2.3, 2.5, 4.0):
             with self.subTest(span=span):
@@ -435,6 +496,20 @@ class GateTests(unittest.TestCase):
         (captions / 'captions.ass').unlink()
         (captions / 'captions.json').write_text('[{"start":1,"end":3,"text":"Oi"}]')
         self.assertEqual(review.caption_ranges(self.proj, {}), [(1, 3)])
+
+    def test_malformed_caption_ranges_cannot_downgrade_a_freeze(self):
+        folder = self.proj / 'captions'
+        folder.mkdir()
+        for cue in ({'start': 0, 'end': float('inf'), 'text': 'Oi'},
+                    {'start': False, 'end': 8, 'text': 'Oi'},
+                    {'start': -1, 'end': 8, 'text': 'Oi'},
+                    {'start': 2, 'end': 1, 'text': 'Oi'},
+                    {'start': 0, 'end': 8, 'text': ''}):
+            with self.subTest(cue=cue):
+                (folder / 'captions.json').write_text(json.dumps([cue]), encoding='utf-8')
+                ranges = review.caption_ranges(self.proj, {})
+                self.assertIsNone(ranges)
+                self.assertTrue(review.freeze_checks([(0, 6)], 8, False, ranges)[0])
 
     def test_effects_accept_real_audio_asset_and_default_output_without_kind_sfx(self):
         for manifest in ({'assets': [{'path': 'audio/sound-design.wav', 'kind': 'audio'}]},

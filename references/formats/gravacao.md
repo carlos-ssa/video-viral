@@ -34,7 +34,7 @@ Mostre a **imagem real da gravação** no A-roll: barras cinza e gráficos subst
 
 O A-roll renderizado é uma base, não uma prova automática de acabamento. Use direção, B-roll, composição, animação e som conforme a peça; não é necessário misturar motores redundantes. Para um pedido pontual, preserve o resto da edição. Se as legendas já estiverem na composição, entregue com `--no-captions`.
 
-`--from/--to` no import serve para gravações com sobra no começo e no fim. A gravação não é copiada; o projeto guarda o caminho, então não mova o arquivo até entregar. `--third-party` registra que a gravação não é do usuário (e o `deliver.py` passa a exigir a licença).
+`--from/--to` no import serve para gravações com sobra no começo e no fim. A gravação não é copiada: o projeto guarda o caminho e `source.sha256`, portanto preserve o arquivo até entregar. Se já houver derivados, trocar o conteúdo da fonte, o intervalo ou a limpeza é recusado antes de modificar o projeto; crie outro projeto para preservar o anterior. Reimportar a mesma fonte com hash, intervalo e limpeza idênticos é permitido. Em projeto legado sem hash, a presença de derivados exige recusa conservadora; sem derivados, a importação pode migrar o registro. `--third-party` registra que a gravação não é do usuário (e o `deliver.py` passa a exigir a licença).
 
 A legenda pode vir de um `.srt` fornecido: `captions.py import` desloca pelo `--from`, aperta cada bloco na fala real e distribui as palavras. Sem transcrição nenhuma, `cut` corta só silêncios; avise que vícios e retomadas ficam para marcar ouvindo.
 
@@ -53,7 +53,7 @@ Leia `edit/transcript.md` inteiro antes de mexer. Cada trecho tem `id`, `in`/`ou
 ## Ritmo e cortes
 
 - Pausa natural de respiração fica (0,12 s de folga de cada lado é o padrão de `--pad`); silêncio de pensar sai. Fala corrida demais (acima de ~3,3 palavras/s) cansa: aumente `--pad` para 0,18.
-- Em vertical dinâmico, 1,5–3 s pode orientar a cadência, mas ajuste ao conteúdo e à intenção. Numa gravação isso vem de corte com zoom alternado, texto na tela, B-roll ou print. Se um trecho passa de 4 s sem nada, quebre com zoom ou inserção.
+- Em vertical dinâmico, 1,5–3 s pode orientar a cadência, mas ajuste ao conteúdo e à intenção. Numa gravação isso vem de corte com zoom alternado, texto na tela, B-roll ou print. Se um trecho perde função narrativa, ajuste corte, enquadramento ou inserção; duração sozinha não obriga a inserir efeitos.
 - `--fillers tipo,né,assim` corta palavras extras quando isoladas; confira no transcript se não sumiu alguma que dava sentido.
 
 ## B-roll, prints e imagens
@@ -70,7 +70,7 @@ Use quando a fala cita algo que dá para mostrar (app, produto, número, lugar),
 
 ## Texto na tela e legenda
 
-- Legenda palavra a palavra (`captions.py ass`) em todo vídeo vertical; em 16:9 longo, legenda opcional (o usuário pode subir o `.srt` na plataforma).
+- Legenda sincronizada por sentido (`captions.py ass`), em até duas linhas, em vídeo vertical com fala; em 16:9 longo, legenda opcional (o usuário pode subir o `.srt` na plataforma).
 - Texto do gancho (até 6 palavras) no quadro 0, no terço superior da área segura, sem cobrir o rosto.
 - Fonte e cor da legenda saem de `direction`; sem direção definida, uma fonte sem serifa pesada com contorno escuro.
 
