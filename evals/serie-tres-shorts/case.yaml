@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: serie-tres-shorts
+expected_outcome: |
+  Cria três projetos (ou um por episódio) com a mesma voz, estilo de legenda e visual, ~30 s cada, monetized false, e explica a ordem de produção que reaproveita componentes entre episódios.

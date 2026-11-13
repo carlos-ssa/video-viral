@@ -1,0 +1,89 @@
+{
+  "schema": 2,
+  "slug": "",
+  "title": "",
+  "format": "narrado",
+  "aspect": "9:16",
+  "lang": "pt-BR",
+  "platforms": [
+    "tiktok",
+    "reels",
+    "shorts"
+  ],
+  "monetized": true,
+  "target_seconds": 40,
+  "fps": 30,
+  "size": [
+    1080,
+    1920
+  ],
+  "source": {
+    "footage": "",
+    "range": null,
+    "audio": ""
+  },
+  "edit": {
+    "edl": "",
+    "broll": []
+  },
+  "voice": {
+    "engine": "kokoro",
+    "voice": "pf_dora",
+    "speed": 1.0
+  },
+  "music": {
+    "engine": "tonejs",
+    "prompt": "",
+    "gain_db": -16
+  },
+  "captions": {
+    "words_per_group": 3,
+    "uppercase": true,
+    "font": "Arial",
+    "size": 88
+  },
+  "direction": {
+    "style": "",
+    "references": [],
+    "palette": [],
+    "fonts": {
+      "title": "",
+      "body": "",
+      "captions": ""
+    },
+    "motion": "",
+    "texture": [],
+    "transitions": "",
+    "music_mood": "",
+    "sfx": []
+  },
+  "hook": "",
+  "cta": "",
+  "scenes": [
+    {
+      "id": "s01",
+      "narration": "",
+      "on_screen": "",
+      "visual": {
+        "engine": "hyperframes",
+        "brief": "",
+        "shots": [],
+        "transition_out": ""
+      },
+      "start": null,
+      "duration": null
+    }
+  ],
+  "assets": [],
+  "publish": {
+    "caption": "",
+    "hashtags": [],
+    "ai_label": false,
+    "ad_disclosure": false,
+    "title": "",
+    "description": "",
+    "chapters": [],
+    "thumbnail": ""
+  },
+  "review": []
+}

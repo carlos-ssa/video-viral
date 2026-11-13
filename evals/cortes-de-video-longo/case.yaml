@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: cortes-de-video-longo
+expected_outcome: |
+  Cria um projeto 16:9 para o vídeo inteiro, importa a gravação e o .srt, roda clips.py suggest e apresenta os trechos sugeridos com motivo, cria ao menos um corte 9:16 com clips.py make (formato corte, levando as palavras), edita e renderiza esse corte com gancho no início, e escreve em publish título, descrição e ao menos 3 capítulos começando em 00:00 para o vídeo longo.

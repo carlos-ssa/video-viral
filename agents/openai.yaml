@@ -1,0 +1,6 @@
+interface:
+  display_name: "Vídeo viral"
+  short_description: "Edita sua gravação e produz vídeo curto ou longo para TikTok, Reels, Shorts, YouTube e Kwai"
+  default_prompt: "Use $video-viral para editar esta gravação (ou criar este vídeo do zero), legendar e deixar pronto para publicar."
+policy:
+  allow_implicit_invocation: true

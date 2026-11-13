@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: short-monetizado-ptbr
+expected_outcome: |
+  Cria um projeto com video.json (formato narrado, 9:16, monetized true, ao menos TikTok, Reels e Shorts, ~40 s), roda ou recomenda check_env, escreve roteiro com gancho nos 2 primeiros segundos e ~100 palavras em cenas, escolhe trilha com licença comercial e não instala nada sem pedir.
