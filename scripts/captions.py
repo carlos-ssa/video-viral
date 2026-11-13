@@ -1,23 +1,12 @@
-"""Legendas palavra a palavra.
+"""Legendas no stack v2: faster-whisper, arquivos SRT/VTT, estimativa e ASS.
 
-Uso:
-  python scripts/captions.py align <projeto>        # WhisperX alinha o texto do roteiro a audio/voice.wav
-  python scripts/captions.py transcribe <projeto> [--audio arquivo] [--model large-v3] [--out captions/x.json]
-  python scripts/captions.py import <projeto> --file legenda.srt [--out captions/x.json]   # SRT ou VTT
-  python scripts/captions.py estimate <projeto>     # reserva sem modelo: tempos estimados pelo texto
-  python scripts/captions.py ass <projeto> [--words 3]   # words.json -> captions.ass e captions.json
+python scripts/captions.py transcribe <projeto> [--audio arquivo] [--model large-v3]
+python scripts/captions.py import <projeto> --file legenda.srt
+python scripts/captions.py estimate <projeto>
+python scripts/captions.py ass <projeto> [--words 3]
 
-'align' e 'transcribe' precisam de whisperx (ou faster-whisper, só em 'transcribe').
-'estimate' e 'ass' usam só biblioteca padrão e FFmpeg. 'estimate' distribui as palavras de cada cena dentro
-do trecho falado do audio/scenes/<id>.wav (sem os silêncios das pontas), pelo tamanho de cada palavra e pelas
-pausas da pontuação. Os tempos são aproximados: serve para entregar, não para ancorar cortes finos.
-
-Gravação própria (projeto com footage.py import): 'transcribe' e 'import' gravam por padrão em
-captions/source_words.json, no tempo do trecho importado (a legenda do arquivo inteiro é deslocada pelo --from
-e o que fica fora do trecho é descartado); footage.py render converte para captions/words.json na linha do tempo
-do vídeo editado. 'transcribe' sem --audio usa audio/source.wav. Use --final quando a legenda já estiver no tempo
-do vídeo editado (vai direto para captions/words.json). 'import' lê SRT ou VTT (CapCut, YouTube Studio etc.),
-aperta cada bloco na fala do áudio e distribui o tempo entre as palavras; é a reserva quando não há Whisper.
+Importação/estimativa não são alinhamento forçado. Projetos de gravação usam
+source_words.json e footage.py render ajusta os tempos à montagem.
 """
 import argparse
 import json
@@ -34,14 +23,6 @@ def lang2(m):
     return (m.get("lang") or "pt-BR").split("-")[0].lower()
 
 
-def device():
-    try:
-        import torch
-        return "cuda" if torch.cuda.is_available() else "cpu"
-    except ImportError:
-        return "cpu"
-
-
 def fill_missing(words):
     """Palavras sem tempo (números, símbolos) recebem tempo interpolado entre as vizinhas."""
     for i, w in enumerate(words):
@@ -54,37 +35,8 @@ def fill_missing(words):
     return words
 
 
-def words_from_whisperx_segments(segments):
-    out = []
-    for seg in segments:
-        for w in seg.get("words", []):
-            text = (w.get("word") or "").strip()
-            if text:
-                out.append({"w": text, "start": w.get("start"), "end": w.get("end")})
-    return fill_missing(out)
-
-
 def cmd_align(proj, m, a):
-    try:
-        import whisperx
-    except ImportError:
-        print("whisperx não está neste Python: transcrevendo a narração com faster-whisper.")
-        return cmd_transcribe(proj, m, a)
-    audio_path = proj / "audio" / "voice.wav"
-    if not audio_path.exists():
-        sys.exit("Falta audio/voice.wav. Rode scripts/voice.py antes.")
-    segs = []
-    for sc in m["scenes"]:
-        text = (sc.get("narration") or "").strip()
-        if text:
-            if sc.get("start") is None or sc.get("duration") is None:
-                sys.exit(f"A cena {sc['id']} não tem start/duration. Rode scripts/voice.py antes.")
-            segs.append({"text": text, "start": float(sc["start"]), "end": float(sc["start"]) + float(sc["duration"])})
-    dev = device()
-    audio = whisperx.load_audio(str(audio_path))
-    model, meta = whisperx.load_align_model(language_code=lang2(m), device=dev)
-    result = whisperx.align(segs, model, meta, audio, dev, return_char_alignments=False)
-    return words_from_whisperx_segments(result["segments"])
+    sys.exit("Alinhamento forçado não faz parte do stack atual. Use transcribe com faster-whisper ou import/estimate; revise os tempos.")
 
 
 def cmd_transcribe(proj, m, a):
@@ -94,51 +46,37 @@ def cmd_transcribe(proj, m, a):
     if not audio_path.exists():
         sys.exit(f"Áudio não encontrado: {audio_path}")
     import importlib.util
-    if not (importlib.util.find_spec("whisperx") or importlib.util.find_spec("faster_whisper")):
-        use_venv("legendas", ["faster_whisper"])  # reexecuta na venv, instalando-a se preciso
-    dev, lang = device(), lang2(m)
-    try:
-        import whisperx
-        compute = "float16" if dev == "cuda" else "int8"
-        model = whisperx.load_model(a.model, dev, compute_type=compute, language=lang)
-        audio = whisperx.load_audio(str(audio_path))
-        result = model.transcribe(audio, batch_size=8, language=lang)
-        del model
-        amodel, meta = whisperx.load_align_model(language_code=lang, device=dev)
-        result = whisperx.align(result["segments"], amodel, meta, audio, dev, return_char_alignments=False)
-        return words_from_whisperx_segments(result["segments"])
-    except ImportError:
-        pass
+    if not importlib.util.find_spec("faster_whisper"):
+        use_venv("legendas", ["faster_whisper"])
     try:
         from faster_whisper import WhisperModel
+        import ctranslate2
     except ImportError:
-        sys.exit("Sem whisperx nem faster-whisper, e a instalação automática falhou (python scripts/setup_tools.py "
-                 "legendas). Reserva: captions.py import --file legenda.srt, ou captions.py estimate.")
+        sys.exit("faster-whisper indisponível: instale o grupo legendas ou importe SRT/VTT.")
     cuda_dlls()
     try:
-        import ctranslate2
         dev = "cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu"
     except Exception:
-        pass
+        dev = "cpu"
     import subprocess
     import numpy as np
-    # decodifica com o FFmpeg: o PyAV da venv pode não aceitar os argumentos do faster-whisper
     pcm = subprocess.run([need("ffmpeg"), "-v", "error", "-i", str(audio_path), "-f", "s16le", "-ac", "1",
                           "-ar", "16000", "-"], capture_output=True, check=True).stdout
     audio = np.frombuffer(pcm, np.int16).astype(np.float32) / 32768.0
     for d in ([dev, "cpu"] if dev == "cuda" else [dev]):
         try:
-            model = WhisperModel(a.model, device=d, compute_type="float16" if d == "cuda" else "int8")
-            segments, _ = model.transcribe(audio, language=lang, word_timestamps=True,
+            model = WhisperModel(a.model, device=d, compute_type="float16" if d == "cuda" else "int8",
+                                 local_files_only=bool(os.environ.get("VIDEO_VIRAL_NO_INSTALL")))
+            segments, _ = model.transcribe(audio, language=lang2(m), word_timestamps=True,
                                            vad_filter=False, condition_on_previous_text=False)
             words = [{"w": w.word.strip(), "start": w.start, "end": w.end}
-                     for s in segments for w in (s.words or []) if w.word.strip()]
+                     for segment in segments for w in (segment.words or []) if w.word.strip()]
             print(f"faster-whisper {a.model} em {d}: {len(words)} palavras")
             return fill_missing(words)
-        except (RuntimeError, OSError) as e:  # DLL de CUDA ausente ou sem VRAM: tenta na CPU
+        except (RuntimeError, OSError) as exc:
             if d == "cpu":
                 raise
-            print(f"GPU indisponível para o faster-whisper ({str(e)[:120]}); usando CPU.")
+            print(f"GPU indisponível ({str(exc)[:120]}); usando CPU.")
 
 
 def cuda_dlls():
@@ -365,7 +303,7 @@ def main():
             print("Tempos por palavra interpolados dentro de cada bloco da legenda.")
         elif a.cmd == "estimate":
             print("Tempos ESTIMADOS (sem alinhamento): a legenda pode adiantar ou atrasar um pouco. "
-                  "Proponha instalar o WhisperX (references/setup.md) e rode 'align' depois.")
+                  "Use transcribe com faster-whisper e confira os tempos antes de cortes finos.")
         else:
             print("Confira nomes próprios e números; depois rode: captions.py ass")
         return

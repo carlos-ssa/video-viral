@@ -1,5 +1,7 @@
 ---
 name: video-viral
+metadata:
+  version: "2.0.0"
 description: Direção, produção e edição audiovisual profissional com IA para vídeos curtos e longos, TikTok, Reels, Shorts, YouTube e Kwai. Use para pesquisar nichos, planejar marketing e ganchos, roteirizar, editar gravações, produzir vídeos de produtos/serviços, UGC, avatares, canais dark, animação e música. Entrega arquivos revisados e material de publicação. Para apenas converter arquivo ou extrair áudio, use FFmpeg diretamente.
 ---
 
@@ -38,17 +40,19 @@ Para uma correção pontual, preserve conteúdo e direção que não foram pedid
 4. **Roteiro.** Construa a progressão por batidas, prova/demonstração quando pertinente, recompensa e CTA contextual. Use [writing](references/writing.md); em longo, blocos e reaberturas. O áudio determina o tempo: cenas e entradas se apoiam na narração, performance ou música medida, não em duração inventada.
 5. **Direção.** Defina paleta, fontes, enquadramento, performance, luz, câmera, movimento e som em `direction`. Planeje cenas e três quadros de estilo antes do render completo. Veja [direction](references/direction.md).
 
-Antes de entregar um planejamento completo ou começar a produção, salve essas decisões no `video.json` e rode `python scripts/plan.py <projeto>`. Um relatório em Markdown não substitui `brief`, `hook_candidates`, `hook`, `research` e `tool_plan`. Código 1 pede completar campos; código 2 permite entregar um plano provisório, identificando os dados em `brief.missing_inputs`, sem declarar produção liberada. Código 0 confirma consistência estrutural, não qualidade criativa. Não invente informação para fazer a checagem passar. Essa checagem não se aplica a uma correção pontual em vídeo existente.
+Antes de entregar um planejamento completo ou começar a produção, salve essas decisões no `video.json` e rode `python scripts/plan.py <projeto>`. Um relatório em Markdown não substitui `brief`, `hook_candidates`, `hook`, `research` e `tool_plan`. Código 1 pede completar campos; código 2 permite entregar um plano provisório, identificando os dados em `brief.missing_inputs`, sem declarar produção liberada. Código 0 confirma consistência estrutural, não qualidade criativa. Em projetos v2, stack.modules e cada tool_plan[].module usam IDs do catálogo; o compositor é hyperframes. Não invente informação para fazer a checagem passar. Essa checagem não se aplica a uma correção pontual em vídeo existente.
 
 ## Produção e edição profissional
 
-Mantenha um arsenal amplo: [stack](references/stack.md) descreve pesquisa, voz, imagens, animação 2D/3D, avatares, música, composição e acabamento. Selecione e combine ferramentas pelo resultado da cena. Registre em `tool_plan`: etapa/cena, ferramenta, contribuição esperada, entrada/saída e status (`integrado`, `validado-neste-projeto`, `adaptacao`, `planejado`). Uma ferramenta citada não é automaticamente integrada ou testada.
+A versão 2.0.0 limita o catálogo a `assets/stack.json`. Use `scripts/stack.py list` e `doctor`: detectado não significa validado. Os [módulos executáveis](references/modules.md) geram arquivos de cena, WAV, imagens ou GLB para a composição. Escolha PixiJS, Paper.js ou p5.js pela linguagem visual; não carregar todos por obrigação. Não instalar motores fora do catálogo por conveniência.
+
+Use somente o stack v2: [stack](references/stack.md) descreve pesquisa, voz, imagens, animação 2D/3D, avatares, música, composição e acabamento. Selecione e combine ferramentas pelo resultado da cena. Registre em `tool_plan`: etapa/cena, ferramenta, contribuição esperada, entrada/saída e status (`integrado`, `validado-neste-projeto`, `adaptacao`, `planejado`). Uma ferramenta citada não é automaticamente integrada ou testada.
 
 O padrão é edição rica e intencional: composição e hierarquia, enquadramento que valoriza o assunto, cortes naturais, animação com bom timing, continuidade, integração de B-roll/IA, correção de cor e desenho de som. [Motion](references/motion.md) traz receitas. Varie planos e recursos para sustentar a narrativa; não existe cota universal de transições, zooms ou efeitos. UGC, anúncio, documentário, aula e música precisam de direções próprias. Preserve o pedido de acabamento sofisticado e justifique escolhas pela peça, não pela quantidade de ferramentas.
 
-- HyperFrames é o compositor padrão; Remotion quando o contexto React favorecer, Blender/Three.js e ComfyUI quando acrescentarem à direção. Uma composição deve ser determinística por tempo/quadro; sem relógio real nem aleatório sem semente.
+- HyperFrames + GSAP é o compositor principal obrigatório para produção completa. Three.js/Blender e ComfyUI entram conforme a cena; não substituir o motor por um compositor externo. FFmpeg prepara/mixa/exporta, e uma base FFmpeg não é edição rica aprovada. Uma composição deve ser determinística por tempo/quadro; sem relógio real nem aleatório sem semente.
 - Gravação: importar → transcrever/importar SRT → selecionar/cortar e reordenar EDL → enquadrar → compor edição rica → entregar. `footage.py render` gera o A-roll/base; a camada de acabamento segue o guia de gravação. Não corte palavras nem altere o sentido da fala.
-- Narração: roteiro/tempos → voz → alinhamento → cenas/ativos → composição → trilha/efeitos → entrega. Kokoro é a voz padrão; Chatterbox quando expressão/dublagem justificarem e estiver disponível.
+- Narração: roteiro/tempos → voz → alinhamento → cenas/ativos → composição → trilha/efeitos → entrega. Kokoro é o único TTS; faster-whisper fornece transcrição e tempos, com conferência humana/modelo e sem alinhador forçado adicional.
 - Legendas devem ser legíveis, sincronizadas e fora do rosto/UI; enquadramento e [área segura](references/platforms.md) dependem do destino. Um vertical pode compartilhar o master, mas confirme capa, CTA e enquadramento por plataforma.
 - Um modelo pesado de GPU por vez no perfil local de 8 GB. Mantenha projetos e caches para refazer somente a etapa alterada. Uma limitação de ferramenta pede alternativa concreta, não renderizações idênticas repetidas.
 

@@ -10,7 +10,7 @@ Planejar storyboard com ações e enquadramentos por plano. Registrar identidade
 
 ## Ferramentas e produção
 
-- HyperFrames/Remotion + GSAP: composição, tipografia, gráficos, recortes e transições.
+- HyperFrames + GSAP: composição, tipografia, gráficos, recortes e transições.
 - Three.js/Blender: personagens/objetos, câmera, luz e atuação que precisem de geometria.
 - ComfyUI ou gerador disponível: referências, fundos e ativos; um gerador imagem-para-vídeo exige workflow/modelo específico, saída de teste e registro em `tool_plan`. `images.py` não deve ser anunciado como gerador de vídeo universal.
 

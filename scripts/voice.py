@@ -1,24 +1,14 @@
-"""Gera a narração por cena com Kokoro e grava os tempos de cada cena no video.json.
+"""Narração com Kokoro ou montagem dos WAVs fornecidos.
 
-Uso:
-  python scripts/voice.py <projeto> [--voice pf_dora] [--speed 1.0] [--gap 0.25]
-  python scripts/voice.py <projeto> --engine system [--voice Maria]   # reserva sem instalar nada
-  python scripts/voice.py <projeto> --from-wavs      # usa audio/scenes/sNN.wav já existentes (Chatterbox etc.)
-
-Saídas: audio/scenes/<id>.wav, audio/voice.wav (48 kHz mono) e scenes[].start/duration.
-Kokoro precisa de: kokoro>=0.9.4, soundfile, numpy e espeak-ng (references/setup.md).
---engine auto (padrão) usa Kokoro se estiver instalado e, senão, a voz do sistema: Windows (System.Speech),
-macOS (say) ou Linux (espeak-ng). A voz do sistema soa robótica e entra com licença "uso comercial não
-verificado", o que bloqueia a entrega monetizada; use deliver.py --draft e proponha instalar o Kokoro.
+python scripts/voice.py <projeto> [--voice pf_dora] [--speed 1.0] [--gap 0.25]
+python scripts/voice.py <projeto> --from-wavs
+Saídas: audio/voice.wav e tempos em scenes[]. Somente Kokoro sintetiza voz.
 """
 import argparse
 import importlib.util
 import json
-import platform
-import shutil
-import subprocess
+import os
 import sys
-import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -27,14 +17,19 @@ from _common import add_asset, ffprobe_json, load_manifest, need, project_dir, r
 KOKORO_LANG = {"pt-BR": "p", "en-US": "a", "en-GB": "b", "es": "e", "fr": "f", "it": "i", "ja": "j", "zh": "z", "hi": "h"}
 
 
-def synth_kokoro(proj, m, voice, speed, lang_code):
+def synth_kokoro(proj, m, voice, speed, lang_code, device="auto"):
     try:
         import numpy as np
         import soundfile as sf
+        import torch
         from kokoro import KPipeline
     except ImportError as e:
         sys.exit(f"Falta {e.name} neste Python ({sys.executable}). Rode: python scripts/setup_tools.py voz")
-    pipe = KPipeline(lang_code=lang_code)
+    selected_device = ("cuda" if torch.cuda.is_available() else "cpu") if device == "auto" else device
+    if selected_device == "cpu":
+        # Some CUDA wheels probe an empty GPU list from LSTM.flatten_parameters on CPU.
+        torch.backends.cudnn.enabled = False
+    pipe = KPipeline(lang_code=lang_code, device=selected_device)
     for sc in m["scenes"]:
         text = (sc.get("narration") or "").strip()
         if not text:
@@ -49,77 +44,6 @@ def synth_kokoro(proj, m, voice, speed, lang_code):
             sys.exit(f"Kokoro não gerou áudio para a cena {sc['id']}.")
         sf.write(proj / "audio" / "scenes" / f"{sc['id']}.wav", np.concatenate(chunks), 24000)
         print(f"  {sc['id']}: ok")
-
-
-WIN_TTS = r"""
-param([string]$Jobs, [string]$Culture, [string]$Voice, [int]$Rate)
-Add-Type -AssemblyName System.Speech
-$s = New-Object System.Speech.Synthesis.SpeechSynthesizer
-$vs = @($s.GetInstalledVoices() | Where-Object { $_.Enabled } | ForEach-Object { $_.VoiceInfo })
-$pick = $null
-if ($Voice) { $pick = $vs | Where-Object { $_.Name -like "*$Voice*" } | Select-Object -First 1 }
-if (-not $pick) { $pick = $vs | Where-Object { $_.Culture.Name -eq $Culture } | Select-Object -First 1 }
-if (-not $pick) { $l = $Culture.Split('-')[0]; $pick = $vs | Where-Object { $_.Culture.TwoLetterISOLanguageName -eq $l } | Select-Object -First 1 }
-if (-not $pick) { [Console]::Error.WriteLine("Nenhuma voz instalada para $Culture. Vozes: " + (($vs | ForEach-Object { $_.Name + ' (' + $_.Culture.Name + ')' }) -join ', ')); exit 3 }
-$s.SelectVoice($pick.Name)
-$s.Rate = $Rate
-foreach ($j in (Get-Content -Raw -Encoding UTF8 $Jobs | ConvertFrom-Json)) {
-  $s.SetOutputToWaveFile($j.out)
-  $s.Speak([IO.File]::ReadAllText($j.txt, [Text.Encoding]::UTF8))
-}
-$s.SetOutputToNull()
-$s.Dispose()
-Write-Output $pick.Name
-"""
-
-
-def synth_system(proj, m, voice, speed):
-    """Voz do sistema operacional. Devolve a descrição da voz usada."""
-    lang = m.get("lang", "pt-BR")
-    scenes = [sc for sc in m["scenes"] if (sc.get("narration") or "").strip()]
-    out_dir = proj / "audio" / "scenes"
-    with tempfile.TemporaryDirectory() as td:
-        td = Path(td)
-        jobs = []
-        for sc in scenes:
-            txt = td / f"{sc['id']}.txt"
-            txt.write_text(sc["narration"].strip(), encoding="utf-8")
-            jobs.append({"id": sc["id"], "txt": str(txt), "out": str(out_dir / f"{sc['id']}.wav")})
-        system = platform.system()
-        if system == "Windows":
-            ps = shutil.which("powershell") or shutil.which("pwsh")
-            if not ps:
-                sys.exit("PowerShell não encontrado para a voz do sistema.")
-            script = td / "tts.ps1"
-            script.write_text(WIN_TTS, encoding="utf-8-sig")
-            (td / "jobs.json").write_text(json.dumps(jobs, ensure_ascii=False), encoding="utf-8")
-            rate = max(-10, min(10, round((speed - 1.0) * 10)))
-            r = subprocess.run([ps, "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(script),
-                                "-Jobs", str(td / "jobs.json"), "-Culture", lang, "-Voice", voice or "",
-                                "-Rate", str(rate)], capture_output=True, text=True, encoding="utf-8", errors="replace")
-            if r.returncode != 0:
-                sys.exit(f"Voz do sistema falhou: {r.stderr.strip()[-600:]}")
-            name = (r.stdout.strip().splitlines() or ["?"])[-1]
-            desc = f"Windows System.Speech ({name})"
-        elif system == "Darwin":
-            ff = need("ffmpeg")
-            for j in jobs:
-                aiff = td / f"{j['id']}.aiff"
-                cmd = ["say", "-o", str(aiff), "-f", j["txt"], "-r", str(int(180 * speed))]
-                run(cmd + (["-v", voice] if voice else []))
-                run([ff, "-y", "-hide_banner", "-i", str(aiff), j["out"]])
-            desc = f"macOS say ({voice or 'voz padrão'})"
-        else:
-            es = shutil.which("espeak-ng") or shutil.which("espeak")
-            if not es:
-                sys.exit("Nenhuma voz do sistema: instale espeak-ng ou o Kokoro (references/setup.md).")
-            v = voice or lang.lower()
-            for j in jobs:
-                run([es, "-v", v, "-s", str(int(165 * speed)), "-w", j["out"], "-f", j["txt"]])
-            desc = f"espeak-ng ({v})"
-    for sc in scenes:
-        print(f"  {sc['id']}: ok")
-    return desc
 
 
 def kokoro_available():
@@ -166,9 +90,12 @@ def main():
     ap.add_argument("--speed", type=float)
     ap.add_argument("--gap", type=float, default=0.25, help="pausa após cada cena, em segundos")
     ap.add_argument("--from-wavs", action="store_true", help="não sintetiza; usa os WAV de audio/scenes")
-    ap.add_argument("--engine", choices=["auto", "kokoro", "system"], default="auto",
-                    help="auto: Kokoro se instalado, senão a voz do sistema")
+    ap.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
+    ap.add_argument("--engine", choices=["auto", "kokoro"], default="kokoro", help="auto é alias legado de kokoro; sem fallback para outro motor")
     a = ap.parse_args()
+    if os.environ.get("VIDEO_VIRAL_NO_INSTALL"):
+        os.environ.setdefault("HF_HUB_OFFLINE", "1")
+        os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 
     proj = project_dir(a.project)
     m = load_manifest(proj)
@@ -182,25 +109,14 @@ def main():
         engine = a.engine
         if engine in ("auto", "kokoro") and not kokoro_available():
             use_venv("voz", ["kokoro", "soundfile", "numpy"])  # reexecuta na venv 'voz', instalando-a se preciso
-        if engine == "auto":
-            engine = "kokoro" if kokoro_available() else "system"
-            if engine == "system":
-                print("Kokoro indisponível (instalação falhou ou VIDEO_VIRAL_NO_INSTALL): usando a voz do sistema como reserva.")
-        if engine == "kokoro":
-            voice = a.voice or v.get("voice", "pf_dora")
-            lang = KOKORO_LANG.get(m.get("lang", "pt-BR"), "p")
-            print(f"Kokoro: voz {voice}, velocidade {speed}, idioma {lang}")
-            synth_kokoro(proj, m, voice, speed, lang)
-            v.update(engine="kokoro", voice=voice, speed=speed)
-            add_asset(m, "audio/voice.wav", "voice", f"Kokoro-82M ({voice})", "Apache-2.0", True)
-        else:
-            desc = synth_system(proj, m, a.voice, speed)
-            print(f"Voz do sistema: {desc}")
-            v.update(engine="system", voice=desc, speed=speed)
-            add_asset(m, "audio/voice.wav", "voice", desc,
-                      "voz do sistema operacional; uso comercial não verificado", None)
-            print("Aviso: voz robótica e sem licença comercial confirmada. A entrega monetizada só sai com "
-                  "deliver.py --draft; proponha instalar o Kokoro (references/setup.md) no relatório final.")
+        if not kokoro_available():
+            sys.exit("Kokoro indisponível; forneça WAVs com --from-wavs ou instale apenas o grupo voz.")
+        voice = a.voice or v.get("voice", "pf_dora")
+        lang = KOKORO_LANG.get(m.get("lang", "pt-BR"), "p")
+        print(f"Kokoro: voz {voice}, velocidade {speed}, idioma {lang}")
+        synth_kokoro(proj, m, voice, speed, lang, a.device)
+        v.update(engine="kokoro", voice=voice, speed=speed)
+        add_asset(m, "audio/voice.wav", "voice", f"Kokoro-82M ({voice})", "Apache-2.0", True)
 
     total = assemble(proj, m, a.gap)
     save_manifest(proj, m)

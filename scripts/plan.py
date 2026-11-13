@@ -4,6 +4,7 @@ Não mede criatividade ou desempenho. Use em produção/planejamento completo, n
 """
 import argparse
 import json
+from pathlib import Path
 
 from _common import load_manifest, project_dir
 
@@ -43,6 +44,16 @@ def plan_problems(m):
                     or item.get("status") not in ("integrado", "validado-neste-projeto", "adaptacao", "planejado")):
                 errors.append("tool_plan: informe ferramenta e status real da integração")
                 break
+    stack = m.get('stack')
+    if isinstance(stack, dict) and stack.get('version') == '2.0.0':
+        allowed = {entry['id'] for entry in json.loads((Path(__file__).resolve().parents[1] / 'assets/stack.json').read_text(encoding='utf-8'))['modules']}
+        selected = stack.get('modules')
+        if stack.get('compositor') != 'hyperframes' or not isinstance(selected, list) or any(not isinstance(x, str) or x not in allowed for x in selected):
+            errors.append('stack v2: compositor precisa ser hyperframes e módulos devem pertencer ao catálogo')
+        elif not {'hyperframes', 'gsap', 'ffmpeg'}.issubset(selected):
+            errors.append('stack v2: declare hyperframes, gsap e ffmpeg no núcleo')
+        if isinstance(tools, list) and any(not isinstance(item, dict) or item.get('module') not in allowed for item in tools):
+            errors.append('tool_plan v2: cada entrada precisa de module com ID do catálogo')
     research = m.get("research")
     if not isinstance(research, dict) or not isinstance(research.get("sources"), list):
         errors.append("research.sources precisa ser uma lista (vazia quando não houver dados)")

@@ -1,80 +1,76 @@
-# Vídeo viral
+# Vídeo viral — 2.0.0
 
-Skill em português para editar e produzir vídeo para TikTok, Instagram (Reels e feed), YouTube (Shorts e vídeo longo) e Kwai, com ferramentas abertas rodando na sua máquina, num pedido só.
+Skill em português para direção, produção e edição audiovisual com IA, marketing, ganchos, retenção e conversão. Produz vídeos curtos/longos, gravações editadas, demonstrações de produto, UGC, animações e peças musicais com planejamento e revisão. Não promete viralização nem valida estética apenas porque o render passou.
 
-- **Sua gravação:** tira silêncios, vícios ("ahn", "éé") e retomadas, põe a melhor frase no começo, enquadra para 9:16, 16:9, 1:1 ou 4:5, legenda palavra a palavra, insere B-roll, mede volume e escreve título, descrição e capítulos.
-- **Cortes de vídeo longo:** sugere os trechos com mais chance de funcionar sozinhos e cria um projeto por corte.
-- **Do zero (canal dark):** pesquisa, direção de arte, roteiro com gancho escolhido entre vários, narração, motion graphics e cenas 2D/3D em código, trilha, efeitos e legendas.
-- **Marketing e formatos avançados:** brief de oferta/público, ganchos multimodais, produto/serviço, UGC, storytelling, música e avatar. Os guias distinguem scripts integrados, composição por projeto e gerações que ainda exigem adaptador/ferramenta disponível.
+## Stack escolhido
 
-Vídeo sai medíocre quando ninguém decide o resultado antes e ninguém assiste antes de entregar; o usuário acaba refazendo o pedido várias vezes. Esta skill põe essas rodadas dentro do trabalho: **direção** antes, **revisão** depois (o agente registra inspeção visual, temporal e de áudio, dá nota com critérios do formato e corrige até 3 vezes). Funciona no Claude Code e no Codex com o mesmo `SKILL.md`. Combina [as ferramentas listadas em fontes](references/sources.md).
+- HyperFrames + GSAP: composição principal, motion, tipografia, camadas e transições.
+- FFmpeg + ffprobe: preparação, mixagem, exportação e medições.
+- Three.js e Blender: cenas e ativos 3D.
+- Tone.js: desenho de som offline sincronizado.
+- gl-transitions: transições por shaders.
+- ComfyUI: geração de imagens por workflows concretos.
+- PixiJS, Paper.js ou p5.js: linguagem visual por cena.
+- Blender MCP + glTF Transform: automação e preparação do 3D.
+- Kokoro: narração.
+- faster-whisper: transcrição/tempos de legenda.
+- ACE-Step 1.5: geração musical por serviço configurado.
 
-## Instalação
+`assets/stack.json` é o catálogo exclusivo. Dependências indiretas de build, fonetização, browser e modelos não são motores criativos alternativos. Não instalar outros provedores automaticamente. Google Trends permanece como fonte de pesquisa/CSV, não como motor audiovisual.
 
-| CLI | Pasta pessoal | Pasta do projeto | Invocação |
-|---|---|---|---|
-| Claude Code | `~/.claude/skills/video-viral/` | `.claude/skills/video-viral/` | `/video-viral <pedido>` |
-| Codex | `~/.agents/skills/video-viral/` | `.agents/skills/video-viral/` | `$video-viral <pedido>` |
+## Instalação da skill
 
-`agents/openai.yaml` só é lido pelo Codex.
+Copie esta pasta para ~/.agents/skills/video-viral ou .agents/skills/video-viral. No Codex, use `$video-viral <pedido>`; no Claude Code, a pasta equivalente de skills e `/video-viral <pedido>`. A atualização do repositório não reinstala uma skill local removida.
 
-As ferramentas de cada etapa são instaladas à parte, uma venv por ferramenta em `~/.video-viral/venvs/`. Veja [instalação](references/setup.md) e confira o que já está pronto:
+Ferramentas são instaladas seletivamente em ambientes dedicados: [setup](references/setup.md). O grupo Node v2 usa package.json e lockfile fixados em assets/node; não sobrescreve um ambiente desconhecido. Não há download automático de checkpoints ComfyUI ou pesos ACE-Step.
 
 ```sh
 python scripts/check_env.py
+python scripts/stack.py list
+python scripts/stack.py doctor --node-root <raiz-npm>
 ```
 
-## Scripts
+## Fluxo
 
-Tudo passa por um manifesto, `video.json` (projetos antigos com `short.json` continuam funcionando), criado por `scripts/new_project.py --format <formato> --aspect <formato de tela>`.
+Brief de público/oferta → pesquisa → ganchos audiovisuais → roteiro → direção e plano técnico → módulos/ativos → composição HyperFrames → mix/export → revisão do mesmo arquivo final. Leia [SKILL.md](SKILL.md), [marketing](references/marketing.md), [pipeline](references/pipeline.md) e os guias do formato.
 
-| Script | Faz |
+## Entradas executáveis
+
+| Script | Função |
 |---|---|
-| `new_project.py` | Cria o projeto por formato (narrado, gravacao, corte, produto, ugc, storytelling, musica, avatar) e formato de tela |
-| `footage.py` | Importa e limpa a gravação, corta silêncios e vícios, mostra o enquadramento, renderiza com zoom e inserções |
-| `clips.py` | Sugere cortes de um vídeo longo e cria um projeto por corte |
-| `captions.py` | Transcreve (WhisperX ou faster-whisper), importa `.srt`/`.vtt`, estima tempos e gera a legenda `.ass` |
-| `voice.py` | Narração com Kokoro, Chatterbox ou a voz do sistema |
-| `deliver.py` | Mixa, legenda, normaliza para -14 LUFS e confere tudo por plataforma: duração, formato de tela, volume, pico, quadros pretos, licenças, capítulos e miniatura |
-| `review.py` | Grade de quadros, quadros do gancho, ritmo e alertas; tabela de notas com critérios do formato e `--verdict` |
-| `plan.py` | Confere planejamento salvo no manifesto e distingue campo esquecido de dado pendente |
-| `trends.py` | Gera pesquisa Google Trends e importa CSV oficial com filtros declarados, fonte e índices preservados |
-| `check_env.py` | O que está instalado, o que falta e a VRAM livre |
+| new_project.py / plan.py | Projeto schema 3, brief, ganchos e consistência do planejamento |
+| footage.py / clips.py | Importar/cortar/enquadrar gravação e selecionar cortes |
+| voice.py | Kokoro ou montagem de WAVs fornecidos |
+| captions.py | faster-whisper, importação SRT/VTT, estimativa identificada e legenda ASS |
+| visual_scene.mjs | Projetos de cena determinísticos PixiJS, Paper.js, p5.js e gl-transitions |
+| sound.mjs | Tone.js offline → WAV e receipt; mix por deliver.py |
+| gltf.mjs | Otimização GLB, preservando fonte |
+| comfy.py / images.py | Workflow ComfyUI API → imagem, com proveniência |
+| music.py | Cliente REST ACE-Step 1.5 → WAV, sem instalar/iniciar o serviço |
+| deliver.py / review.py | Mix, exportação e revisão vinculada por hashes e evidências |
+| trends.py | URL/CSV oficial do Google Trends, com filtros e índices preservados |
 
-## Conteúdo
+Exemplos, contratos e limites em [módulos](references/modules.md). Os projetos de cena são demos técnicas editáveis; a direção e a integração no filme continuam necessárias. Scripts antigos de rastreamento externo e alinhamento forçado não instalam alternativas: explicam a migração.
 
-- [SKILL.md](SKILL.md): ponto de entrada, escolha do formato, fluxos e regras.
-- Formatos: [gravação própria](references/formats/gravacao.md), [cortes](references/formats/cortes.md), [vídeo longo](references/formats/longo.md), [outros](references/formats/outros.md).
-- [Marketing e ganchos](references/marketing.md) e [pesquisa com Google Trends](references/research.md).
-- [Avatares/UGC](references/formats/avatares.md), [animação](references/formats/animacao.md), [música](references/formats/musica.md).
-- [Pipeline narrado](references/pipeline.md), [direção](references/direction.md), [motion graphics](references/motion.md), [roteiro](references/writing.md) e [revisão](references/review.md).
-- [Plataformas](references/platforms.md), [ferramentas](references/stack.md), [instalação](references/setup.md), [fontes](references/sources.md) e [casos de teste](evals/).
+## Validação
 
-## Limites e licença
+```sh
+python -m unittest discover -s tests -v
+node --test tests/node/*.test.mjs
+python tests/integration_pipeline.py --output <pasta-nova>
+```
 
-Pensada para GPU de 8 GB: um modelo por vez, Hunyuan3D só na versão mini. A skill instala sozinha o que a tarefa usa (`scripts/setup_tools.py`: winget ou brew, e venvs em `~/.video-viral/venvs`), salvo se você pedir para não instalar; não publica nem agenda posts, usa yt-dlp só para pesquisa (sem reaproveitar vídeo alheio) e clona voz ou rosto só com consentimento. Ativos com licença não comercial ou não verificada (pesos do MusicGen, voz do sistema, gravação de terceiros sem autorização) bloqueiam a entrega de vídeos monetizados; `deliver.py --draft` gera um rascunho marcado para não publicar. Se uma instalação falhar, a skill usa a reserva da etapa e entrega mesmo assim, dizendo o que faltou. O vídeo só é declarado pronto quando `review.py --verdict` aprova.
+Testes Node precisam das dependências fixadas e de Chrome/Edge instalado. Defina VIDEO_VIRAL_NODE_ROOT e, se necessário, VIDEO_VIRAL_BROWSER_PATH. Os testes verificam determinismo, arquivos, APIs e falhas; não medem retenção real ou qualidade artística. Clientes de geração podem ser testados com servidores simulados sem validar os modelos reais.
 
-Testado de ponta a ponta com gravações sintéticas (voz do Windows, 720p, com vícios e uma retomada): edição em 9:16 e 16:9 com B-roll, cortes de um vídeo de 3 min, entrega e revisão. Depois, com uma gravação real de celular (480p, 2 min): transcrição com faster-whisper na GPU, corte com gancho no topo, legendas e revisão aprovada; e voz Kokoro em pt-BR, ambas instaladas pelo `setup_tools.py`. WhisperX ainda não foi validado. A revisão automática mede ritmo e erros objetivos; a nota estética depende do modelo olhar as imagens.
+## Entrega e licenças
 
-Distribuída sob a [licença MIT](LICENSE). Cada ferramenta e modelo segue a própria licença.
+A entrega monetizada exige licenças/ativos confirmados; --draft gera rascunho identificado. `out/delivery.json`, métricas, imagens e assessment.json ligam revisão ao mesmo render/manifesto. Código 3 é limite com deficiências, não aprovação. Não publicar ou acessar contas sem pedido explícito.
 
-## Pendências (próximas melhorias)
+Distribuição da skill: MIT. Ferramentas, pesos e ativos têm termos próprios; registre os reais. Sem provas, datas, preços ou analytics fornecidos, não inventar informação para passar num teste.
 
-- Script de A-roll que encaixa os cortes no mínimo de energia do áudio, aplica fades nas emendas, keyframes a cada 1 s e upscale/denoise.
-- Script que monta o projeto HyperFrames vertical a partir do EDL, `faces.json` e `words.json` (layout dividido/tela cheia, legendas animadas, gancho com recorte, transições e efeitos sonoros).
-- Adaptar as transições com shader do registry (whip-pan, glitch, light-leak) para quadros de vídeo real.
-- Efeitos sonoros com Tone.js renderizados offline; trilha com ACE-Step.
-- Refazer o vídeo de teste com a edição rica e atualizar os evals com critérios visuais (transições com função, progressão narrativa, legibilidade e gancho multimodal).
-- Integrar e validar geradores de avatar/lip-sync e música conforme os guias; manter o status de adaptador até existir uma saída real verificada.
+## Migração para 2.0.0
 
-## Planejamento e validação
-
-O manifesto schema 3 acrescenta `brief`, `research`, `hook_candidates` e `tool_plan`; os scripts continuam lendo projetos antigos. Exemplo: `new_project.py campanha --format produto --objective conversao --audience "donos de salao" --offer "servico de agendamento" --dir <pasta>`.
-
-`deliver.py` grava `out/delivery.json`. A revisão vincula vídeo, manifesto e imagens por SHA-256 e exige `assessment.json` com método/intervalos de inspeção; notas isoladas ou um comando executado não aprovam a entrega. Código 3 é resultado com limitações, nunca aprovação. Não há garantia de viralização ou previsão de vendas.
-
-Google Trends entra por URL e CSV oficial; a API alpha não é requisito. O interesse de busca do site é relativo, não volume absoluto ou retenção. Ver [pesquisa](references/research.md).
-
-Testes de regressão: `python -m unittest discover -s tests -v`. Os casos em `evals/` também verificam comportamento editorial e integração; seus graders precisam ser executados por um avaliador compatível. O status de cada validação deve distinguir testes automatizados de avaliação estética e de métricas após publicação.
-
-Smoke técnico com FFmpeg e fixtures sintéticas: `python tests/integration_pipeline.py --output <pasta-nova>`. Exercita gravação e música e rejeita evidência pendente; não dá nota estética nem baixa modelos.
+- Projetos novos registram o compositor HyperFrames e IDs de módulos no manifesto/tool_plan. Projetos legados continuam legíveis, mas novas revisões exigem as evidências atuais.
+- Kokoro é o único TTS; não há troca automática para voz do sistema. faster-whisper é o transcritor; importação SRT/VTT e estimativa permanecem.
+- images.py agora é alias do cliente por workflow API ComfyUI: migrar specs antigas para um grafo exportado e informar o nó de saída.
+- O runtime Node v2 usa pasta/lockfile próprios; não atualiza silenciosamente o cache v1 ou reativa skills removidas.
