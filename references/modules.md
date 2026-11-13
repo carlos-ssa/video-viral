@@ -10,7 +10,7 @@ node scripts/sound.mjs <projeto> --spec edit/sound.json --node-root <raiz-npm>
 
 A spec contém duration (segundos), seed e events: [{"type":"whoosh","at":1,"duration":0.4,"gainDb":-18}]. Tipos: whoosh, impact, pop, riser e pulse. A saída padrão é audio/sound-design.wav com receipt JSON. A geração é offline, não reprodução ao vivo; não sobrescreve resultado existente. deliver.py inclui essa faixa automaticamente; --sfx seleciona outra faixa. Não duplique efeitos já mixados no master.
 
-Registre efeitos e ambientes sintetizados em `video.json.assets` com **`kind:"sfx"`**, não apenas `kind:"audio"`/`"sound"`. O review reconhece `sfx` (ou arquivos em `audio/sfx/`); esse registro declara a função, não comprova qualidade nem mix. Exemplo para som próprio realmente gerado:
+O review não exige `kind:"sfx"`: reconhece `audio/sound-design.wav`, conteúdo em `audio/sfx/` e ativos por nome (`sound-design`, `sfx`, `foley`, `effects`, `efeitos`) ou `kind`/`role` de efeito (`sfx`, `sound-design`, `foley`, `effect`, `efeito`). Para nome personalizado, use por exemplo `{"path":"audio/transicoes.wav","kind":"audio","role":"sfx"}`. Esse registro declara a função, não comprova qualidade nem mix; efeitos planejados em prosa não comprovam ativo. Exemplo para som próprio realmente gerado:
 
 ```json
 {"path":"audio/sound-design.wav","kind":"sfx","source":"Tone.js local; edit/sound.json; textura e contatos sintetizados, não gravação de ambiente real","license":"Síntese original deste projeto; sem amostras externas","commercial_ok":true}
@@ -20,7 +20,7 @@ Registre efeitos e ambientes sintetizados em `video.json.assets` com **`kind:"sf
 
 Sem gravação/ativo autorizado, crie uma **textura estilizada de reserva**, nunca anuncie chuva, rua, madeira ou musgo realista. Em `edit/sound.json`, use a duração medida `D`, uma seed fixa da receita e eventos `whoosh` sobrepostos: início a cada **1,5 s**, duração **min(3, D − at) s**, `gainDb:-24` sob fala ou `-18` sem fala. Comece em 0, termine em D e omita eventos com duração ≤0. Acrescente `pop` de **0,12 s / −28 dB** no contato leve, `impact` de **0,18 s / −26 dB** no contato grave e `whoosh` de **0,4 s / −29 dB** no deslocamento, sempre ancorados à imagem e contidos em D. São parâmetros de síntese, não LUFS finais; os tipos atuais usam osciladores e não modelam ambientes físicos.
 
-Gere pela CLI acima, registre `kind:"sfx"` e escute a mix; ajuste ganho/densidade conforme [composição](composition.md#regras-de-acabamento-obrigatórias). A textura pode soar tonal: se não cumprir a função sensorial/realista, PARE e solicite áudio adequado, ou ofereça demonstração sintética identificada. Não preencha falta de Foley com quatro estalos separados por silêncio.
+Gere pela CLI acima, registre a origem/licença do áudio (o caminho padrão é reconhecido mesmo com `kind:"audio"`) e escute a mix; ajuste ganho/densidade conforme [composição](composition.md#regras-de-acabamento-obrigatórias). A textura pode soar tonal: se não cumprir a função sensorial/realista, PARE e solicite áudio adequado, ou ofereça demonstração sintética identificada. Não preencha falta de Foley com quatro estalos separados por silêncio.
 
 ## Cenas — PixiJS, Paper.js, p5.js e gl-transitions
 
@@ -50,11 +50,21 @@ Workflow exportado em formato API, nós e checkpoints reais já disponíveis no 
 python scripts/music.py <projeto> --endpoint http://127.0.0.1:8001 --prompt "..." --duration 30 --seed 7
 ```
 
-O cliente usa release_task, query_result e o endpoint de áudio da mesma origem. Opcional ACE_STEP_API_KEY por ambiente, sem gravar o segredo. Timeout/falha/resposta incompleta não geram sucesso fictício; arquivo anterior é preservado. O serviço e os pesos precisam ser configurados à parte. Sem serviço, siga a distinção entre reserva procedural identificada e falha orientada em [música](formats/musica.md), sem prometer geração ACE-Step. Registre a licença real antes de --commercial-ok. O contrato de API foi testado com servidor simulado; isso não comprova uma geração musical local.
+O cliente usa release_task, query_result e o endpoint de áudio da mesma origem. Opcional ACE_STEP_API_KEY por ambiente, sem gravar o segredo. Timeout/falha/resposta incompleta não geram sucesso fictício; arquivo anterior é preservado. O serviço e os pesos precisam ser configurados à parte. Sem serviço, a reserva real é `python scripts/music.py <projeto> --backend procedural --duration 30 --seed 7`: dispensa `--endpoint`/`--prompt`, sintetiza cama instrumental tonal sem interpretar prompt e registra `fallback:true`, `backend:"procedural"`, seed e duração no ativo (padrão `audio/music.wav`). Aceita 10–600 s; não oferece canto nem geração ACE-Step. Se inadequada, siga a falha orientada em [música](formats/musica.md). Registre a licença real antes de --commercial-ok. O contrato de API foi testado com servidor simulado; isso não comprova uma geração musical local.
 
 ## Voz e legendas
 
 voice.py usa Kokoro ou WAVs fornecidos. captions.py transcribe usa faster-whisper; import lê SRT/VTT, estimate marca aproximação e ass gera a camada de legenda. align é um comando legado que explica a migração, sem instalar outro motor. Scripts de apoio não autorizam adicionar novos provedores ao stack.
+
+```sh
+python scripts/captions.py ass <projeto> --words 3 --script-text <roteiro.txt>
+```
+
+`--script-text` lê TXT UTF-8 como fonte explícita de grafia/pontuação e numerais; também vale em transcribe/import/estimate. Conserva os tempos reconhecidos, recupera grafia de palavras correspondentes e pode trocar numerais falados por algarismos entre âncoras; não alinha áudio nem insere fala omitida pelo ASR. Em `ass`, não regrava `words.json`: salva os grupos em `captions/captions.json` e o ASS em `captions/captions.ass`.
+
+A segmentação lê `video.json.captions`: `words_per_group` (padrão 3, meta, não corte rígido), `max_chars_per_line` (32), `max_lines` (2, aceita 1 ou 2), `min_duration` (0,6 s), `max_cps` (24 caracteres/s) e `pause_threshold` (0,45 s). `--words` substitui somente a meta de palavras, não esses limites. Frases/pontuação final e `jump` separam blocos; pausas são fronteiras preferidas, sem isolar a última palavra. Equilibra linhas e penaliza órfãs, mas não é análise sintática: revise cada quebra. Se texto/tempos não comportarem os limites, falha pedindo revisão, em vez de produzir legenda rápida demais.
+
+O review já mede cauda morta, silêncio interior, proporção audível e ocupação do quadro e avisa sobre ausência de cama sonora. Dispensa de cama: `"music":{"bed_waiver":"Justificativa editorial não vazia"}`; não dispensa silêncio/cauda. Veja [gates e limiares reais](review.md#gates-instrumentados-e-limites). Colisão de textos continua sendo checagem obrigatória do revisor, sem gate automático confiável.
 
 ## IDs no planejamento
 
