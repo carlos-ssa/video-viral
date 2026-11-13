@@ -90,8 +90,25 @@ def duration(path):
     return float(ffprobe_json(path)["format"]["duration"])
 
 
+def validate_scenes(m, gap=0):
+    if not math.isfinite(gap) or gap < 0:
+        raise ValueError("--gap deve ser um número finito maior ou igual a zero.")
+    seen = set()
+    for sc in m.get("scenes", []):
+        identifier = sc.get("id")
+        if (not isinstance(identifier, str) or not identifier.strip() or identifier in (".", "..")
+                or any(c in identifier for c in '/\\:') or identifier in seen):
+            raise ValueError("Cada cena precisa de um id único, sem separadores de caminho.")
+        seen.add(identifier)
+        if not (sc.get("narration") or "").strip():
+            dur = float(sc.get("duration") or 0)
+            if not math.isfinite(dur) or dur <= 0:
+                raise ValueError(f"A cena {identifier} sem narração exige duration positiva e finita.")
+
+
 def assemble(proj, m, gap):
     """Concatena as cenas (com pausa) em audio/voice.wav e grava start/duration."""
+    validate_scenes(m, gap)
     ff = need("ffmpeg")
     args, filters, labels, t = [ff, "-y", "-hide_banner"], [], [], 0.0
     for i, sc in enumerate(m["scenes"]):
@@ -137,6 +154,10 @@ def main():
     m = load_manifest(proj)
     if not m.get("scenes") or not any((s.get("narration") or "").strip() for s in m["scenes"]):
         sys.exit("Nenhuma cena com narração no video.json. Escreva o roteiro primeiro.")
+    try:
+        validate_scenes(m, a.gap)
+    except (TypeError, ValueError) as exc:
+        ap.error(str(exc))
     (proj / "audio" / "scenes").mkdir(parents=True, exist_ok=True)
 
     if not a.from_wavs:

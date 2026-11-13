@@ -17,6 +17,17 @@ from deliver import license_blockers
 
 
 class VoiceTests(unittest.TestCase):
+    def test_invalid_scene_paths_gap_and_durations_fail_before_ffmpeg(self):
+        for scenes, gap in (([{'id': '../outside', 'narration': 'x'}], 0),
+                            ([{'id': 'same', 'narration': 'x'}] * 2, 0),
+                            ([{'id': 's1', 'narration': 'x'}], -.1),
+                            ([{'id': 's1', 'narration': 'x'}], float('nan')),
+                            ([{'id': 's1', 'duration': float('inf')}], 0)):
+            with self.subTest(scenes=scenes, gap=gap), patch.object(voice, 'need') as need:
+                with self.assertRaises(ValueError):
+                    voice.assemble(Path('unused'), {'scenes': scenes}, gap)
+                need.assert_not_called()
+
     def test_language_defaults_and_rate(self):
         for lang in ('pt', 'pt-BR', 'pt_BR'):
             self.assertEqual(voice.voice_settings({'lang': lang}), ('pt-BR-ThalitaMultilingualNeural', 1.2))

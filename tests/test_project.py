@@ -11,6 +11,14 @@ from _common import FORMATS, load_manifest, save_manifest
 
 
 class ProjectTests(unittest.TestCase):
+    def test_nonpositive_duration_is_rejected_before_creating_files(self):
+        with tempfile.TemporaryDirectory() as folder:
+            for seconds in ('0', '-1'):
+                result = subprocess.run([sys.executable, str(ROOT / 'scripts/new_project.py'), 'invalid',
+                                         '--seconds', seconds, '--dir', folder], capture_output=True, text=True)
+                self.assertEqual(result.returncode, 2)
+                self.assertFalse((Path(folder) / 'invalid').exists())
+
     def test_narration_defaults_follow_language_and_allow_voice_override(self):
         with tempfile.TemporaryDirectory() as folder:
             for lang, override, expected in (('pt-BR', None, 'pt-BR-ThalitaMultilingualNeural'),

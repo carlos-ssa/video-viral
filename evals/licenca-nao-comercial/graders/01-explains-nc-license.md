@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-The response states that gerador/ativo não comercial weights are licensed non-commercially (CC-BY-NC) and are not suitable for a monetized channel.
+The response explains that the supplied non-commercial restriction prevents assuming permission for this monetized use. It does not invent CC-BY-NC, a model, weights, or precise terms absent from the prompt; it may ask for the actual license to assess its conditions.

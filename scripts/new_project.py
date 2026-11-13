@@ -43,6 +43,9 @@ def main():
     ap.add_argument("--offer", default="")
     a = ap.parse_args()
 
+    if a.seconds is not None and a.seconds <= 0:
+        ap.error("--seconds precisa ser positivo")
+
     if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", a.slug):
         sys.exit("Use um slug com letras minúsculas, números e hífens (ex.: cubo-em-codigo).")
     plats = [p.strip() for p in (a.platforms or DEFAULT_PLATFORMS[a.aspect]).split(",") if p.strip()]
@@ -68,7 +71,7 @@ def main():
         (proj / f).mkdir(parents=True, exist_ok=True)
 
     m = json.loads(TEMPLATE.read_text(encoding="utf-8"))
-    seconds = a.seconds or (480 if a.aspect == "16:9" else 40)
+    seconds = a.seconds if a.seconds is not None else (480 if a.aspect == "16:9" else 40)
     m.update(slug=a.slug, title=a.title, format=a.format, aspect=a.aspect, lang=a.lang, platforms=plats,
              monetized=not a.not_monetized, target_seconds=seconds, fps=a.fps, size=list(ASPECTS[a.aspect]))
     m["captions"]["size"] = CAPTION_SIZE.get(a.aspect, 72)

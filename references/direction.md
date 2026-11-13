@@ -49,7 +49,7 @@ Campos de `direction`:
 }
 ```
 
-Fontes: use famílias com licença aberta (SIL OFL, como as do Google Fonts), coloque os arquivos `.ttf` em `assets/fonts/` e registre em `assets`. O `deliver.py` passa essa pasta para as legendas; na composição, carregue com `@font-face`. Atualize `captions.font` para a fonte de legenda escolhida e a cor de destaque da legenda para a cor de destaque da paleta.
+Fontes: use famílias com licença aberta (SIL OFL, como as do Google Fonts), coloque os arquivos `.ttf` em `assets/fonts/` e registre em `assets`. O `deliver.py` passa essa pasta para as legendas; na composição, carregue com `@font-face`. Atualize `captions.font` para a fonte de legenda escolhida e aplique a cor de destaque da paleta no HTML/ASS; o manifesto atual não expõe um campo de cor de legenda.
 
 ## 3. Gancho
 
@@ -106,10 +106,10 @@ No HyperFrames, renderize quadros soltos no tempo de cada plano. No Blender, `--
 | Sinal | Correção |
 |---|---|
 | Fonte padrão (Arial, Roboto) centralizada e parada | Fonte do estilo, hierarquia de tamanhos, texto que entra com máscara e tem uma palavra destacada |
-| Tudo entra com o mesmo fade linear | Curvas de [motion](motion.md#princípios), entradas diferentes por tipo de elemento |
+| Tudo entra com o mesmo fade linear | Curvas de [motion](motion.md#acabamento), entradas diferentes por tipo de elemento |
 | Imagem literal da palavra falada | Imagem que mostra consequência, contraste ou detalhe |
 | Vídeo gerado por IA com rostos e mãos deformando | Imagens paradas com câmera virtual e paralaxe, 3D em código ou o próprio texto como imagem |
-| Quadros mortos de 3 s ou mais | Movimento contínuo de câmera e um evento a cada 1,5–3 s |
+| Quadro sem função narrativa | Ajustar ação, enquadramento ou ritmo ao formato; sustentar uma pausa intencional quando ela acrescentar sentido |
 | Só voz e música no mesmo volume o tempo todo | Efeitos nas entradas, música que abaixa sob a voz e sobe no payoff, um silêncio de 0,3 s antes da revelação |
 | Paleta que muda a cada cena | 3 a 5 cores do `direction.palette` em todas as cenas |
 | Legenda em cima do assunto principal | Assunto no terço de cima, legenda no terço de baixo, dentro da área segura |

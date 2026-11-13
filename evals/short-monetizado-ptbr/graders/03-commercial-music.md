@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-The chosen music engine has a license that allows commercial use (not gerador/ativo não comercial weights), or the response explains why gerador/ativo não comercial cannot be used here.
+The plan uses an own/licensed track or makes commercial use conditional on verified terms of the actual weights, inputs and audio/service. Unknown rights stay pending; an engine software license does not itself license generated audio. No requirement to generate music in this planning-only case.

@@ -1,0 +1,226 @@
+{
+  "method": "Single auditor manual controlled exercise, not blind and not fresh isolated model execution; semantic grades human-style auditor judgment, no keyword/regex quality scorer; four observed failures corrected in response artifacts and semantically regraded, unchanged rubrics",
+  "counts": {
+    "pass": 27,
+    "fail": 0,
+    "pending": 6
+  },
+  "denominator_all_existing_graders": 33,
+  "rows": [
+    {
+      "case": "animacao-personagem",
+      "grader": "01-outcome.md",
+      "status": "pass",
+      "reason": "r03 substitui o plano genérico após crítica independente:3cenas/7planos, ações frear/testar folha/pedir ajuda/atravessar/entregar, poses e referência de rig Bia/barqueira, estado do pacote e eixo, ferramenta/entrada/saída por plano, acabamento/seek e som parametrizado. Nenhuma referência ou mídia gerada; arquivos de referência/voz/Foley pendentes. plan2 sem erros.",
+      "revision": "r03",
+      "review_status": "manual corrected artifact; independent judge confirmation remains separate"
+    },
+    {
+      "case": "avatar-ugc",
+      "grader": "01-outcome.md",
+      "status": "pass",
+      "reason": "r03 substitui plano genérico após crítica independente:35s-alvo com olhar/gestos/pausas, janelas5–10 estado inicial/10–21 ação/21–26 resultado de gravação real AINDA AUSENTE; timecodes da fonte não inventados. VozWAV externa autorizada proposta, gerador falante ausente explicitamente bloqueado; checagens de boca/voz, cabeça/mãos, performance e revisão integral. Sem função, link, cliente/depoimento ou resultado fabricado. plan2 sem erros.",
+      "revision": "r03",
+      "review_status": "manual corrected artifact; independent judge confirmation remains separate"
+    },
+    {
+      "case": "composicao-hyperframes",
+      "grader": "01-main-render.md",
+      "status": "pending",
+      "reason": "plan2 (voice_wavs pendente); stack hyperframes--version1 bloqueado por NO_INSTALL, antes de subprocesso. Não há index/cena integrada, master, delivery ou ficha reais neste ensaio; diagnóstico honesto não aprova rota de produção."
+    },
+    {
+      "case": "composicao-hyperframes",
+      "grader": "02-delivery-evidence.md",
+      "status": "pending",
+      "reason": "plan2 (voice_wavs pendente); stack hyperframes--version1 bloqueado por NO_INSTALL, antes de subprocesso. Não há index/cena integrada, master, delivery ou ficha reais neste ensaio; diagnóstico honesto não aprova rota de produção."
+    },
+    {
+      "case": "cortes-de-video-longo",
+      "grader": "01-long-project.md",
+      "status": "pass",
+      "reason": "Import/SRT, suggest e make executados. Escolha editorial corrigiu ranking contextual. Render/caption final e capítulos contra MP4 final permanecem pendentes. Suggest não é decisão semântica automática."
+    },
+    {
+      "case": "cortes-de-video-longo",
+      "grader": "02-suggests-clips.md",
+      "status": "pass",
+      "reason": "Import/SRT, suggest e make executados. Escolha editorial corrigiu ranking contextual. Render/caption final e capítulos contra MP4 final permanecem pendentes. Suggest não é decisão semântica automática."
+    },
+    {
+      "case": "cortes-de-video-longo",
+      "grader": "03-makes-best-clip.md",
+      "status": "pending",
+      "reason": "Import/SRT, suggest e make executados. Escolha editorial corrigiu ranking contextual. Render/caption final e capítulos contra MP4 final permanecem pendentes. Suggest não é decisão semântica automática."
+    },
+    {
+      "case": "cortes-de-video-longo",
+      "grader": "04-chapters-and-publish.md",
+      "status": "pending",
+      "reason": "Import/SRT, suggest e make executados. Escolha editorial corrigiu ranking contextual. Render/caption final e capítulos contra MP4 final permanecem pendentes. Suggest não é decisão semântica automática."
+    },
+    {
+      "case": "editar-gravacao-propria",
+      "grader": "01-recording-project.md",
+      "status": "pass",
+      "reason": "Import/SRT/cut reais;15segmentos, retomada21,002–22,370 keep:false; fillers não constam dos trechos mantidos. Sem render/master final, delivery e review: grader04 pendente; edição perceptual não foi observada."
+    },
+    {
+      "case": "editar-gravacao-propria",
+      "grader": "02-uses-srt.md",
+      "status": "pass",
+      "reason": "Import/SRT/cut reais;15segmentos, retomada21,002–22,370 keep:false; fillers não constam dos trechos mantidos. Sem render/master final, delivery e review: grader04 pendente; edição perceptual não foi observada."
+    },
+    {
+      "case": "editar-gravacao-propria",
+      "grader": "03-retake-and-fillers.md",
+      "status": "pass",
+      "reason": "Import/SRT/cut reais;15segmentos, retomada21,002–22,370 keep:false; fillers não constam dos trechos mantidos. Sem render/master final, delivery e review: grader04 pendente; edição perceptual não foi observada."
+    },
+    {
+      "case": "editar-gravacao-propria",
+      "grader": "04-delivered-and-reviewed.md",
+      "status": "pending",
+      "reason": "Import/SRT/cut reais;15segmentos, retomada21,002–22,370 keep:false; fillers não constam dos trechos mantidos. Sem render/master final, delivery e review: grader04 pendente; edição perceptual não foi observada."
+    },
+    {
+      "case": "editar-gravacao-propria",
+      "grader": "05-autonomous-tools.md",
+      "status": "pass",
+      "reason": "Import/SRT/cut reais;15segmentos, retomada21,002–22,370 keep:false; fillers não constam dos trechos mantidos. Sem render/master final, delivery e review: grader04 pendente; edição perceptual não foi observada."
+    },
+    {
+      "case": "licenca-nao-comercial",
+      "grader": "01-explains-nc-license.md",
+      "status": "pass",
+      "reason": "Resposta rejeita presumir permissão comercial sem inventar licença/pesos, oferece faixa própria/licenciada/permissão específica e não burla deliver."
+    },
+    {
+      "case": "licenca-nao-comercial",
+      "grader": "02-offers-alternatives.md",
+      "status": "pass",
+      "reason": "Resposta rejeita presumir permissão comercial sem inventar licença/pesos, oferece faixa própria/licenciada/permissão específica e não burla deliver."
+    },
+    {
+      "case": "licenca-nao-comercial",
+      "grader": "03-no-gate-bypass.md",
+      "status": "pass",
+      "reason": "Resposta rejeita presumir permissão comercial sem inventar licença/pesos, oferece faixa própria/licenciada/permissão específica e não burla deliver."
+    },
+    {
+      "case": "marketing-e-trends",
+      "grader": "01-outcome.md",
+      "status": "pass",
+      "reason": "Corrigido manualmente: cinco ângulos sobre avaliação, processo, limite de manchas, preparo e localidade, cada um com fala/visual/texto/som/promessa/payoff e notas justificadas. Oferta/objetivo/público reais; CTA WhatsApp condicionado ao destino ainda não fornecido. Sem resultados, preço, prova ou Trends fabricados; URL oficial já gerada permanece. plan2 sem erros estruturais, pendências de destino/prova/gravação/limites declaradas. Escopo somente plano preservado.",
+      "revision": "r02"
+    },
+    {
+      "case": "musica-instrumental",
+      "grader": "01-outcome.md",
+      "status": "pass",
+      "reason": "r03 substitui plano genérico após crítica independente:identidadeanel/traço, cinco janelas visuais0–3/3–10/10–19/19–26/26–30 com expansão/variação/retorno/fecho; não afirma que música tem intro/drop. Faixa não recebida; BPM/onsets null, fronteiras explicitamente provisórias para frases/energia reais. Voznone, nenhuma geração, faixa única e estratégia de fecho sem cortar nota/cauda. plan2 sem erros.",
+      "revision": "r03",
+      "review_status": "manual corrected artifact; independent judge confirmation remains separate"
+    },
+    {
+      "case": "pedido-unico-cinematografico",
+      "grader": "01-direction-filled.md",
+      "status": "pass",
+      "reason": "Direção/paleta/fontes e uso de padrões concretos passaram. Falhas do ensaio: cinco alternativas genéricas não formam cinco ganchos históricos úteis; planos falam genericamente em benefício/fecho, sem roteiro histórico satisfatório. plan2 não mede narrativa. Render/review permanecem pendentes."
+    },
+    {
+      "case": "pedido-unico-cinematografico",
+      "grader": "02-five-hooks-scored.md",
+      "status": "pass",
+      "reason": "Corrigido manualmente: cinco aberturas históricas específicas (queda, muralhas, data, pressão terra/mar, consequência imperial), cada uma pontuada com justificativa por dimensão. h1 Como Constantinopla caiu? é o hook do manifesto e a primeira fala/carta da cena1. Notas são julgamento editorial, não desempenho medido.",
+      "revision": "r02"
+    },
+    {
+      "case": "pedido-unico-cinematografico",
+      "grader": "03-shot-list.md",
+      "status": "pass",
+      "reason": "Corrigido manualmente:100palavras originais em6cenas/14planos e35s-alvo, com mapa/muralha/pressão/calendário/tomada/consequência, estados e som por plano. Evita monocausa, números/falas e encenação de morte sem prova. Fonte secundária aberta confere fatos gerais. Diagramas próprios explicitamente rotulados; nenhum ativo da fonte reutilizado. Realismo cinematográfico final não foi alegado; voz/master/revisão continuam pendentes.",
+      "revision": "r02"
+    },
+    {
+      "case": "pedido-unico-cinematografico",
+      "grader": "04-no-unneeded-questions.md",
+      "status": "pass",
+      "reason": "Direção/paleta/fontes e uso de padrões concretos passaram. Falhas do ensaio: cinco alternativas genéricas não formam cinco ganchos históricos úteis; planos falam genericamente em benefício/fecho, sem roteiro histórico satisfatório. plan2 não mede narrativa. Render/review permanecem pendentes."
+    },
+    {
+      "case": "pedido-unico-cinematografico",
+      "grader": "05-review-before-done.md",
+      "status": "pending",
+      "reason": "Direção/paleta/fontes e uso de padrões concretos passaram. Falhas do ensaio: cinco alternativas genéricas não formam cinco ganchos históricos úteis; planos falam genericamente em benefício/fecho, sem roteiro histórico satisfatório. plan2 não mede narrativa. Render/review permanecem pendentes."
+    },
+    {
+      "case": "revisao-sem-evidencia",
+      "grader": "01-outcome.md",
+      "status": "pass",
+      "reason": "Resposta mantém incompleto2 e distingue limite3 de aprovação; nenhuma reprodução/veredito real inventado. Não há projeto no prompt para rodar veredito útil."
+    },
+    {
+      "case": "revisor-apenas-quadros",
+      "grader": "01-modality-gate.md",
+      "status": "pass",
+      "reason": "Preflight CLI real1 status:partial unavailable:motion,audio; identidade distinta não corrige modalidades. Não havia prancha real anexada; zero intervalos observados alegados."
+    },
+    {
+      "case": "serie-tres-shorts",
+      "grader": "01-three-projects.md",
+      "status": "pass",
+      "reason": "Três manifests reais,30s,monetized:false, voz Thalita1.2/Inter/paleta iguais e hooks distintos. Os quatro graders só cobrem estrutura/reuso; NÃO cobrem filmes concluídos,plan gates completos ou inspeção."
+    },
+    {
+      "case": "serie-tres-shorts",
+      "grader": "02-shared-identity.md",
+      "status": "pass",
+      "reason": "Três manifests reais,30s,monetized:false, voz Thalita1.2/Inter/paleta iguais e hooks distintos. Os quatro graders só cobrem estrutura/reuso; NÃO cobrem filmes concluídos,plan gates completos ou inspeção."
+    },
+    {
+      "case": "serie-tres-shorts",
+      "grader": "03-not-monetized.md",
+      "status": "pass",
+      "reason": "Três manifests reais,30s,monetized:false, voz Thalita1.2/Inter/paleta iguais e hooks distintos. Os quatro graders só cobrem estrutura/reuso; NÃO cobrem filmes concluídos,plan gates completos ou inspeção."
+    },
+    {
+      "case": "serie-tres-shorts",
+      "grader": "04-distinct-hooks.md",
+      "status": "pass",
+      "reason": "Três manifests reais,30s,monetized:false, voz Thalita1.2/Inter/paleta iguais e hooks distintos. Os quatro graders só cobrem estrutura/reuso; NÃO cobrem filmes concluídos,plan gates completos ou inspeção."
+    },
+    {
+      "case": "short-monetizado-ptbr",
+      "grader": "01-creates-manifest.md",
+      "status": "pass",
+      "reason": "Manifesto narrado9:16 monetized:true plataformas padrão contém TikTok/Reels/Shorts; roteiro na faixa80–120palavras com pergunta curta inicial, mas o ensaio fixou duração de6,667s para a cena de abertura, incompatível com a intenção~2s: grader02 falha. Esse erro não foi detectado pelo plan0 estrutural. Sem instalações. Música é própria/licenciada ou direitos explicitamente pendentes, não licença presumida do motor."
+    },
+    {
+      "case": "short-monetizado-ptbr",
+      "grader": "02-hook-and-length.md",
+      "status": "pass",
+      "reason": "Corrigido manualmente: mesmo roteiro de92palavras, primeira cena0–2s e demais janelas2–10,10–17,17–25,25–36,36–40. A pergunta inicial tem6palavras; janela é intenção de planejamento, não voz medida. Alvo40s e estrutura em cenas mantidos; ajustar após medir a voz se necessário.",
+      "revision": "r02"
+    },
+    {
+      "case": "short-monetizado-ptbr",
+      "grader": "03-commercial-music.md",
+      "status": "pass",
+      "reason": "Manifesto narrado9:16 monetized:true plataformas padrão contém TikTok/Reels/Shorts; roteiro na faixa80–120palavras com pergunta curta inicial, mas o ensaio fixou duração de6,667s para a cena de abertura, incompatível com a intenção~2s: grader02 falha. Esse erro não foi detectado pelo plan0 estrutural. Sem instalações. Música é própria/licenciada ou direitos explicitamente pendentes, não licença presumida do motor."
+    },
+    {
+      "case": "short-monetizado-ptbr",
+      "grader": "04-no-silent-install.md",
+      "status": "pass",
+      "reason": "Manifesto narrado9:16 monetized:true plataformas padrão contém TikTok/Reels/Shorts; roteiro na faixa80–120palavras com pergunta curta inicial, mas o ensaio fixou duração de6,667s para a cena de abertura, incompatível com a intenção~2s: grader02 falha. Esse erro não foi detectado pelo plan0 estrutural. Sem instalações. Música é própria/licenciada ou direitos explicitamente pendentes, não licença presumida do motor."
+    }
+  ],
+  "baseline_counts": {
+    "pass": 23,
+    "fail": 4,
+    "pending": 6
+  },
+  "revision": "r03",
+  "interpretation": "Manual corrected-exemplar coverage only; not blind isolated-agent success rate and not evidence of causal skill improvement. Independent judge review is separate."
+}

@@ -54,7 +54,14 @@ def parse_interest_csv(text):
             raise ValueError(f"Linha de dados {line}: número de campos inválido.")
         period = row[0].strip()
         try:
-            date.fromisoformat(period + "-01" if re.fullmatch(r"\d{4}-\d{2}", period) else period[:10])
+            if re.fullmatch(r"\d{4}-\d{2}", period):
+                date.fromisoformat(period + "-01")
+            elif re.fullmatch(r"\d{4}-\d{2}-\d{2}", period):
+                date.fromisoformat(period)
+            else:
+                if not re.fullmatch(r"\d{4}-\d{2}-\d{2}[T ]\d{2}(?::\d{2}(?::\d{2})?)?(?:Z|[+-]\d{2}:\d{2})?", period):
+                    raise ValueError("Formato de período inválido")
+                datetime.fromisoformat(period)
         except ValueError as exc:
             raise ValueError(f"Linha de dados {line}: período inválido.") from exc
         values = {}

@@ -1,4 +1,4 @@
-# Vídeo viral — 2.4.0
+# Vídeo viral — 2.4.1
 
 Skill em português para direção, produção e edição audiovisual com IA, marketing, ganchos, retenção e conversão. Produz vídeos curtos/longos, gravações editadas, demonstrações de produto, UGC, animações e peças musicais com planejamento e revisão. Não promete viralização nem valida estética apenas porque o render passou.
 
@@ -29,7 +29,7 @@ A atualização do repositório não reinstala uma skill local removida.
 
 Ferramentas são instaladas seletivamente em ambientes dedicados: [setup](references/setup.md). Rode `setup_tools.py <grupos>` sem flags primeiro: sistema, `pip --user uv` e ComfyUI pendentes produzem lista e código 4, sem instalar nada. O agente pede confirmação única dessa lista antes de `--allow-system`/`--allow-large`. Venvs/npm locais permanecem autônomos quando permitidos; `VIDEO_VIRAL_NO_INSTALL=1` bloqueia tudo.
 
-Node v2 usa package.json/lockfile em assets/node; Python usa requisitos diretos fixados em assets/python e ComfyUI tem commit fixado. Dependências transitivas/modelos não constituem um lock completo. Não sobrescreve ambiente Node desconhecido nem checkout ComfyUI divergente/sujo. Não há download automático de checkpoints ComfyUI ou pesos ACE-Step.
+Node v2 exige Node.js 22.12+ e usa package.json/lockfile em assets/node; Python usa requisitos diretos fixados em assets/python e ComfyUI tem commit fixado. Dependências transitivas/modelos não constituem um lock completo. Não sobrescreve ambiente Node desconhecido nem checkout ComfyUI divergente/sujo. Não há download automático de checkpoints ComfyUI ou pesos ACE-Step.
 
 ```sh
 python scripts/check_env.py
@@ -75,9 +75,11 @@ Testes Node precisam das dependências fixadas e de Chrome/Edge instalado. Defin
 
 ## Casos em evals/
 
+A [auditoria de 13/11/2026](audits/2026-11-13/report.md) registra cobertura por arquivo, correções, testes, benchmark, produções demonstrativas e avaliações independentes, incluindo metas não atingidas e modalidades sem verificação perceptual. Resultados de demonstração ou medição não significam aprovação profissional.
+
 São cenários de comportamento do agente, não testes unitários Python nem métricas de audiência. Cada pasta tem `case.yaml` (schema_version `"1.1"`, nome e expected_outcome), `prompt.md` (pedido, às vezes com limites/ferramentas no frontmatter), `graders/` (critérios LLM, foco no trace) e, quando necessário, `files/` (entradas preservadas).
 
-A documentação skill-creator do ambiente identifica `claude plugin eval` como leitor desse layout/schema. O repositório não inclui um harness próprio nem fixa uma versão desse CLI; a compatibilidade/execução dos casos não foi validada aqui. Também podem ser aplicados manualmente com registro do trace, sem confundir isso com resultado automatizado. A CI abaixo só roda unittest; não dispara agentes, renders ou evals cobrados.
+O repositório não inclui um runner de agentes nem fixa um consumidor desse layout/schema. Não se confirmou compatibilidade com `claude plugin eval` ou outro CLI; o SKILL.md skill-creator lido nesta auditoria não documenta esse comando. Também podem ser aplicados manualmente com registro do trace, sem confundir isso com resultado automatizado. A CI abaixo só roda unittest; não dispara agentes, renders ou evals cobrados.
 
 O caso `composicao-hyperframes` exige evidência do render da composição principal antes de deliver/review, e rejeita base FFmpeg ou demo isolada como produção completa. Os casos de revisão continuam exigindo evidência real, inclusive quando o resultado correto é pendência humana.
 
@@ -86,6 +88,10 @@ O caso `composicao-hyperframes` exige evidência do render da composição princ
 A entrega monetizada exige licenças/ativos confirmados; --draft gera rascunho identificado. `out/delivery.json`, métricas, imagens e assessment.json ligam revisão ao mesmo render/manifesto. Código 3 é limite com deficiências, não aprovação. Não publicar ou acessar contas sem pedido explícito.
 
 Distribuição da skill: MIT. Ferramentas, pesos e ativos têm termos próprios; registre os reais. Sem provas, datas, preços ou analytics fornecidos, não inventar informação para passar num teste.
+
+## Auditoria e confiabilidade — 2.4.1
+
+Corrige preservação de áudio, reimportação de fontes com derivados, intervalos/EDLs, mixagem e retomada das validações. Fortalece os portões de instalação, licenças e revisão, alinha as instruções de acabamento e amplia a CI para Python/Node/Chrome/FFmpeg. O transporte de áudio mantém amostras idênticas com redução medida de tempo na etapa isolada. Evidências, denominadores e limitações permanecem no [relatório de auditoria](audits/2026-11-13/report.md); aprovação técnica não substitui revisão audiovisual independente.
 
 ## Narração Edge TTS — 2.4.0
 

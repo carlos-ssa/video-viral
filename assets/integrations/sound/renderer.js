@@ -24,5 +24,5 @@ window.renderSound = async spec => {
       osc.start(e.at).stop(end);
     }
   }, spec.duration, 1, 44100);
-  return Array.from(rendered.getChannelData(0));
+  return rendered.getChannelData(0);
 };

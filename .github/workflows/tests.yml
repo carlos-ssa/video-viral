@@ -1,4 +1,4 @@
-name: Testes Python
+name: Testes Python e Node
 
 on: [push, pull_request]
 
@@ -6,12 +6,32 @@ permissions:
   contents: read
 
 jobs:
-  unittest:
+  tests:
     runs-on: ubuntu-latest
+    env:
+      VIDEO_VIRAL_NODE_ROOT: ${{ github.workspace }}/.node-stack
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Executar testes Python
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: assets/node/package-lock.json
+      - name: Preparar FFmpeg e stack JS fixado (sem modelos ou serviços pagos)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          mkdir -p "$VIDEO_VIRAL_NODE_ROOT"
+          cp assets/node/package*.json "$VIDEO_VIRAL_NODE_ROOT/"
+          npm ci --prefix "$VIDEO_VIRAL_NODE_ROOT" --ignore-scripts --no-audit --no-fund
+          "$VIDEO_VIRAL_NODE_ROOT/node_modules/.bin/esbuild" --version
+          google-chrome --version
+      - name: Executar testes Python com FFmpeg
         run: python -m unittest discover -s tests -v
+      - name: Executar testes Node com Chrome local
+        env:
+          VIDEO_VIRAL_NO_INSTALL: '1'
+        run: node --test tests/node/*.test.mjs

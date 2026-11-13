@@ -19,6 +19,7 @@ Sai com código 1 se alguma checagem falhar e 2 se uma licença bloquear a entre
 """
 import argparse
 import json
+import math
 import os
 import re
 import sys
@@ -65,20 +66,28 @@ def audio_graph(inputs, music_db):
     fmt = "aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo"
     f, mix = [], []
     v, mu, va, sfx = inputs.get("voice"), inputs.get("music"), inputs.get("video_audio"), inputs.get("sfx")
-    if v is not None and mu is not None:
-        f.append(f"[{v}:a]{fmt},asplit=2[vo][sc]")
-        f.append(f"[{mu}:a]{fmt},volume={music_db}dB[mu]")
-        f.append("[mu][sc]sidechaincompress=threshold=0.03:ratio=6:attack=15:release=350[duck]")
-        mix += ["[vo]", "[duck]"]
-    elif v is not None:
+    if v is not None:
         f.append(f"[{v}:a]{fmt}[vo]")
         mix.append("[vo]")
-    elif mu is not None:
-        f.append(f"[{mu}:a]{fmt}[mu]")
-        mix.append("[mu]")
     if va is not None:
         f.append(f"[{va}:a]{fmt}[va]")
         mix.append("[va]")
+    if mu is not None:
+        f.append(f"[{mu}:a]{fmt},volume={music_db}dB[mu]")
+        if mix:
+            if len(mix) > 1:
+                f.append(f"{''.join(mix)}amix=inputs={len(mix)}:duration=longest:normalize=0[dialogue]")
+                dialogue = "[dialogue]"
+            else:
+                dialogue = mix[0]
+            f.append(f"{dialogue}asplit=2[foreground][sidechain]")
+            # Keep the detector alive after speech EOF so it releases the music
+            # instead of ending the bed and padding the final mix with silence.
+            f.append("[sidechain]apad[sc]")
+            f.append("[mu][sc]sidechaincompress=threshold=0.03:ratio=6:attack=15:release=350[duck]")
+            mix = ["[foreground]", "[duck]"]
+        else:
+            mix.append("[mu]")
     if sfx is not None:
         f.append(f"[{sfx}:a]{fmt}[sfx]")
         mix.append("[sfx]")
@@ -105,7 +114,9 @@ def chapter_problems(chapters, dur):
     """Regras do YouTube para capítulos: o primeiro em 00:00, pelo menos 3, cada um com 10 s ou mais."""
     try:
         starts = [secs(c.get("start") if isinstance(c, dict) else str(c).split()[0]) for c in chapters]
-    except ValueError:
+        if any(not math.isfinite(t) or t < 0 or t >= dur for t in starts):
+            return ["tempo de capítulo fora da duração do vídeo"]
+    except (ValueError, TypeError, IndexError):
         return ["tempo de capítulo ilegível"]
     probs = []
     if len(starts) < 3:
@@ -174,10 +185,15 @@ def main():
     ap.add_argument("--crf", type=int, default=18)
     a = ap.parse_args()
 
+    if not 0 <= a.crf <= 51:
+        ap.error("--crf precisa estar entre 0 e 51")
+
     ff = need("ffmpeg")
     proj = project_dir(a.project)
     m = load_manifest(proj)
     slug = m.get("slug") or proj.name
+    if not isinstance(slug, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]*", slug):
+        ap.error("slug inválido; use letras minúsculas, números e hífens")
     W, H = m.get("size", [1080, 1920])
     SAFE = safe_area(W, H)
     aspect = m.get("aspect") or ("9:16" if H > W * 1.5 else "16:9" if W > H * 1.5 else "1:1" if W == H else "4:5")
@@ -188,7 +204,7 @@ def main():
     blockers = license_blockers(m)
     if a.allow_noncommercial and m.get("monetized", True):
         ap.error("--allow-noncommercial só é permitido em projeto com monetized: false; use --draft para prévia.")
-    draft = a.draft and m.get("monetized", True) and bool(blockers)
+    draft = a.draft
     if m.get("monetized", True) and blockers and not (a.allow_noncommercial or a.draft):
         print("Entrega bloqueada: vídeo monetizado com ativos sem licença comercial confirmada:")
         for b in blockers:
@@ -204,6 +220,11 @@ def main():
         sys.exit(f"{video} não tem faixa de vídeo.")
     vdur = float(vinfo["format"]["duration"])
 
+    for option, value in (("--voice", a.voice), ("--music", a.music), ("--sfx", a.sfx),
+                          ("--captions", a.captions)):
+        if value and not rel(proj, value).is_file():
+            ap.error(f"{option}: arquivo não encontrado: {rel(proj, value)}")
+
     voice = rel(proj, a.voice) if a.voice else (proj / "audio" / "voice.wav")
     voice = voice if voice.exists() else None
     music = None
@@ -217,6 +238,12 @@ def main():
         caps = rel(proj, a.captions) if a.captions else (proj / "captions" / "captions.ass")
         caps = caps if caps.exists() else None
     music_db = a.music_db if a.music_db is not None else float(m.get("music", {}).get("gain_db", -16))
+    if not math.isfinite(music_db):
+        ap.error("ganho de música precisa ser finito")
+
+    for name, path in (("voz", voice), ("música", music), ("efeitos", sfx)):
+        if path and not stream(ffprobe_json(path), "audio"):
+            ap.error(f"A fonte de {name} não contém áudio: {path}")
 
     in_args, idx = ["-i", str(video)], {}
     n = 1
@@ -314,7 +341,7 @@ def main():
         chk(False, "Sem narração (audio/voice.wav ausente) nem áudio no vídeo", "aviso")
     chk(caps is not None or a.no_captions, "Legendas queimadas" if caps else "Sem arquivo de legendas", "aviso")
     if draft:
-        chk(False, f"RASCUNHO: {len(blockers)} ativo(s) sem licença comercial confirmada; não publicar antes de trocar", "aviso")
+        chk(False, f"RASCUNHO: não publicar; {len(blockers)} ativo(s) sem licença comercial confirmada", "aviso")
     elif blockers:
         chk(not m.get("monetized", True), f"{len(blockers)} ativo(s) não comercial(is) liberado(s) com --allow-noncommercial", "aviso")
     pub = m.get("publish", {})

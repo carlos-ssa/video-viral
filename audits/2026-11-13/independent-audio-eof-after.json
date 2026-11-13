@@ -1,0 +1,83 @@
+{
+  "baseline": {
+    "frames": 144000,
+    "rms_100ms": {
+      "0.5": 0.12497205382474406,
+      "1.5": 0.08836834525177342,
+      "2.5": 0.08836834525177342
+    },
+    "graph": [
+      "[1:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[mu]",
+      "[0:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[va]",
+      "[mu][va]amix=inputs=2:duration=longest:normalize=0,apad[mix]"
+    ],
+    "command": [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-f",
+      "lavfi",
+      "-i",
+      "sine=frequency=440:sample_rate=48000:duration=1",
+      "-f",
+      "lavfi",
+      "-i",
+      "sine=frequency=1000:sample_rate=48000:duration=3",
+      "-filter_complex",
+      "[1:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[mu];[0:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[va];[mu][va]amix=inputs=2:duration=longest:normalize=0,apad[mix]",
+      "-map",
+      "[mix]",
+      "-t",
+      "3",
+      "-ar",
+      "48000",
+      "-ac",
+      "1",
+      "-f",
+      "f32le",
+      "-"
+    ]
+  },
+  "current": {
+    "frames": 144000,
+    "rms_100ms": {
+      "0.5": 0.09037906314634725,
+      "1.5": 0.04428908376038349,
+      "2.5": 0.04428908376038349
+    },
+    "graph": [
+      "[0:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[va]",
+      "[1:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,volume=-6dB[mu]",
+      "[va]asplit=2[foreground][sidechain]",
+      "[sidechain]apad[sc]",
+      "[mu][sc]sidechaincompress=threshold=0.03:ratio=6:attack=15:release=350[duck]",
+      "[foreground][duck]amix=inputs=2:duration=longest:normalize=0,apad[mix]"
+    ],
+    "command": [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-f",
+      "lavfi",
+      "-i",
+      "sine=frequency=440:sample_rate=48000:duration=1",
+      "-f",
+      "lavfi",
+      "-i",
+      "sine=frequency=1000:sample_rate=48000:duration=3",
+      "-filter_complex",
+      "[0:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[va];[1:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,volume=-6dB[mu];[va]asplit=2[foreground][sidechain];[sidechain]apad[sc];[mu][sc]sidechaincompress=threshold=0.03:ratio=6:attack=15:release=350[duck];[foreground][duck]amix=inputs=2:duration=longest:normalize=0,apad[mix]",
+      "-map",
+      "[mix]",
+      "-t",
+      "3",
+      "-ar",
+      "48000",
+      "-ac",
+      "1",
+      "-f",
+      "f32le",
+      "-"
+    ]
+  }
+}

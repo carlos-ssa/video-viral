@@ -11,6 +11,13 @@ from trends import explore_url, import_csv, parse_interest_csv
 
 
 class TrendsTests(unittest.TestCase):
+    def test_full_hourly_period_validation(self):
+        data = parse_interest_csv('Hour,Corte\n2026-11-01T23:00:00,50\n')
+        self.assertEqual(data['points'][0]['period'], '2026-11-01T23:00:00')
+        for period in ('2026-11-01garbage', '2026-11-01T25:00:00', '2026-11-01T12:99'):
+            with self.subTest(period=period), self.assertRaises(ValueError):
+                parse_interest_csv(f'Hour,Corte\n{period},50\n')
+
     def test_query_keeps_geo_period_property_and_unicode(self):
         params = parse_qs(urlparse(explore_url(["salão de beleza", "barbearia"], "BR-SP", "today 12-m", "youtube", 44)).query)
         self.assertEqual(params["q"], ["salão de beleza,barbearia"])

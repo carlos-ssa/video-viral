@@ -32,10 +32,10 @@ Não use dois cortes que contam a mesma coisa na mesma semana. Se o longo repete
 
 - Texto do gancho na tela no quadro 0 (até 6 palavras), com a mesma promessa/pergunta da fala; siga as [regras de composição](../composition.md#regras-de-acabamento-obrigatórias).
 - Use o trecho real do original e a variação de título/moldura exigida em [gravação](gravacao.md#camada-de-acabamento), com a [cadência daquele fluxo](gravacao.md#ritmo-e-cortes). Preserve nome/fonte/marca d'água fora da faixa exclusiva da legenda.
-- Legenda palavra a palavra; muita gente assiste sem som.
+- Legenda sincronizada, segmentada por sentido em até duas linhas; realce palavra a palavra é opcional e deve preservar leitura natural.
 - Se o original tem duas pessoas, enquadre quem fala em cada trecho (`x` por trecho) ou use 16:9 com `fit` padrão.
 - Título e descrição próprios em `publish`, com o link ou nome do vídeo completo na descrição.
 
 ## Direitos
 
-Cortes do próprio usuário são livres. Cortes de podcast, live ou vídeo de outra pessoa só com autorização escrita (importe com `--third-party` e registre a licença no ativo); sem isso, o `deliver.py` monetizado bloqueia e o corte sai como rascunho. "Uso justo" não protege corte viral de conteúdo alheio.
+O usuário declarar autoria permite registrar essa proveniência; confira separadamente músicas, imagens e participações de terceiros incorporadas à gravação. Cortes de podcast, live ou vídeo de outra pessoa só com autorização escrita (importe com `--third-party` e registre a licença no ativo); sem isso, o `deliver.py` monetizado bloqueia e o corte sai como rascunho. Não presuma que uma exceção de direito autoral autoriza o uso concreto; confirme direitos e termos aplicáveis.

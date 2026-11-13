@@ -19,14 +19,18 @@ def catalog():
 
 
 def doctor(node_root):
+    data = catalog()
     result = []
-    for module in catalog()['modules']:
+    for module in data['modules']:
         item = {'id': module['id'], 'installed': None, 'artifact_validated': False}
         if module['node_package']:
             package = node_root / 'node_modules' / module['node_package'] / 'package.json'
             item['installed'] = package.is_file()
             if item['installed']:
-                item['version'] = json.loads(package.read_text(encoding='utf-8'))['version']
+                try:
+                    item['version'] = json.loads(package.read_text(encoding='utf-8'))['version']
+                except (OSError, ValueError, KeyError, TypeError) as exc:
+                    item.update(installed=False, error=f'package.json inválido: {exc}')
         elif module['id'] == 'ffmpeg':
             item['installed'] = bool(shutil.which('ffmpeg') and shutil.which('ffprobe'))
         elif module['id'] == 'blender':
@@ -40,14 +44,18 @@ def doctor(node_root):
             py = venv_python(group)
             item['installed'] = False
             if py:
-                checked = subprocess.run([str(py), '-c', f'import importlib.util; raise SystemExit(0 if importlib.util.find_spec({imported!r}) else 1)'], capture_output=True, timeout=20)
-                item.update(installed=checked.returncode == 0, python=str(py))
+                item['python'] = str(py)
+                try:
+                    checked = subprocess.run([str(py), '-I', '-c', f'import importlib.util; raise SystemExit(0 if importlib.util.find_spec({imported!r}) else 1)'], capture_output=True, timeout=20)
+                    item['installed'] = checked.returncode == 0
+                except (OSError, subprocess.SubprocessError) as exc:
+                    item['error'] = str(exc)
             if module['id'] == 'edge-tts':
                 item['note'] = 'Síntese online; conexão e disponibilidade das vozes não verificadas pelo diagnóstico.'
         else:
             item['note'] = 'Serviço/workflow configurado separadamente; disponibilidade não inferida.'
         result.append(item)
-    return {'version': catalog()['version'], 'node_root': str(node_root), 'modules': result}
+    return {'version': data['version'], 'node_root': str(node_root), 'modules': result}
 
 
 def hyperframes_command(node_root, arguments, screenshot=False):

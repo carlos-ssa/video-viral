@@ -1,0 +1,170 @@
+[
+  {
+    "project": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto",
+    "final": "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\out\\projeto.mp4",
+    "duration": 26.467,
+    "last_word": {
+      "w": "você.",
+      "start": 25.899,
+      "end": 26.293,
+      "estimated": true
+    },
+    "source": "<repo>\\evals\\editar-gravacao-propria\\files\\gravacao.mp4",
+    "source_sha256": "2e0e813b0a4ba94595b0728a54a55d314cb01b10173ea3c92d57e34f16338f54",
+    "delivery_approved": true,
+    "draft": false,
+    "lufs": -14.0,
+    "true_peak_dbtp": -1.9,
+    "hashes": {
+      "video.json": "62abd08f49e10f8ca21135292a4fd4581354ba3f2a486a630a2c9550c0ff6e8d",
+      "edit\\edl.json": "8537c49e9916970a559ec089773ab0efae7a673ca22c3eaf799cd4122899b1e2",
+      "captions\\words.json": "243531aa4013ba1fbfb04a102acbfd04a1854d4db2105a3f1d3d0d2acd44ad00",
+      "captions\\captions.ass": "1125b04a500b2d2ade79366557400d447028bbfaab54499a70c4df72eb3e5d54",
+      "composition\\index.html": "7227d57c976ddadc49c15749e9a3da8d7955f58d94b8bb19a5389d3f9c5fb30b",
+      "render\\aroll.mp4": "d0cc79e5733da68f060fad99f1b300b858af3267aaba779d45ab1f73aa323f7d",
+      "render\\master.mp4": "2f5f0d251982c5a547de921753da0045517b1f0266943d5458a9dbfc5774a26b",
+      "out\\projeto.mp4": "9277f8ec75881fa762109df1d219f0f3a9e25ef9ae9cab611a207b470a185ddd",
+      "out\\delivery.json": "a510dc647152ee11128e927a39a80a38f737f388ea59489aa425c591917c3593",
+      "review\\r03\\input\\video.mp4": "9277f8ec75881fa762109df1d219f0f3a9e25ef9ae9cab611a207b470a185ddd",
+      "review\\r03\\input\\request.json": "0958ffeeb069c8450627a068c9cc99375f02e17ad151e4583645ca2dda9020ca"
+    },
+    "frame_commands": [
+      {
+        "command": [
+          "ffmpeg",
+          "-v",
+          "error",
+          "-ss",
+          "0",
+          "-i",
+          "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\out\\projeto.mp4",
+          "-frames:v",
+          "1",
+          "-y",
+          "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\fullstage-frame0.png"
+        ],
+        "code": 0
+      },
+      {
+        "command": [
+          "ffmpeg",
+          "-v",
+          "error",
+          "-ss",
+          "13.2335",
+          "-i",
+          "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\out\\projeto.mp4",
+          "-frames:v",
+          "1",
+          "-y",
+          "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\fullstage-framemid.png"
+        ],
+        "code": 0
+      },
+      {
+        "command": [
+          "ffmpeg",
+          "-v",
+          "error",
+          "-ss",
+          "26.267",
+          "-i",
+          "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\out\\projeto.mp4",
+          "-frames:v",
+          "1",
+          "-y",
+          "<workspace>\\work\\eval-runs\\editar-gravacao-propria\\projeto\\render\\fullstage-frameend.png"
+        ],
+        "code": 0
+      }
+    ],
+    "check_ok": true,
+    "check_lint_errors": 0,
+    "check_layout_errors": 0,
+    "check_lint_warnings": 7
+  },
+  {
+    "project": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado",
+    "final": "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\out\\corte-selecionado.mp4",
+    "duration": 14.0,
+    "last_word": {
+      "w": "semana.",
+      "start": 13.379,
+      "end": 13.844,
+      "estimated": true
+    },
+    "source": "<repo>\\evals\\cortes-de-video-longo\\files\\gravacao_longa.mp4",
+    "source_sha256": "e9c534aa2d4087a2320c8640373ed413951f0a25f9bd66d6a1ad7fdd724c04c0",
+    "delivery_approved": true,
+    "draft": false,
+    "lufs": -14.0,
+    "true_peak_dbtp": -2.2,
+    "hashes": {
+      "video.json": "188b0fd01ddabd6b0b1e607aa9fe9f605f182d7f8b5d6dd1e5cb4a28b73c2ed6",
+      "edit\\edl.json": "f98aed7c21d2e47be8fef4c90b0459f4ff22bffc548d8e500686d423e0cc510e",
+      "captions\\words.json": "b1680800e83d1a8c70f876560be23fcb3680a10cc48f17eb145ea27ab04bd7e8",
+      "captions\\captions.ass": "5c45a81569a0ed11344d68ec27068089eb02888d0087e475de31180811c27008",
+      "composition\\index.html": "94b923a3ab7d2a3cea932ac668dde86487ab049af91a9c6625795835daf53b0e",
+      "render\\aroll.mp4": "60aef3618e06cbe0ee787eb9e3f56d21f8dc97007c63327960f71236337be4c5",
+      "render\\master.mp4": "2f388b39dee31375474921f35542aff1c06646517f8ff799dc91df1c151eae46",
+      "out\\corte-selecionado.mp4": "c518fdf7e05be88c949ae9964bff0097ac95ed412e7c9d4faa90c7067dfd0b56",
+      "out\\delivery.json": "8436b15b3d750600d6479adda7705782acce03506775912e239bad7ecb140b16",
+      "review\\r03\\input\\video.mp4": "c518fdf7e05be88c949ae9964bff0097ac95ed412e7c9d4faa90c7067dfd0b56",
+      "review\\r03\\input\\request.json": "eba10faf647b256131a304fe249e1e42e5d5f3c13f1ddbfea8f3b8e876f589b8"
+    },
+    "frame_commands": [
+      {
+        "command": [
+          "ffmpeg",
+          "-v",
+          "error",
+          "-ss",
+          "0",
+          "-i",
+          "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\out\\corte-selecionado.mp4",
+          "-frames:v",
+          "1",
+          "-y",
+          "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\fullstage-frame0.png"
+        ],
+        "code": 0
+      },
+      {
+        "command": [
+          "ffmpeg",
+          "-v",
+          "error",
+          "-ss",
+          "7.0",
+          "-i",
+          "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\out\\corte-selecionado.mp4",
+          "-frames:v",
+          "1",
+          "-y",
+          "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\fullstage-framemid.png"
+        ],
+        "code": 0
+      },
+      {
+        "command": [
+          "ffmpeg",
+          "-v",
+          "error",
+          "-ss",
+          "13.8",
+          "-i",
+          "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\out\\corte-selecionado.mp4",
+          "-frames:v",
+          "1",
+          "-y",
+          "<workspace>\\work\\eval-runs\\cortes-de-video-longo\\corte-selecionado\\render\\fullstage-frameend.png"
+        ],
+        "code": 0
+      }
+    ],
+    "check_ok": true,
+    "check_lint_errors": 0,
+    "check_layout_errors": 0,
+    "check_lint_warnings": 5
+  }
+]

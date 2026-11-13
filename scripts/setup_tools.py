@@ -37,7 +37,13 @@ SYSTEM_GROUPS = {"base": ["ffmpeg", "node"], "blender": ["blender"],
                  "hyperframes": ["node"]}
 
 
+def require_install_allowed():
+    if os.environ.get("VIDEO_VIRAL_NO_INSTALL"):
+        raise PermissionError("VIDEO_VIRAL_NO_INSTALL definido: nada instalado.")
+
+
 def sh(args, **kw):
+    require_install_allowed()
     print("  $", " ".join(map(str, args)), flush=True)
     # Caches e Python gerenciado pelo uv ficam no ambiente dedicado, não no sistema.
     env = {**os.environ, "UV_CACHE_DIR": str(ROOT / "cache" / "uv"),
@@ -67,6 +73,7 @@ def system_command(name):
 
 
 def install_program(name, allow_system=False):
+    require_install_allowed()
     if has_program(name):
         print(f"[ok] {name} já instalado")
         return True
@@ -86,6 +93,7 @@ def uv_available():
 
 
 def uv(allow_system=False):
+    require_install_allowed()
     if shutil.which("uv"):
         return ["uv"]
     if not uv_available():
@@ -119,6 +127,7 @@ def consent_plan(groups):
 
 
 def install_venv(group, allow_system=False):
+    require_install_allowed()
     name, pyver, mods, requirements = VENV_GROUPS[group]
     UV = uv(allow_system)
     root = VENVS / name
@@ -138,6 +147,7 @@ def install_venv(group, allow_system=False):
 
 
 def install_hyperframes(allow_system=False):
+    require_install_allowed()
     if not install_program("node", allow_system):
         return False
     d = Path(os.environ.get("VIDEO_VIRAL_NODE_ROOT", str(ROOT / "node-v2")))
@@ -159,6 +169,7 @@ def install_hyperframes(allow_system=False):
 
 
 def install_comfyui(allow_system=False, allow_large=False):
+    require_install_allowed()
     if not allow_large:
         raise PermissionError("ComfyUI exige --allow-large, inclusive sem checkpoints")
     revision = json.loads((PYTHON_ASSETS / "comfyui.json").read_text(encoding="utf-8"))

@@ -79,10 +79,18 @@ def execute(proj, workflow_path, output_node, output, endpoint='http://127.0.0.1
         history = json.loads(request('/history/' + urllib.parse.quote(prompt_id, safe='')))
         item = history.get(prompt_id) if isinstance(history, dict) else None
         if item:
-            if item.get('status', {}).get('status_str') == 'error':
+            if not isinstance(item, dict) or not isinstance(item.get('status', {}), dict) or not isinstance(item.get('outputs', {}), dict):
+                raise ComfyError('Histórico inválido do servidor.')
+            status = item.get('status', {})
+            if status.get('status_str') == 'error':
                 raise ComfyError('Workflow falhou no servidor; confira o histórico do ComfyUI.')
-            images = item.get('outputs', {}).get(output_node, {}).get('images')
+            node = item.get('outputs', {}).get(output_node, {})
+            if not isinstance(node, dict):
+                raise ComfyError('Saída de nó inválida no histórico.')
+            images = node.get('images')
             if images:
+                if not isinstance(images, list):
+                    raise ComfyError('Nó de saída não contém uma lista de imagens.')
                 selected = images[0]
                 if not isinstance(selected, dict) or not selected.get('filename'):
                     raise ComfyError('Nó de saída não contém uma imagem válida.')
@@ -99,6 +107,8 @@ def execute(proj, workflow_path, output_node, output, endpoint='http://127.0.0.1
                 if extension != expected:
                     raise ComfyError('Extensão de saída não corresponde à imagem retornada.')
                 break
+            if status.get('completed') is True or status.get('status_str') == 'success':
+                raise ComfyError('Workflow terminou sem imagem no nó de saída selecionado.')
         time.sleep(min(1, max(0, deadline - time.monotonic())))
     else:
         raise ComfyError('Limite de consultas excedido.')

@@ -1,0 +1,98 @@
+{
+  "steps": [
+    {
+      "step": "create",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "step": "import",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "step": "captions_import",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "step": "cut",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "step": "render",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "step": "compose",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "step": "captions_ass",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "step": "tone_sound",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "step": "deliver",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "step": "review",
+      "exit_code": 0,
+      "blockers": []
+    },
+    {
+      "step": "pending_evidence_rejected",
+      "exit_code": 2,
+      "expected": 2
+    },
+    {
+      "step": "frame_only_preflight_partial",
+      "exit_code": 1,
+      "expected": 1
+    },
+    {
+      "step": "trends_import",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "step": "changed_brief_rejected",
+      "exit_code": 2,
+      "expected": 2
+    },
+    {
+      "step": "create_music",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "step": "generate_music_fixture",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "step": "deliver_music",
+      "exit_code": 0,
+      "expected": 0
+    },
+    {
+      "step": "review_music",
+      "exit_code": 0,
+      "expected": 0
+    }
+  ],
+  "technical_smoke_passed": true,
+  "aesthetic_quality_assessed": false,
+  "live_trends_data_fetched": false,
+  "models_installed": false
+}

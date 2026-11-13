@@ -4,6 +4,7 @@ import { mkdtemp, mkdir, readFile, rm, writeFile, symlink } from 'node:fs/promis
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { nodeRootFrom } from '../../scripts/_node.mjs';
 import { generate, validateSamples } from '../../scripts/sound.mjs';
 
 test('fractional durations accept one sample of rounding, not corrupt audio', () => {
@@ -14,7 +15,7 @@ test('fractional durations accept one sample of rounding, not corrupt audio', ()
   assert.throws(() => validateSamples(new Array(frames).fill(1.01), duration), /amplitude/);
 });
 
-const root = process.env.VIDEO_VIRAL_NODE_ROOT || 'C:/Users/igcar/.codex/reviews/video-viral-integration-2026-11-12/node';
+const root = nodeRootFrom();
 test('renders deterministic PCM and protects outputs on errors', async t => {
   const project = await mkdtemp(path.join(tmpdir(), 'sound-test-'));
   t.after(() => rm(project, { recursive: true, force: true }));

@@ -114,8 +114,9 @@ def cmd_import(proj, m, a):
     sil = []
     rng = (m.get("source") or {}).get("range") or [0.0, 1e9]
     off, span = (float(rng[0]), float(rng[1]) - float(rng[0])) if source_timeline(m, a) else (0.0, 1e9)
-    wav = proj / ((m.get("source") or {}).get("audio") or "audio/source.wav")
-    if wav.is_file():
+    source_audio = (m.get("source") or {}).get("audio")
+    wav = proj / source_audio if source_audio else None
+    if source_timeline(m, a) and wav is not None and wav.is_file():
         r = run([need("ffmpeg"), "-hide_banner", "-nostats", "-i", str(wav), "-af",
                  "silencedetect=n=-35dB:d=0.15", "-f", "null", "-"])
         st = [float(x) for x in re.findall(r"silence_start: (-?[\d.]+)", r.stderr)]

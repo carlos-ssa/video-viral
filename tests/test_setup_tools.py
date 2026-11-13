@@ -13,6 +13,11 @@ import setup_tools as setup
 
 
 class SetupConsentTests(unittest.TestCase):
+    def setUp(self):
+        self.install_env = patch.dict(os.environ, {'VIDEO_VIRAL_NO_INSTALL': ''})
+        self.install_env.start()
+        self.addCleanup(self.install_env.stop)
+
     def invoke(self, args, programs=False, uv=False):
         output = io.StringIO()
         with patch.object(sys, 'argv', ['setup_tools.py', *args]), \
@@ -97,6 +102,20 @@ class SetupConsentTests(unittest.TestCase):
             self.assertEqual(setup.main(), 1)
             run.assert_not_called()
             plan.assert_not_called()
+
+    def test_no_install_guards_direct_helpers_before_changes(self):
+        with patch.dict(os.environ, {'VIDEO_VIRAL_NO_INSTALL': '1'}), \
+                patch.object(setup.subprocess, 'run') as run, \
+                patch.object(setup.Path, 'mkdir') as mkdir:
+            for call in (lambda: setup.install_program('node', True),
+                         lambda: setup.uv(True), lambda: setup.install_venv('voz', True),
+                         lambda: setup.install_hyperframes(True),
+                         lambda: setup.install_comfyui(True, True),
+                         lambda: setup.sh(['npm', 'ci'])):
+                with self.assertRaisesRegex(PermissionError, 'VIDEO_VIRAL_NO_INSTALL'):
+                    call()
+            run.assert_not_called()
+            mkdir.assert_not_called()
 
     def test_python_requirements_and_comfy_revision_are_data(self):
         revision = json.loads((setup.PYTHON_ASSETS / 'comfyui.json').read_text(encoding='utf-8'))

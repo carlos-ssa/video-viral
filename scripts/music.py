@@ -3,6 +3,7 @@ import argparse
 import json
 import math
 import os
+import struct
 from pathlib import Path
 import sys
 import tempfile
@@ -63,6 +64,28 @@ def procedural_audio(duration, seed):
         wav.setparams((1, 2, rate, 0, 'NONE', 'not compressed'))
         wav.writeframes(samples.tobytes())
     return stream.getvalue()
+
+
+def validate_wav(audio):
+    """Reject header-only/truncated responses before replacing existing project audio."""
+    if len(audio) < 12 or audio[:4] != b'RIFF' or audio[8:12] != b'WAVE':
+        raise MusicError('Download não é WAV válido')
+    limit = struct.unpack_from('<I', audio, 4)[0] + 8
+    if limit > len(audio) or limit < 12:
+        raise MusicError('WAV truncado')
+    offset, fmt, data_size = 12, None, None
+    while offset + 8 <= limit:
+        kind, size = audio[offset:offset + 4], struct.unpack_from('<I', audio, offset + 4)[0]
+        offset += 8
+        if offset + size > limit:
+            raise MusicError('WAV truncado')
+        if kind == b'fmt ' and size >= 16:
+            fmt = struct.unpack_from('<HHIIHH', audio, offset)
+        elif kind == b'data':
+            data_size = size
+        offset += size + size % 2
+    if fmt is None or not data_size or not fmt[1] or not fmt[2] or not fmt[4] or data_size % fmt[4]:
+        raise MusicError('WAV sem formato ou amostras válidas')
 
 
 def run(args):
@@ -185,8 +208,7 @@ def run(args):
     if origin(url) != base_origin or p.path != '/v1/audio' or not p.query or p.fragment:
         raise MusicError('URL de áudio inválida ou fora da origem')
     audio = request(url, limit=MAX_DOWNLOAD)
-    if len(audio) < 12 or audio[:4] != b'RIFF' or audio[8:12] != b'WAVE':
-        raise MusicError('Download não é WAV válido')
+    validate_wav(audio)
     publish_audio(out, proj, m, audio)
 
 

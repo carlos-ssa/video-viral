@@ -8,8 +8,8 @@ Vale para gravação própria e para vídeo narrado do zero com mais de 3 minuto
 |---|---|---|
 | Tamanho | 1080×1920 | 1920×1080 (4K se a fonte for 4K e o usuário pedir) |
 | Decide a retenção | 2 primeiros segundos | 30 primeiros segundos e cada transição de assunto |
-| Evento visual | a cada 1,5–3 s | a cada 5–8 s (corte, zoom, B-roll, gráfico, texto) |
-| Legenda | queimada, palavra a palavra | opcional; prefira subir o `.srt` na plataforma |
+| Evento visual | referência inicial de 1,5–3 s | referência inicial de 5–8 s, conforme intenção (corte, zoom, B-roll, gráfico, texto) |
+| Legenda | sincronizada, segmentada por sentido | opcional; prefira subir o `.srt` na plataforma |
 | Capa | primeiro quadro | miniatura 1280×720 obrigatória |
 | Extra | — | capítulos, descrição, cortes verticais derivados |
 

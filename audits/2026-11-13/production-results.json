@@ -1,0 +1,2970 @@
+{
+  "commands": [
+    {
+      "step": "hyperframes-version",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\hyperframes-version.log"
+    },
+    {
+      "step": "ffmpeg-version",
+      "command": [
+        "ffmpeg",
+        "-version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.023,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\ffmpeg-version.log"
+    },
+    {
+      "step": "narrated-create",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\new_project.py",
+        "narrated",
+        "--format",
+        "narrado",
+        "--seconds",
+        "14",
+        "--aspect",
+        "9:16",
+        "--dir",
+        "<workspace>\\work\\video-viral-validation-run2"
+      ],
+      "exit_code": 0,
+      "seconds": 0.103,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-create.log"
+    },
+    {
+      "step": "narrated-plan",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\plan.py",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated"
+      ],
+      "exit_code": 0,
+      "seconds": 0.067,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-plan.log"
+    },
+    {
+      "step": "narrated-wav",
+      "command": [
+        "ffmpeg",
+        "-y",
+        "-v",
+        "error",
+        "-i",
+        "<repo>\\evals\\editar-gravacao-propria\\files\\gravacao.mp4",
+        "-t",
+        "14",
+        "-vn",
+        "-ar",
+        "48000",
+        "-ac",
+        "1",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\audio\\voice.wav"
+      ],
+      "exit_code": 0,
+      "seconds": 0.037,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-wav.log"
+    },
+    {
+      "step": "narrated-captions-import",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\captions.py",
+        "import",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated",
+        "--file",
+        "<repo>\\evals\\editar-gravacao-propria\\files\\gravacao.srt"
+      ],
+      "exit_code": 0,
+      "seconds": 0.074,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-captions-import.log"
+    },
+    {
+      "step": "narrated-ass",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\captions.py",
+        "ass",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated"
+      ],
+      "exit_code": 0,
+      "seconds": 0.075,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-ass.log"
+    },
+    {
+      "step": "narrated-music",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\music.py",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated",
+        "--backend",
+        "procedural",
+        "--duration",
+        "14",
+        "--seed",
+        "7"
+      ],
+      "exit_code": 0,
+      "seconds": 0.604,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-music.log"
+    },
+    {
+      "step": "narrated-lint",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "lint",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 0.292,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-lint.log"
+    },
+    {
+      "step": "narrated-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 4.601,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-check.log"
+    },
+    {
+      "step": "narrated-render",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\render\\master.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 1,
+      "seconds": 4.256,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-render.log"
+    },
+    {
+      "step": "narrated-render-screenshot",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--screenshot",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\render\\master.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 0,
+      "seconds": 16.338,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-render-screenshot.log"
+    },
+    {
+      "step": "narrated-baseline",
+      "command": [
+        "ffmpeg",
+        "-y",
+        "-v",
+        "error",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\audio\\voice.wav",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\audio\\music.wav",
+        "-filter_complex",
+        "[1:a]volume=-16dB[m];[0:a][m]amix=inputs=2:normalize=0[a]",
+        "-map",
+        "[a]",
+        "-t",
+        "14",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\audio\\baseline-mix.wav"
+      ],
+      "exit_code": 0,
+      "seconds": 0.052,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-baseline.log"
+    },
+    {
+      "step": "narrated-deliver",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\deliver.py",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated",
+        "--video",
+        "render/master.mp4",
+        "--draft"
+      ],
+      "exit_code": 0,
+      "seconds": 1.684,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-deliver.log"
+    },
+    {
+      "step": "narrated-review",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated",
+        "--producer-id",
+        "validation:productions"
+      ],
+      "exit_code": 0,
+      "seconds": 0.83,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-review.log"
+    },
+    {
+      "step": "narrated-verdict",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated",
+        "--verdict"
+      ],
+      "exit_code": 2,
+      "seconds": 0.091,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-verdict.log"
+    },
+    {
+      "step": "narrated-loudness-baseline",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\audio\\baseline-mix.wav",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 0.196,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-loudness-baseline.log"
+    },
+    {
+      "step": "narrated-loudness-delivered",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\out\\narrated_rascunho.mp4",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 0.349,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-loudness-delivered.log"
+    },
+    {
+      "step": "product-create",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\new_project.py",
+        "product",
+        "--format",
+        "produto",
+        "--seconds",
+        "12",
+        "--aspect",
+        "9:16",
+        "--dir",
+        "<workspace>\\work\\video-viral-validation-run2"
+      ],
+      "exit_code": 0,
+      "seconds": 0.112,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-create.log"
+    },
+    {
+      "step": "product-plan",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\plan.py",
+        "<workspace>\\work\\video-viral-validation-run2\\product"
+      ],
+      "exit_code": 0,
+      "seconds": 0.07,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-plan.log"
+    },
+    {
+      "step": "product-music",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\music.py",
+        "<workspace>\\work\\video-viral-validation-run2\\product",
+        "--backend",
+        "procedural",
+        "--duration",
+        "12",
+        "--seed",
+        "7"
+      ],
+      "exit_code": 0,
+      "seconds": 0.555,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-music.log"
+    },
+    {
+      "step": "product-lint",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "lint",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 0.297,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-lint.log"
+    },
+    {
+      "step": "product-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 3.31,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-check.log"
+    },
+    {
+      "step": "product-render",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\render\\master.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 1,
+      "seconds": 4.298,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-render.log"
+    },
+    {
+      "step": "product-render-screenshot",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--screenshot",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\render\\master.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 0,
+      "seconds": 14.257,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-render-screenshot.log"
+    },
+    {
+      "step": "product-deliver",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\deliver.py",
+        "<workspace>\\work\\video-viral-validation-run2\\product",
+        "--video",
+        "render/master.mp4",
+        "--draft"
+      ],
+      "exit_code": 0,
+      "seconds": 1.359,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-deliver.log"
+    },
+    {
+      "step": "product-review",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\product",
+        "--producer-id",
+        "validation:productions"
+      ],
+      "exit_code": 0,
+      "seconds": 0.776,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-review.log"
+    },
+    {
+      "step": "product-verdict",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\product",
+        "--verdict"
+      ],
+      "exit_code": 2,
+      "seconds": 0.095,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-verdict.log"
+    },
+    {
+      "step": "product-loudness-baseline",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\audio\\baseline-mix.wav",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 0.181,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-loudness-baseline.log"
+    },
+    {
+      "step": "product-loudness-delivered",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\out\\product_rascunho.mp4",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 0.302,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-loudness-delivered.log"
+    },
+    {
+      "step": "recording-create",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\new_project.py",
+        "recording",
+        "--format",
+        "gravacao",
+        "--seconds",
+        "47",
+        "--aspect",
+        "9:16",
+        "--dir",
+        "<workspace>\\work\\video-viral-validation-run2"
+      ],
+      "exit_code": 0,
+      "seconds": 0.117,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-create.log"
+    },
+    {
+      "step": "recording-plan",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\plan.py",
+        "<workspace>\\work\\video-viral-validation-run2\\recording"
+      ],
+      "exit_code": 0,
+      "seconds": 0.074,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-plan.log"
+    },
+    {
+      "step": "recording-import",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\footage.py",
+        "import",
+        "<workspace>\\work\\video-viral-validation-run2\\recording",
+        "<repo>\\evals\\editar-gravacao-propria\\files\\gravacao.mp4",
+        "--to",
+        "47"
+      ],
+      "exit_code": 0,
+      "seconds": 0.33,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-import.log"
+    },
+    {
+      "step": "recording-captions-import",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\captions.py",
+        "import",
+        "<workspace>\\work\\video-viral-validation-run2\\recording",
+        "--file",
+        "<repo>\\evals\\editar-gravacao-propria\\files\\gravacao.srt"
+      ],
+      "exit_code": 0,
+      "seconds": 0.146,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-captions-import.log"
+    },
+    {
+      "step": "recording-cut",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\footage.py",
+        "cut",
+        "<workspace>\\work\\video-viral-validation-run2\\recording",
+        "--no-zoom"
+      ],
+      "exit_code": 0,
+      "seconds": 0.163,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-cut.log"
+    },
+    {
+      "step": "recording-base",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\footage.py",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\recording"
+      ],
+      "exit_code": 0,
+      "seconds": 2.538,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-base.log"
+    },
+    {
+      "step": "recording-ass",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\captions.py",
+        "ass",
+        "<workspace>\\work\\video-viral-validation-run2\\recording"
+      ],
+      "exit_code": 0,
+      "seconds": 0.08,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-ass.log"
+    },
+    {
+      "step": "recording-music",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\music.py",
+        "<workspace>\\work\\video-viral-validation-run2\\recording",
+        "--backend",
+        "procedural",
+        "--duration",
+        "27.671",
+        "--seed",
+        "7"
+      ],
+      "exit_code": 0,
+      "seconds": 1.311,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-music.log"
+    },
+    {
+      "step": "recording-lint",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "lint",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 0.535,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-lint.log"
+    },
+    {
+      "step": "recording-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 5.677,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-check.log"
+    },
+    {
+      "step": "recording-render",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\render\\master.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 1,
+      "seconds": 5.859,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-render.log"
+    },
+    {
+      "step": "recording-render-screenshot",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--screenshot",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\render\\master.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 0,
+      "seconds": 31.795,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-render-screenshot.log"
+    },
+    {
+      "step": "recording-deliver",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\deliver.py",
+        "<workspace>\\work\\video-viral-validation-run2\\recording",
+        "--video",
+        "render/master.mp4",
+        "--draft",
+        "--voice",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\render\\aroll.mp4"
+      ],
+      "exit_code": 0,
+      "seconds": 2.162,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-deliver.log"
+    },
+    {
+      "step": "recording-review",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\recording",
+        "--producer-id",
+        "validation:productions"
+      ],
+      "exit_code": 0,
+      "seconds": 1.471,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-review.log"
+    },
+    {
+      "step": "recording-verdict",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\recording",
+        "--verdict"
+      ],
+      "exit_code": 2,
+      "seconds": 0.114,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-verdict.log"
+    },
+    {
+      "step": "recording-loudness-baseline",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\audio\\baseline-mix.wav",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 0.381,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-loudness-baseline.log"
+    },
+    {
+      "step": "recording-loudness-delivered",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\out\\recording_rascunho.mp4",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 0.703,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-loudness-delivered.log"
+    },
+    {
+      "step": "story-create",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\new_project.py",
+        "story",
+        "--format",
+        "storytelling",
+        "--seconds",
+        "12",
+        "--aspect",
+        "9:16",
+        "--dir",
+        "<workspace>\\work\\video-viral-validation-run2"
+      ],
+      "exit_code": 0,
+      "seconds": 0.115,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-create.log"
+    },
+    {
+      "step": "story-plan",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\plan.py",
+        "<workspace>\\work\\video-viral-validation-run2\\story"
+      ],
+      "exit_code": 0,
+      "seconds": 0.071,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-plan.log"
+    },
+    {
+      "step": "story-music",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\music.py",
+        "<workspace>\\work\\video-viral-validation-run2\\story",
+        "--backend",
+        "procedural",
+        "--duration",
+        "12",
+        "--seed",
+        "7"
+      ],
+      "exit_code": 0,
+      "seconds": 0.713,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-music.log"
+    },
+    {
+      "step": "story-lint",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "lint",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 0.341,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-lint.log"
+    },
+    {
+      "step": "story-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 3.293,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-check.log"
+    },
+    {
+      "step": "story-render",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\render\\master.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 1,
+      "seconds": 4.32,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-render.log"
+    },
+    {
+      "step": "story-render-screenshot",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--screenshot",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\render\\master.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 0,
+      "seconds": 14.228,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-render-screenshot.log"
+    },
+    {
+      "step": "story-deliver",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\deliver.py",
+        "<workspace>\\work\\video-viral-validation-run2\\story",
+        "--video",
+        "render/master.mp4",
+        "--draft"
+      ],
+      "exit_code": 0,
+      "seconds": 1.268,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-deliver.log"
+    },
+    {
+      "step": "story-review",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\story",
+        "--producer-id",
+        "validation:productions"
+      ],
+      "exit_code": 0,
+      "seconds": 0.766,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-review.log"
+    },
+    {
+      "step": "story-verdict",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\story",
+        "--verdict"
+      ],
+      "exit_code": 2,
+      "seconds": 0.127,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-verdict.log"
+    },
+    {
+      "step": "story-loudness-baseline",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\audio\\baseline-mix.wav",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 0.183,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-loudness-baseline.log"
+    },
+    {
+      "step": "story-loudness-delivered",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\out\\story_rascunho.mp4",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 0.294,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-loudness-delivered.log"
+    },
+    {
+      "step": "long-create",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\new_project.py",
+        "long",
+        "--format",
+        "gravacao",
+        "--seconds",
+        "181",
+        "--aspect",
+        "16:9",
+        "--dir",
+        "<workspace>\\work\\video-viral-validation-run2"
+      ],
+      "exit_code": 0,
+      "seconds": 0.108,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-create.log"
+    },
+    {
+      "step": "long-plan",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\plan.py",
+        "<workspace>\\work\\video-viral-validation-run2\\long"
+      ],
+      "exit_code": 0,
+      "seconds": 0.069,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-plan.log"
+    },
+    {
+      "step": "long-import",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\footage.py",
+        "import",
+        "<workspace>\\work\\video-viral-validation-run2\\long",
+        "<repo>\\evals\\cortes-de-video-longo\\files\\gravacao_longa.mp4",
+        "--to",
+        "181"
+      ],
+      "exit_code": 0,
+      "seconds": 0.78,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-import.log"
+    },
+    {
+      "step": "long-captions-import",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\captions.py",
+        "import",
+        "<workspace>\\work\\video-viral-validation-run2\\long",
+        "--file",
+        "<repo>\\evals\\cortes-de-video-longo\\files\\gravacao_longa.srt"
+      ],
+      "exit_code": 0,
+      "seconds": 0.173,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-captions-import.log"
+    },
+    {
+      "step": "long-base",
+      "command": [
+        "ffmpeg",
+        "-y",
+        "-v",
+        "error",
+        "-i",
+        "<repo>\\evals\\cortes-de-video-longo\\files\\gravacao_longa.mp4",
+        "-t",
+        "181",
+        "-vf",
+        "scale=640:360,fps=15",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "fast",
+        "-c:a",
+        "aac",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\render\\aroll.mp4"
+      ],
+      "exit_code": 0,
+      "seconds": 3.314,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-base.log"
+    },
+    {
+      "step": "long-ass",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\captions.py",
+        "ass",
+        "<workspace>\\work\\video-viral-validation-run2\\long"
+      ],
+      "exit_code": 1,
+      "seconds": 0.082,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-ass.log"
+    },
+    {
+      "step": "long-captions-timeline",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\captions.py",
+        "import",
+        "<workspace>\\work\\video-viral-validation-run2\\long",
+        "--file",
+        "<repo>\\evals\\cortes-de-video-longo\\files\\gravacao_longa.srt",
+        "--out",
+        "captions/words.json"
+      ],
+      "exit_code": 0,
+      "seconds": 0.158,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-captions-timeline.log"
+    },
+    {
+      "step": "long-ass",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\captions.py",
+        "ass",
+        "<workspace>\\work\\video-viral-validation-run2\\long"
+      ],
+      "exit_code": 0,
+      "seconds": 0.086,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-ass-attempt2.log"
+    },
+    {
+      "step": "long-music",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\music.py",
+        "<workspace>\\work\\video-viral-validation-run2\\long",
+        "--backend",
+        "procedural",
+        "--duration",
+        "181",
+        "--seed",
+        "7"
+      ],
+      "exit_code": 0,
+      "seconds": 6.747,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-music.log"
+    },
+    {
+      "step": "long-lint",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "lint",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 0.36,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-lint.log"
+    },
+    {
+      "step": "long-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 12.522,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-check.log"
+    },
+    {
+      "step": "long-render",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\render\\master.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 1,
+      "seconds": 5.547,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-render.log"
+    },
+    {
+      "step": "long-render-screenshot",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--screenshot",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\render\\master.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 0,
+      "seconds": 180.219,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-render-screenshot.log"
+    },
+    {
+      "step": "long-baseline",
+      "command": [
+        "ffmpeg",
+        "-y",
+        "-v",
+        "error",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\render\\aroll.mp4",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\audio\\music.wav",
+        "-filter_complex",
+        "[1:a]volume=-16dB[m];[0:a][m]amix=inputs=2:normalize=0[a]",
+        "-map",
+        "[a]",
+        "-t",
+        "181",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\audio\\baseline-mix.wav"
+      ],
+      "exit_code": 0,
+      "seconds": 0.145,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-baseline.log"
+    },
+    {
+      "step": "long-deliver",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\deliver.py",
+        "<workspace>\\work\\video-viral-validation-run2\\long",
+        "--video",
+        "render/master.mp4",
+        "--draft",
+        "--voice",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\render\\aroll.mp4"
+      ],
+      "exit_code": 0,
+      "seconds": 12.26,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-deliver.log"
+    },
+    {
+      "step": "long-review",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\long",
+        "--producer-id",
+        "validation:productions"
+      ],
+      "exit_code": 0,
+      "seconds": 3.2,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-review.log"
+    },
+    {
+      "step": "long-verdict",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\long",
+        "--verdict"
+      ],
+      "exit_code": 2,
+      "seconds": 0.097,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-verdict.log"
+    },
+    {
+      "step": "long-loudness-baseline",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\audio\\baseline-mix.wav",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 2.137,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-loudness-baseline.log"
+    },
+    {
+      "step": "long-loudness-delivered",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\out\\long_rascunho.mp4",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 3.988,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-loudness-delivered.log"
+    },
+    {
+      "step": "narrated-r02-plan",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\plan.py",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated"
+      ],
+      "exit_code": 0,
+      "seconds": 0.071,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-r02-plan.log"
+    },
+    {
+      "step": "narrated-r02-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\composition"
+      ],
+      "exit_code": 1,
+      "seconds": 4.676,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-r02-check.log"
+    },
+    {
+      "step": "narrated-r02-render",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--screenshot",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\render\\master-r02.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 0,
+      "seconds": 16.333,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-r02-render.log"
+    },
+    {
+      "step": "narrated-r02-deliver",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\deliver.py",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated",
+        "--video",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\render\\master-r02.mp4",
+        "--draft"
+      ],
+      "exit_code": 0,
+      "seconds": 1.781,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-r02-deliver.log"
+    },
+    {
+      "step": "narrated-r02-review",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated",
+        "--producer-id",
+        "validation:productions"
+      ],
+      "exit_code": 0,
+      "seconds": 0.778,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-r02-review.log"
+    },
+    {
+      "step": "narrated-r02-verdict",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated",
+        "--verdict"
+      ],
+      "exit_code": 2,
+      "seconds": 0.088,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-r02-verdict.log"
+    },
+    {
+      "step": "product-r02-plan",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\plan.py",
+        "<workspace>\\work\\video-viral-validation-run2\\product"
+      ],
+      "exit_code": 0,
+      "seconds": 0.069,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-r02-plan.log"
+    },
+    {
+      "step": "product-r02-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\composition"
+      ],
+      "exit_code": 1,
+      "seconds": 3.197,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-r02-check.log"
+    },
+    {
+      "step": "product-r02-render",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--screenshot",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\render\\master-r02.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 0,
+      "seconds": 16.283,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-r02-render.log"
+    },
+    {
+      "step": "product-r02-deliver",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\deliver.py",
+        "<workspace>\\work\\video-viral-validation-run2\\product",
+        "--video",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\render\\master-r02.mp4",
+        "--draft"
+      ],
+      "exit_code": 0,
+      "seconds": 2.115,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-r02-deliver.log"
+    },
+    {
+      "step": "product-r02-review",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\product",
+        "--producer-id",
+        "validation:productions"
+      ],
+      "exit_code": 0,
+      "seconds": 0.908,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-r02-review.log"
+    },
+    {
+      "step": "product-r02-verdict",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\product",
+        "--verdict"
+      ],
+      "exit_code": 2,
+      "seconds": 0.137,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-r02-verdict.log"
+    },
+    {
+      "step": "recording-r02-plan",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\plan.py",
+        "<workspace>\\work\\video-viral-validation-run2\\recording"
+      ],
+      "exit_code": 0,
+      "seconds": 0.163,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-r02-plan.log"
+    },
+    {
+      "step": "recording-r02-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\composition"
+      ],
+      "exit_code": 1,
+      "seconds": 6.153,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-r02-check.log"
+    },
+    {
+      "step": "recording-r02-render",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--screenshot",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\render\\master-r02.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 0,
+      "seconds": 31.098,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-r02-render.log"
+    },
+    {
+      "step": "recording-r02-deliver",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\deliver.py",
+        "<workspace>\\work\\video-viral-validation-run2\\recording",
+        "--video",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\render\\master-r02.mp4",
+        "--draft",
+        "--voice",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\render\\aroll.mp4"
+      ],
+      "exit_code": 0,
+      "seconds": 1.98,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-r02-deliver.log"
+    },
+    {
+      "step": "recording-r02-review",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\recording",
+        "--producer-id",
+        "validation:productions"
+      ],
+      "exit_code": 0,
+      "seconds": 1.195,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-r02-review.log"
+    },
+    {
+      "step": "recording-r02-verdict",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\recording",
+        "--verdict"
+      ],
+      "exit_code": 2,
+      "seconds": 0.09,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-r02-verdict.log"
+    },
+    {
+      "step": "story-r02-plan",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\plan.py",
+        "<workspace>\\work\\video-viral-validation-run2\\story"
+      ],
+      "exit_code": 0,
+      "seconds": 0.069,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-r02-plan.log"
+    },
+    {
+      "step": "story-r02-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\composition"
+      ],
+      "exit_code": 1,
+      "seconds": 3.263,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-r02-check.log"
+    },
+    {
+      "step": "story-r02-render",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--screenshot",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\render\\master-r02.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 0,
+      "seconds": 14.654,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-r02-render.log"
+    },
+    {
+      "step": "story-r02-deliver",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\deliver.py",
+        "<workspace>\\work\\video-viral-validation-run2\\story",
+        "--video",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\render\\master-r02.mp4",
+        "--draft"
+      ],
+      "exit_code": 0,
+      "seconds": 1.281,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-r02-deliver.log"
+    },
+    {
+      "step": "story-r02-review",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\story",
+        "--producer-id",
+        "validation:productions"
+      ],
+      "exit_code": 0,
+      "seconds": 0.693,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-r02-review.log"
+    },
+    {
+      "step": "story-r02-verdict",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\story",
+        "--verdict"
+      ],
+      "exit_code": 2,
+      "seconds": 0.089,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-r02-verdict.log"
+    },
+    {
+      "step": "long-r02-plan",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\plan.py",
+        "<workspace>\\work\\video-viral-validation-run2\\long"
+      ],
+      "exit_code": 0,
+      "seconds": 0.068,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r02-plan.log"
+    },
+    {
+      "step": "long-r02-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\composition"
+      ],
+      "exit_code": 1,
+      "seconds": 12.138,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r02-check.log"
+    },
+    {
+      "step": "long-r02-source-sentence",
+      "command": [
+        "ffmpeg",
+        "-y",
+        "-v",
+        "error",
+        "-i",
+        "<repo>\\evals\\cortes-de-video-longo\\files\\gravacao_longa.mp4",
+        "-t",
+        "183.6",
+        "-vf",
+        "scale=640:360,fps=15",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "fast",
+        "-c:a",
+        "aac",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\render\\aroll-r02.mp4"
+      ],
+      "exit_code": 0,
+      "seconds": 3.715,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r02-source-sentence.log"
+    },
+    {
+      "step": "long-r02-captions-import",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\captions.py",
+        "import",
+        "<workspace>\\work\\video-viral-validation-run2\\long",
+        "--file",
+        "<repo>\\evals\\cortes-de-video-longo\\files\\gravacao_longa.srt",
+        "--out",
+        "captions/words.json"
+      ],
+      "exit_code": 0,
+      "seconds": 0.193,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r02-captions-import.log"
+    },
+    {
+      "step": "long-r02-ass",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\captions.py",
+        "ass",
+        "<workspace>\\work\\video-viral-validation-run2\\long"
+      ],
+      "exit_code": 0,
+      "seconds": 0.112,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r02-ass.log"
+    },
+    {
+      "step": "long-r02-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 14.932,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r02-check-attempt2.log"
+    },
+    {
+      "step": "long-r02-render",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--screenshot",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\render\\master-r02.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 0,
+      "seconds": 192.592,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r02-render.log"
+    },
+    {
+      "step": "long-r02-deliver",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\deliver.py",
+        "<workspace>\\work\\video-viral-validation-run2\\long",
+        "--video",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\render\\master-r02.mp4",
+        "--draft",
+        "--voice",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\render\\aroll-r02.mp4"
+      ],
+      "exit_code": 0,
+      "seconds": 12.865,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r02-deliver.log"
+    },
+    {
+      "step": "long-r02-review",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\long",
+        "--producer-id",
+        "validation:productions"
+      ],
+      "exit_code": 0,
+      "seconds": 3.375,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r02-review.log"
+    },
+    {
+      "step": "long-r02-verdict",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\long",
+        "--verdict"
+      ],
+      "exit_code": 2,
+      "seconds": 0.094,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r02-verdict.log"
+    },
+    {
+      "step": "recording-baseline-fullmix",
+      "command": [
+        "ffmpeg",
+        "-y",
+        "-v",
+        "error",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\render\\aroll.mp4",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\audio\\music.wav",
+        "-filter_complex",
+        "[1:a]volume=-16dB[m];[0:a][m]amix=inputs=2:normalize=0[a]",
+        "-map",
+        "[a]",
+        "-t",
+        "27.671",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\audio\\baseline-fullmix.wav"
+      ],
+      "exit_code": 0,
+      "seconds": 0.056,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-baseline-fullmix.log"
+    },
+    {
+      "step": "recording-loudness-baseline-fullmix",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\audio\\baseline-fullmix.wav",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 0.351,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-loudness-baseline-fullmix.log"
+    },
+    {
+      "step": "long-baseline-fullmix",
+      "command": [
+        "ffmpeg",
+        "-y",
+        "-v",
+        "error",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\render\\aroll-r02.mp4",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\audio\\music.wav",
+        "-filter_complex",
+        "[1:a]volume=-16dB[m];[0:a][m]amix=inputs=2:normalize=0[a]",
+        "-map",
+        "[a]",
+        "-t",
+        "183.6",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\audio\\baseline-fullmix.wav"
+      ],
+      "exit_code": 0,
+      "seconds": 0.159,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-baseline-fullmix.log"
+    },
+    {
+      "step": "long-loudness-baseline-fullmix",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\audio\\baseline-fullmix.wav",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 2.223,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-loudness-baseline-fullmix.log"
+    },
+    {
+      "step": "narrated-r02-final-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 4.645,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-r02-final-check.log"
+    },
+    {
+      "step": "narrated-seek-r02",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "snapshot",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\composition",
+        "--at",
+        "2,0,2",
+        "--no-end",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\research\\seek-r02"
+      ],
+      "exit_code": 0,
+      "seconds": 2.7,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-seek-r02.log"
+    },
+    {
+      "step": "product-r02-final-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 3.28,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-r02-final-check.log"
+    },
+    {
+      "step": "product-seek-r02",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "snapshot",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\composition",
+        "--at",
+        "2,0,2",
+        "--no-end",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\research\\seek-r02"
+      ],
+      "exit_code": 0,
+      "seconds": 2.583,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-seek-r02.log"
+    },
+    {
+      "step": "recording-r02-final-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 5.647,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-r02-final-check.log"
+    },
+    {
+      "step": "recording-seek-r02",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "snapshot",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\composition",
+        "--at",
+        "2,0,2",
+        "--no-end",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\research\\seek-r02"
+      ],
+      "exit_code": 0,
+      "seconds": 3.147,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-seek-r02.log"
+    },
+    {
+      "step": "story-r02-final-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 3.395,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-r02-final-check.log"
+    },
+    {
+      "step": "story-seek-r02",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "snapshot",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\composition",
+        "--at",
+        "2,0,2",
+        "--no-end",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\research\\seek-r02"
+      ],
+      "exit_code": 0,
+      "seconds": 2.754,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-seek-r02.log"
+    },
+    {
+      "step": "long-r02-final-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 0.304,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r02-final-check.log"
+    },
+    {
+      "step": "long-seek-r02",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "snapshot",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\composition",
+        "--at",
+        "2,0,2",
+        "--no-end",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\research\\seek-r02"
+      ],
+      "exit_code": 0,
+      "seconds": 3.351,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-seek-r02.log"
+    },
+    {
+      "step": "narrated-r03-ass",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\captions.py",
+        "ass",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated"
+      ],
+      "exit_code": 0,
+      "seconds": 0.074,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-r03-ass.log"
+    },
+    {
+      "step": "narrated-r03-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 4.826,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-r03-check.log"
+    },
+    {
+      "step": "narrated-r03-render",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--screenshot",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\render\\master-r03.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 0,
+      "seconds": 15.657,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-r03-render.log"
+    },
+    {
+      "step": "narrated-r03-deliver",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\deliver.py",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated",
+        "--video",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\render\\master-r03.mp4",
+        "--draft"
+      ],
+      "exit_code": 0,
+      "seconds": 1.568,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-r03-deliver.log"
+    },
+    {
+      "step": "narrated-r03-review",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated",
+        "--producer-id",
+        "validation:productions"
+      ],
+      "exit_code": 0,
+      "seconds": 0.799,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-r03-review.log"
+    },
+    {
+      "step": "narrated-r03-verdict",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated",
+        "--verdict"
+      ],
+      "exit_code": 2,
+      "seconds": 0.1,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-r03-verdict.log"
+    },
+    {
+      "step": "product-r03-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 3.484,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-r03-check.log"
+    },
+    {
+      "step": "product-r03-render",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--screenshot",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\render\\master-r03.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 0,
+      "seconds": 15.359,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-r03-render.log"
+    },
+    {
+      "step": "product-r03-deliver",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\deliver.py",
+        "<workspace>\\work\\video-viral-validation-run2\\product",
+        "--video",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\render\\master-r03.mp4",
+        "--draft"
+      ],
+      "exit_code": 0,
+      "seconds": 1.658,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-r03-deliver.log"
+    },
+    {
+      "step": "product-r03-review",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\product",
+        "--producer-id",
+        "validation:productions"
+      ],
+      "exit_code": 0,
+      "seconds": 0.864,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-r03-review.log"
+    },
+    {
+      "step": "product-r03-verdict",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\product",
+        "--verdict"
+      ],
+      "exit_code": 2,
+      "seconds": 0.117,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-r03-verdict.log"
+    },
+    {
+      "step": "recording-r03-base",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\footage.py",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\recording"
+      ],
+      "exit_code": 0,
+      "seconds": 4.869,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-r03-base.log"
+    },
+    {
+      "step": "recording-r03-ass",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\captions.py",
+        "ass",
+        "<workspace>\\work\\video-viral-validation-run2\\recording"
+      ],
+      "exit_code": 0,
+      "seconds": 0.126,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-r03-ass.log"
+    },
+    {
+      "step": "recording-r03-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 8.041,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-r03-check.log"
+    },
+    {
+      "step": "recording-r03-render",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--screenshot",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\render\\master-r03.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 0,
+      "seconds": 33.529,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-r03-render.log"
+    },
+    {
+      "step": "recording-r03-deliver",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\deliver.py",
+        "<workspace>\\work\\video-viral-validation-run2\\recording",
+        "--video",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\render\\master-r03.mp4",
+        "--draft",
+        "--voice",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\render\\aroll-r03.mp4"
+      ],
+      "exit_code": 0,
+      "seconds": 2.209,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-r03-deliver.log"
+    },
+    {
+      "step": "recording-r03-review",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\recording",
+        "--producer-id",
+        "validation:productions"
+      ],
+      "exit_code": 0,
+      "seconds": 1.365,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-r03-review.log"
+    },
+    {
+      "step": "recording-r03-verdict",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\recording",
+        "--verdict"
+      ],
+      "exit_code": 2,
+      "seconds": 0.101,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-r03-verdict.log"
+    },
+    {
+      "step": "recording-baseline-fullmix",
+      "command": [
+        "ffmpeg",
+        "-y",
+        "-v",
+        "error",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\render\\aroll-r03.mp4",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\audio\\music.wav",
+        "-filter_complex",
+        "[1:a]volume=-16dB[m];[0:a][m]amix=inputs=2:normalize=0[a]",
+        "-map",
+        "[a]",
+        "-t",
+        "27.671",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\audio\\baseline-fullmix.wav"
+      ],
+      "exit_code": 0,
+      "seconds": 0.062,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-baseline-fullmix-attempt2.log"
+    },
+    {
+      "step": "narrated-seek-r03",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "snapshot",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\composition",
+        "--at",
+        "2,0,2",
+        "--no-end",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\research\\seek-r03"
+      ],
+      "exit_code": 0,
+      "seconds": 2.64,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-seek-r03.log"
+    },
+    {
+      "step": "narrated-loudness-final-r03",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\narrated\\out\\narrated_rascunho.mp4",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 0.413,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\narrated-loudness-final-r03.log"
+    },
+    {
+      "step": "product-seek-r03",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "snapshot",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\composition",
+        "--at",
+        "2,0,2",
+        "--no-end",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\research\\seek-r03"
+      ],
+      "exit_code": 0,
+      "seconds": 2.62,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-seek-r03.log"
+    },
+    {
+      "step": "product-loudness-final-r03",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\product\\out\\product_rascunho.mp4",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 0.326,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\product-loudness-final-r03.log"
+    },
+    {
+      "step": "recording-seek-r03",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "snapshot",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\composition",
+        "--at",
+        "2,0,2",
+        "--no-end",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\research\\seek-r03"
+      ],
+      "exit_code": 0,
+      "seconds": 3.092,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-seek-r03.log"
+    },
+    {
+      "step": "recording-loudness-final-r03",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\recording\\out\\recording_rascunho.mp4",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 0.698,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\recording-loudness-final-r03.log"
+    },
+    {
+      "step": "story-loudness-final-r02",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\story\\out\\story_rascunho.mp4",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 0.349,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\story-loudness-final-r02.log"
+    },
+    {
+      "step": "long-loudness-final-r02",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\out\\long_rascunho.mp4",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 4.67,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-loudness-final-r02.log"
+    },
+    {
+      "step": "long-r03-style-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 13.095,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r03-style-check.log"
+    },
+    {
+      "step": "long-r03-style-snapshots",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "snapshot",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\composition",
+        "--at",
+        "0,90,150,183.533",
+        "--no-end",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\research\\style-r03"
+      ],
+      "exit_code": 0,
+      "seconds": 3.64,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r03-style-snapshots.log"
+    },
+    {
+      "step": "long-r03-check",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "check",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\composition"
+      ],
+      "exit_code": 0,
+      "seconds": 0.619,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r03-check.log"
+    },
+    {
+      "step": "long-r03-render",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--screenshot",
+        "--",
+        "render",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\composition",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\render\\master-r03.mp4",
+        "--fps",
+        "15",
+        "--workers",
+        "1",
+        "--quality",
+        "draft"
+      ],
+      "exit_code": 0,
+      "seconds": 191.327,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r03-render.log"
+    },
+    {
+      "step": "long-r03-deliver",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\deliver.py",
+        "<workspace>\\work\\video-viral-validation-run2\\long",
+        "--video",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\render\\master-r03.mp4",
+        "--draft",
+        "--voice",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\render\\aroll-r02.mp4"
+      ],
+      "exit_code": 0,
+      "seconds": 12.95,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r03-deliver.log"
+    },
+    {
+      "step": "long-r03-review",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\long",
+        "--producer-id",
+        "validation:productions"
+      ],
+      "exit_code": 0,
+      "seconds": 3.72,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r03-review.log"
+    },
+    {
+      "step": "long-r03-verdict",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\review.py",
+        "<workspace>\\work\\video-viral-validation-run2\\long",
+        "--verdict"
+      ],
+      "exit_code": 2,
+      "seconds": 0.113,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-r03-verdict.log"
+    },
+    {
+      "step": "long-seek-r03",
+      "command": [
+        "<home>\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "<repo>\\scripts\\stack.py",
+        "hyperframes",
+        "--node-root",
+        "<runtime-root>\\node-v2",
+        "--",
+        "snapshot",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\composition",
+        "--at",
+        "2,0,2",
+        "--no-end",
+        "--output",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\research\\seek-r03"
+      ],
+      "exit_code": 0,
+      "seconds": 3.313,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-seek-r03.log"
+    },
+    {
+      "step": "long-loudness-final-r03",
+      "command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostats",
+        "-i",
+        "<workspace>\\work\\video-viral-validation-run2\\long\\out\\long_rascunho.mp4",
+        "-af",
+        "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json",
+        "-f",
+        "null",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 4.555,
+      "log": "<workspace>\\work\\video-viral-validation-run2\\long-loudness-final-r03.log"
+    }
+  ],
+  "cases": [
+    {
+      "slug": "narrated",
+      "duration": 14,
+      "size": [
+        360,
+        640
+      ],
+      "fps": 15,
+      "master": "<workspace>\\work\\video-viral-validation-run2\\narrated\\render\\master-r03.mp4",
+      "final": "<workspace>\\work\\video-viral-validation-run2\\narrated\\out\\narrated_rascunho.mp4",
+      "sha256": "c5e6d52997bc31fa948ae673ddc4759aeeac77aac7c2418c11e7ffad78941cb9",
+      "loudness": {
+        "baseline": {
+          "input_i": "-23.67",
+          "input_tp": "-4.97",
+          "input_lra": "6.10",
+          "input_thresh": "-35.86",
+          "output_i": "-14.77",
+          "output_tp": "-1.50",
+          "output_lra": "3.20",
+          "output_thresh": "-26.68",
+          "normalization_type": "dynamic",
+          "target_offset": "0.77"
+        },
+        "delivered": {
+          "input_i": "-14.24",
+          "input_tp": "-1.50",
+          "input_lra": "5.80",
+          "input_thresh": "-26.42",
+          "output_i": "-14.09",
+          "output_tp": "-1.50",
+          "output_lra": "3.70",
+          "output_thresh": "-26.01",
+          "normalization_type": "dynamic",
+          "target_offset": "0.09"
+        }
+      },
+      "delivery_exit": 0,
+      "independent_review": "pending",
+      "revision": 3,
+      "seek_2_0_2": {
+        "same_session": true,
+        "decoded_pixels_equal": true,
+        "changed_pixels": 0,
+        "rgba_sha256": [
+          "cf18b00cbe18de3f77e9f3a32a566a44f816930be862255339937aae076467f1",
+          "cf18b00cbe18de3f77e9f3a32a566a44f816930be862255339937aae076467f1"
+        ],
+        "scope": "Post-render technical regression, not perceptual approval or pre-render style approval"
+      }
+    },
+    {
+      "slug": "product",
+      "duration": 12,
+      "size": [
+        360,
+        640
+      ],
+      "fps": 15,
+      "master": "<workspace>\\work\\video-viral-validation-run2\\product\\render\\master-r03.mp4",
+      "final": "<workspace>\\work\\video-viral-validation-run2\\product\\out\\product_rascunho.mp4",
+      "sha256": "17370c2529e3db1a8d0254a914be1022520bd7fa48a0bbc039facac65c0017bb",
+      "loudness": {
+        "baseline": {
+          "input_i": "-25.33",
+          "input_tp": "-13.74",
+          "input_lra": "0.70",
+          "input_thresh": "-35.33",
+          "output_i": "-13.99",
+          "output_tp": "-2.29",
+          "output_lra": "0.30",
+          "output_thresh": "-23.99",
+          "normalization_type": "dynamic",
+          "target_offset": "-0.01"
+        },
+        "delivered": {
+          "input_i": "-14.04",
+          "input_tp": "-5.45",
+          "input_lra": "0.70",
+          "input_thresh": "-24.04",
+          "output_i": "-13.99",
+          "output_tp": "-5.30",
+          "output_lra": "0.30",
+          "output_thresh": "-23.99",
+          "normalization_type": "dynamic",
+          "target_offset": "-0.01"
+        }
+      },
+      "delivery_exit": 0,
+      "independent_review": "pending",
+      "revision": 3,
+      "seek_2_0_2": {
+        "same_session": true,
+        "decoded_pixels_equal": true,
+        "changed_pixels": 0,
+        "rgba_sha256": [
+          "65dff2227c706215366a784e00c61c77cc55d0c45e873a0029518e09284b3fba",
+          "65dff2227c706215366a784e00c61c77cc55d0c45e873a0029518e09284b3fba"
+        ],
+        "scope": "Post-render technical regression, not perceptual approval or pre-render style approval"
+      }
+    },
+    {
+      "slug": "recording",
+      "duration": 27.671,
+      "size": [
+        360,
+        640
+      ],
+      "fps": 15,
+      "master": "<workspace>\\work\\video-viral-validation-run2\\recording\\render\\master-r03.mp4",
+      "final": "<workspace>\\work\\video-viral-validation-run2\\recording\\out\\recording_rascunho.mp4",
+      "sha256": "3f7ec58c0e59e6ccc1461b7bca89b558b89d567a036ba4d342b9ff9f98ba2b9b",
+      "loudness": {
+        "baseline": {
+          "input_i": "-21.13",
+          "input_tp": "-5.77",
+          "input_lra": "1.40",
+          "input_thresh": "-31.15",
+          "output_i": "-14.32",
+          "output_tp": "-1.50",
+          "output_lra": "1.60",
+          "output_thresh": "-24.35",
+          "normalization_type": "dynamic",
+          "target_offset": "0.32"
+        },
+        "delivered": {
+          "input_i": "-14.03",
+          "input_tp": "-1.77",
+          "input_lra": "1.40",
+          "input_thresh": "-24.05",
+          "output_i": "-14.14",
+          "output_tp": "-1.76",
+          "output_lra": "1.30",
+          "output_thresh": "-24.17",
+          "normalization_type": "dynamic",
+          "target_offset": "0.14"
+        }
+      },
+      "delivery_exit": 0,
+      "independent_review": "pending",
+      "revision": 3,
+      "baseline_reference": "aroll source audio + procedural bed -16dB, no normalization",
+      "seek_2_0_2": {
+        "same_session": true,
+        "decoded_pixels_equal": true,
+        "changed_pixels": 0,
+        "rgba_sha256": [
+          "8d3711dde93e698a86d4774951ee0419cb1a2466b204650577223c85ef8e8d78",
+          "8d3711dde93e698a86d4774951ee0419cb1a2466b204650577223c85ef8e8d78"
+        ],
+        "scope": "Post-render technical regression, not perceptual approval or pre-render style approval"
+      }
+    },
+    {
+      "slug": "story",
+      "duration": 12,
+      "size": [
+        360,
+        640
+      ],
+      "fps": 15,
+      "master": "<workspace>\\work\\video-viral-validation-run2\\story\\render\\master-r02.mp4",
+      "final": "<workspace>\\work\\video-viral-validation-run2\\story\\out\\story_rascunho.mp4",
+      "sha256": "af044535c612857e597f2ff859b937802436d01efdc3604f2995bac9d2f0d39f",
+      "loudness": {
+        "baseline": {
+          "input_i": "-25.33",
+          "input_tp": "-13.74",
+          "input_lra": "0.70",
+          "input_thresh": "-35.33",
+          "output_i": "-13.99",
+          "output_tp": "-2.29",
+          "output_lra": "0.30",
+          "output_thresh": "-23.99",
+          "normalization_type": "dynamic",
+          "target_offset": "-0.01"
+        },
+        "delivered": {
+          "input_i": "-14.04",
+          "input_tp": "-5.45",
+          "input_lra": "0.70",
+          "input_thresh": "-24.04",
+          "output_i": "-13.99",
+          "output_tp": "-5.30",
+          "output_lra": "0.30",
+          "output_thresh": "-23.99",
+          "normalization_type": "dynamic",
+          "target_offset": "-0.01"
+        }
+      },
+      "delivery_exit": 0,
+      "independent_review": "pending",
+      "revision": 2,
+      "seek_2_0_2": {
+        "same_session": true,
+        "decoded_pixels_equal": true,
+        "changed_pixels": 0,
+        "rgba_sha256": [
+          "1222e3d81d1cec59a105cd872cb6fe359e4934ac5e180592d2953a239d3ad9ee",
+          "1222e3d81d1cec59a105cd872cb6fe359e4934ac5e180592d2953a239d3ad9ee"
+        ],
+        "scope": "Post-render technical regression, not perceptual approval or pre-render style approval"
+      }
+    },
+    {
+      "slug": "long",
+      "duration": 183.6,
+      "size": [
+        640,
+        360
+      ],
+      "fps": 15,
+      "master": "<workspace>\\work\\video-viral-validation-run2\\long\\render\\master-r03.mp4",
+      "final": "<workspace>\\work\\video-viral-validation-run2\\long\\out\\long_rascunho.mp4",
+      "sha256": "28740e1dd9a24aacd0ef52d2104307c46f2da17afc7fca1d44ca459063ce1951",
+      "loudness": {
+        "baseline": {
+          "input_i": "-23.83",
+          "input_tp": "-4.38",
+          "input_lra": "5.80",
+          "input_thresh": "-35.42",
+          "output_i": "-15.37",
+          "output_tp": "-1.50",
+          "output_lra": "5.00",
+          "output_thresh": "-26.87",
+          "normalization_type": "dynamic",
+          "target_offset": "1.37"
+        },
+        "delivered": {
+          "input_i": "-14.07",
+          "input_tp": "-1.46",
+          "input_lra": "5.50",
+          "input_thresh": "-25.64",
+          "output_i": "-13.99",
+          "output_tp": "-1.50",
+          "output_lra": "5.40",
+          "output_thresh": "-25.56",
+          "normalization_type": "dynamic",
+          "target_offset": "-0.01"
+        }
+      },
+      "delivery_exit": 0,
+      "independent_review": "pending",
+      "revision": 3,
+      "baseline_reference": "aroll source audio + procedural bed -16dB, no normalization",
+      "seek_2_0_2": {
+        "same_session": true,
+        "decoded_pixels_equal": true,
+        "changed_pixels": 0,
+        "rgba_sha256": [
+          "c52f269aa2ae20f2f57948ed51a58be936c9fdca2e43d44b7f3f2fbaf4c5dea7",
+          "c52f269aa2ae20f2f57948ed51a58be936c9fdca2e43d44b7f3f2fbaf4c5dea7"
+        ],
+        "scope": "Post-render technical regression, not perceptual approval or pre-render style approval"
+      }
+    }
+  ],
+  "no_install_inherited": null,
+  "perceptual_approval": false
+}

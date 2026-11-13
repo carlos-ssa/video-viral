@@ -1,7 +1,7 @@
 ---
 name: video-viral
 metadata:
-  version: "2.4.0"
+  version: "2.4.1"
 description: Direção, produção e edição audiovisual profissional com IA para vídeos curtos e longos, TikTok, Reels, Shorts, YouTube e Kwai. Use para pesquisar nichos, planejar marketing e ganchos, roteirizar, editar gravações, produzir vídeos de produtos/serviços, UGC, avatares, canais dark, animação e música. Entrega arquivos revisados e material de publicação. Para apenas converter arquivo ou extrair áudio, use FFmpeg diretamente.
 ---
 
@@ -12,6 +12,8 @@ Dirija e edite com estratégia: ideia relevante, gancho cumprido, progressão e 
 ## Ambiente e caminhos
 
 `<skill-dir>` contém este SKILL.md; `<projeto>` é a pasta absoluta do vídeo. `scripts/...` é relativo à skill: use esse workdir ou caminhos absolutos. Saídas no projeto; preserve originais.
+
+Adapte o fluxo ao pedido: consulta sobre licença, diagnóstico ou revisão limitada usa só as etapas necessárias. Não crie projeto, produza ganchos, instale ou renderize apenas para responder uma dúvida; planejamento e produção completos seguem os portões abaixo. Pedidos apenas de plano não autorizam geração de mídia.
 
 1. Rode `python scripts/check_env.py`. Instale grupos necessários com `setup_tools.py <grupos>`: venvs/npm dedicados quando permitido; sistema, `pip --user` e ComfyUI só após **confirmação única da lista**, com `--allow-system`/`--allow-large`. Código 4: consentimento pendente, nada instalado. Proibição usa `VIDEO_VIRAL_NO_INSTALL=1`. Siga [setup](references/setup.md), inclusive reservas.
 2. Infira idioma, formato e plataforma. Sem pista: pt-BR, vertical 30–45 s; longo conforme conteúdo; licença comercial por padrão. Registre suposições; pergunte apenas dados essenciais impossíveis de inferir.

@@ -18,7 +18,7 @@ Identificar intro, versos, refrão, drop, respiros e final. Medir batidas/onsets
 - Lyric video: transcrever/alinha a letra cantada, corrigir palavras e ajustar tempos; não tratar canto como narração já perfeitamente alinhada.
 - Clipe animado: usar [animação](animacao.md), personagens/cenários consistentes e um arco visual.
 
-Compor em HyperFrames/Blender conforme a direção; sincronizar cortes e revelações em momentos musicais relevantes, sem obrigar corte a cada batida. Preservar contraste e respiros. Para vertical, escolher o trecho que funciona sozinho e abrir com sua força musical/visual. Para longo, planejar evolução e retornos temáticos.
+Compor o filme principal em HyperFrames + GSAP; Blender pode fornecer cenas/ativos conforme a direção; sincronizar cortes e revelações em momentos musicais relevantes, sem obrigar corte a cada batida. Preservar contraste e respiros. Para vertical, escolher o trecho que funciona sozinho e abrir com sua força musical/visual. Para longo, planejar evolução e retornos temáticos.
 
 ## Mix e revisão
 
