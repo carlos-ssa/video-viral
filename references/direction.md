@@ -17,7 +17,9 @@ Grave o resultado em `direction` no `video.json` e o raciocínio em `research/di
 
 Use o recorte de [pesquisa](research.md): nicho, plataforma, objetivo, duração, período e fontes. Examine exemplos recorrentes e seu contexto; visualizações por dia são apenas um sinal. Registre abertura visual/verbal, promessa, ritmo, enquadramento, payoff e CTA. Google Trends ajuda a escolher tema e sazonalidade, sem comprovar retenção ou conversão.
 
-Sem pesquisa disponível, avance com hipóteses identificadas.
+Sem pesquisa disponível, avance com hipóteses identificadas. Use a [ficha por plano](research.md#ficha-de-referência-por-plano) para separar observação e inferência.
+
+Separe geração de ativos → seleção humana → montagem; gerar não é aprovar. Agrupe tomadas por cenário/identidade para conferir continuidade. Trate ambiente sonoro como etapa própria: planeje camadas, perspectiva e sincronismo, depois confira a mixagem com voz e efeitos.
 
 ## 2. Estilo
 

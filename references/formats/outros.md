@@ -15,5 +15,6 @@ O pipeline narrado ou de gravação executa as etapas já disponíveis; o acabam
 - [Avatares e UGC](avatares.md): performance real/sintética, lip-sync, identidade e integração do render falante.
 - [Animação e storytelling](animacao.md): storyboard, personagens, continuidade e composição.
 - [Música](musica.md): faixa, batidas, visualizer/lyric video/clipe e mix.
+- [Formatos virais com IA](virais-ia.md): catálogo editorial de POV, criaturas, ASMR, séries e making-of; exemplos datados, riscos e limites do stack.
 
-Geração de avatar, vídeo generativo e música requer ferramenta disponível ou adaptador do projeto. Os guias descrevem o fluxo e a validação; não anunciam motores ainda não implementados como recursos nativos. Registre o status em `tool_plan` e na entrega.
+Os guias não anunciam motores externos como recursos nativos. Use somente o stack atual; clipes gerados fora e fornecidos pelo usuário entram como ativos com origem, licença e rótulo de IA. Adicionar um gerador é decisão do dono, não consequência de escolher um formato. Registre o status real em `tool_plan` e na entrega.

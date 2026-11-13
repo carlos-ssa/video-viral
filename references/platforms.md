@@ -51,7 +51,20 @@ Alvo -14 LUFS integrado e pico real até -1 dBTP; as plataformas normalizam pert
 
 `deliver.py` escreve em `out/report.md` o título, a descrição, os capítulos e a marcação de publicidade a partir de `publish`. Hashtags: 3–5 específicas do nicho, não genéricas. A skill não posta; o usuário publica.
 
-## Rótulos de IA e de publicidade
+## Rótulos de IA, originalidade e publicidade
 
-- YouTube, TikTok, Instagram e Kwai pedem que o criador sinalize conteúdo sintético realista (pessoa real dizendo o que não disse, voz clonada, avatar realista, cena que parece filmada). Animação claramente gráfica e narração sintética genérica costumam não exigir, mas as regras mudam: na dúvida, marque `publish.ai_label` e diga ao usuário para ativar o rótulo ao postar.
-- Publicidade (produto próprio, publi paga, permuta): marque `publish.ad_disclosure` e use a ferramenta de parceria paga da plataforma. No Brasil, o CONAR exige que a publicidade seja identificável como tal.
+**Recorte documental: 13/11/2026.** Revalidar regras no destino antes de publicar; rótulo, elegibilidade de monetização e distribuição são decisões distintas.
+
+| Plataforma | Regra e fonte |
+|---|---|
+| YouTube | Exige declaração de conteúdo alterado/sintético realista. O rótulo por si só não limita audiência nem elegibilidade para ganhar dinheiro: [divulgação de IA](https://support.google.com/youtube/answer/14328491). Conteúdo repetitivo/em massa pode perder monetização, mesmo rotulado: [políticas de monetização](https://support.google.com/youtube/answer/1311392). |
+| TikTok | Exige rótulo para imagens, áudio ou vídeo realistas gerados por IA: [rótulos de IA](https://newsroom.tiktok.com/new-labels-for-disclosing-ai-generated-content?lang=en). O [Creator Rewards](https://newsroom.tiktok.com/introducing-the-new-creator-rewards-program) exige vídeo original **acima de 1 minuto**, além dos demais critérios de conta/região; piloto mais curto não atende esse requisito de duração. |
+| Meta (Instagram/Facebook) | Exige divulgação de vídeo fotorrealista e áudio realista criados/alterados digitalmente: [política de rótulos](https://about.fb.com/news/2024/02/labeling-ai-generated-images-on-facebook-instagram-and-threads/). Conteúdo repetitivo/em massa sem contribuição original pode perder distribuição; no Facebook, consultar [prioridade a criadores originais](https://about.fb.com/news/2026/03/rewarding-original-creators-on-facebook/). |
+
+O rótulo não remove automaticamente monetização nem a garante; originalidade, direitos e regras de cada programa continuam valendo. A declaração explícita de neutralidade de monetização acima é do YouTube; não estender essa garantia a todos os programas de TikTok/Meta. Ser feito com IA, isoladamente, não prova repetição ou falta de originalidade.
+
+Clone de voz/imagem exige autorização da pessoa e direitos de uso; **rótulo não concede direitos**. Registrar consentimento e licença antes de produzir/publicar, inclusive para clipes externos fornecidos. Não apresentar avatar como depoimento real.
+
+Em animação claramente gráfica e narração sintética genérica, avaliar a regra específica, sem usar essa distinção para ocultar IA realista. Marque `publish.ai_label` quando aplicável e oriente ativar o rótulo no envio; o manifesto não o ativa na plataforma. Para Kwai, conferir a regra vigente no destino.
+
+Publicidade (produto próprio, publi paga, permuta): marque `publish.ad_disclosure` e use a ferramenta de parceria paga da plataforma. No Brasil, o CONAR exige que a publicidade seja identificável como tal.

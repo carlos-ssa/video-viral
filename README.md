@@ -1,4 +1,4 @@
-# Vídeo viral — 2.1.0
+# Vídeo viral — 2.2.0
 
 Skill em português para direção, produção e edição audiovisual com IA, marketing, ganchos, retenção e conversão. Produz vídeos curtos/longos, gravações editadas, demonstrações de produto, UGC, animações e peças musicais com planejamento e revisão. Não promete viralização nem valida estética apenas porque o render passou.
 
@@ -86,6 +86,10 @@ O caso `composicao-hyperframes` exige evidência do render da composição princ
 A entrega monetizada exige licenças/ativos confirmados; --draft gera rascunho identificado. `out/delivery.json`, métricas, imagens e assessment.json ligam revisão ao mesmo render/manifesto. Código 3 é limite com deficiências, não aprovação. Não publicar ou acessar contas sem pedido explícito.
 
 Distribuição da skill: MIT. Ferramentas, pesos e ativos têm termos próprios; registre os reais. Sem provas, datas, preços ou analytics fornecidos, não inventar informação para passar num teste.
+
+## Referências e roteiros com IA — 2.2.0
+
+Ficha de pesquisa por plano, ganchos e [catálogo de formatos](references/formats/virais-ia.md), com pilotos editoriais, fontes datadas e regras de plataforma. Pesquisa não assistida e números de terceiros, sem garantia de alcance. Atualização apenas documental e de versão: nenhum motor, instalação ou mudança no stack.
 
 ## Composição e revisão humana — 2.1.0
 
