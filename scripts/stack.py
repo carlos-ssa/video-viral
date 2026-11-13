@@ -34,14 +34,16 @@ def doctor(node_root):
             if not found and os.name == 'nt':
                 found = next(Path(os.environ.get('ProgramFiles', 'C:/Program Files')).glob('Blender Foundation/*/blender.exe'), None)
             item.update(installed=bool(found), executable=str(found) if found else None)
-        elif module['id'] in ('kokoro', 'faster-whisper'):
+        elif module['id'] in ('edge-tts', 'faster-whisper'):
             from _common import venv_python
-            group, imported = ('voz', 'kokoro') if module['id'] == 'kokoro' else ('legendas', 'faster_whisper')
+            group, imported = ('voz', 'edge_tts') if module['id'] == 'edge-tts' else ('legendas', 'faster_whisper')
             py = venv_python(group)
             item['installed'] = False
             if py:
                 checked = subprocess.run([str(py), '-c', f'import importlib.util; raise SystemExit(0 if importlib.util.find_spec({imported!r}) else 1)'], capture_output=True, timeout=20)
                 item.update(installed=checked.returncode == 0, python=str(py))
+            if module['id'] == 'edge-tts':
+                item['note'] = 'Síntese online; conexão e disponibilidade das vozes não verificadas pelo diagnóstico.'
         else:
             item['note'] = 'Serviço/workflow configurado separadamente; disponibilidade não inferida.'
         result.append(item)

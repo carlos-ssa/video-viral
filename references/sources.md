@@ -16,7 +16,7 @@ Links canônicos do catálogo. Fixar versões de runtime e registrar versões de
 - [MCP for Blender](https://github.com/ahujasid/mcp-for-blender)
 - [glTF Transform](https://github.com/donmccurdy/glTF-Transform)
 - [ACE-Step 1.5](https://github.com/ace-step/ACE-Step-1.5)
-- [Kokoro](https://github.com/hexgrad/kokoro)
+- [Edge TTS](https://github.com/rany2/edge-tts)
 - [faster-whisper](https://github.com/SYSTRAN/faster-whisper)
 
 - Google Trends: [dados](https://support.google.com/trends/answer/4365533), [CSV/atribuição](https://support.google.com/trends/answer/4365538), [API alpha](https://developers.google.com/search/apis/trends). É fonte de pesquisa, não motor audiovisual.

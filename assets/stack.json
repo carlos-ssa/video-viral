@@ -129,10 +129,10 @@
       "entrypoint": "scripts/music.py"
     },
     {
-      "id": "kokoro",
-      "name": "Kokoro",
+      "id": "edge-tts",
+      "name": "Edge TTS",
       "role": "module",
-      "repository": "https://github.com/hexgrad/kokoro",
+      "repository": "https://github.com/rany2/edge-tts",
       "capability": "voice",
       "node_package": null,
       "entrypoint": "scripts/voice.py"

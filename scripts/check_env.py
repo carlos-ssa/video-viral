@@ -19,7 +19,7 @@ for _s in (sys.stdout, sys.stderr):
 
 PROBE = r"""
 import importlib.util, json
-mods = ["kokoro", "soundfile", "numpy", "faster_whisper", "torch"]
+mods = ["edge_tts", "faster_whisper", "torch"]
 out = {m: importlib.util.find_spec(m) is not None for m in mods}
 if out["torch"]:
     try:
@@ -42,15 +42,6 @@ def cmd_version(cmd, args=("-version",)):
         return (r.stdout or r.stderr).strip().splitlines()[0] if (r.stdout or r.stderr) else "ok"
     except Exception:
         return "ok"
-
-
-def espeak():
-    if shutil.which("espeak-ng"):
-        return True
-    for base in (os.environ.get("ProgramFiles", ""), os.environ.get("ProgramFiles(x86)", "")):
-        if base and Path(base, "eSpeak NG", "espeak-ng.exe").exists():
-            return True
-    return False
 
 
 def gpu():
@@ -117,7 +108,6 @@ def main():
         "npx": bool(shutil.which("npx")),
         "blender": cmd_version("blender", ("--version",)),
         "uv": cmd_version("uv", ("--version",)),
-        "espeak-ng": espeak(),
     }
     g = gpu()
     pys = pythons(a.python)
@@ -128,13 +118,13 @@ def main():
 
     ff_ok = bool(tools["ffmpeg"]) and bool(tools["ffprobe"])
     node_major = major(tools["node"], r"v(\d+)")
-    voice_py = py_with("kokoro", "soundfile", "numpy")
+    voice_py = py_with("edge_tts")
     cap_py = py_with("faster_whisper")
     node_root = Path(os.environ.get("VIDEO_VIRAL_NODE_ROOT", str(Path.home() / ".video-viral/node-v2")))
     hf_package = node_root / "node_modules/hyperframes/package.json"
     stages = [
-        ("3 Voz (Kokoro)", bool(voice_py) and tools["espeak-ng"],
-         voice_py or "setup_tools.py voz"),
+        ("3 Voz (Edge TTS)", bool(voice_py) and ff_ok,
+         f"{voice_py}; FFmpeg/ffprobe necessários; síntese online (rede/vozes não verificadas)" if voice_py else "setup_tools.py voz"),
         ("4 Legendas (faster-whisper)", bool(cap_py), cap_py or "setup_tools.py legendas"),
         ("5 Visual (HyperFrames)", node_major >= 22 and ff_ok and hf_package.is_file(), f"node {tools['node'] or 'ausente'}; precisa 22+ (setup_tools.py base)"),
         ("5 Visual (Blender, opcional)", bool(tools["blender"]), tools["blender"] or "setup_tools.py blender"),
@@ -152,7 +142,7 @@ def main():
     if g and g["vram_mb"] < 10000:
         print("  VRAM até ~8 GB: um modelo pesado de GPU por vez; selecione o perfil ACE-Step/ComfyUI.")
     for p in pys:
-        flags = [m for m in ("kokoro", "faster_whisper", "torch") if p.get(m)]
+        flags = [m for m in ("edge_tts", "faster_whisper", "torch") if p.get(m)]
         cuda = " cuda" if p.get("cuda") else ""
         print(f"Python {p['python']}: {', '.join(flags) or 'nenhuma ferramenta de IA'}{cuda}")
     print()
@@ -160,7 +150,7 @@ def main():
         print(f"[{'ok' if ready else '--'}] {s}: {detail if not ready or s.startswith(('3', '4')) else 'pronto'}")
     print("\nPara módulos JS, execute stack.py doctor --node-root <pasta>; Node instalado não comprova pacote nem render validado.")
     fallbacks = []
-    if not (voice_py and tools["espeak-ng"]):
+    if not (voice_py and ff_ok):
         fallbacks.append("voz: forneça WAVs e use voice.py --from-wavs; não há outro motor automático")
     if not cap_py:
         fallbacks.append("legendas: captions.py estimate (tempos aproximados)")

@@ -23,7 +23,7 @@ Fragmento real de `video.json` (mesclar no projeto criado; **não é manifesto c
 
 ```json
 {
-  "stack": {"version":"2.0.0","compositor":"hyperframes","modules":["hyperframes","gsap","ffmpeg","comfyui","kokoro","faster-whisper","tone"]},
+  "stack": {"version":"2.0.0","compositor":"hyperframes","modules":["hyperframes","gsap","ffmpeg","comfyui","edge-tts","faster-whisper","tone"]},
   "scenes": [
     {"id":"s01","narration":"A ponte fechou, mas o pedido precisava chegar.","on_screen":"UM CAMINHO A MENOS",
      "visual":{"engine":"hyperframes","brief":"Recorte original em ponte estilizada; assets/p01.png",
@@ -32,7 +32,7 @@ Fragmento real de `video.json` (mesclar no projeto criado; **não é manifesto c
   ],
   "tool_plan": [
     {"module":"comfyui","tool":"comfy.py: edit/p01-api.json → assets/p01.png; contribuição: fundo e pose selecionada","status":"planejado"},
-    {"module":"kokoro","tool":"voice.py: scenes.narration → audio/voice.wav e tempos; contribuição: relato","status":"planejado"},
+    {"module":"edge-tts","tool":"voice.py: scenes.narration → audio/voice.wav e tempos; contribuição: relato","status":"planejado"},
     {"module":"faster-whisper","tool":"captions.py: áudio final → captions/words.json; contribuição: tempos conferidos","status":"planejado"},
     {"module":"hyperframes","tool":"HyperFrames: composition/index.html → render/master.mp4; contribuição: montagem principal","status":"planejado"},
     {"module":"gsap","tool":"GSAP: imagens/recortes → timeline pausada; contribuição: paralaxe","status":"planejado"},
@@ -126,7 +126,7 @@ Não existe campo de IA por ativo neste contrato; marcar em `source` e no `publi
 
 ## 3. Voz medida, legendas e som (ambas as rotas)
 
-Para narração, preencher `scenes[].narration` e gerar Kokoro. Para falas de personagens diferentes, selecionar voz por performance em projetos/tomadas separados ou fornecer os WAVs de cada cena, sem inventar `voice` por personagem no schema. Identificar atores/consentimentos. Na novela, preferir uma fala por cena:
+Para narração, preencher `scenes[].narration` e gerar Edge TTS. Para falas de personagens diferentes, selecionar voz por performance em projetos/tomadas separados ou fornecer os WAVs de cada cena, sem inventar `voice` por personagem no schema. Identificar atores/consentimentos. Na novela, preferir uma fala por cena:
 
 ```sh
 python scripts/voice.py "<P>"
@@ -191,7 +191,7 @@ Tudo nesta seção é **relato do autor, não testado aqui**. Ele apresenta dez 
 
 | O que o autor ensina, em paráfrase | Aplicação concreta nas receitas, sem importar seu stack |
 |---|---|
-| Explicador “e se?” de 60–75 s: casa sobre bloco de solo seccionado, narração calma, legenda por palavra, construção em Blender e voz local. O artigo orienta um prompt-guia para roteiro/produção. | Na [analogia](explicacao-analogia.md), definir regra e consequência num cenário com profundidade; Three.js/Blender ou camadas próprias, Kokoro/WAV e HyperFrames. A duração do nosso piloto é outra, não uma cronometragem do exemplo do autor. |
+| Explicador “e se?” de 60–75 s: casa sobre bloco de solo seccionado, narração calma, legenda por palavra, construção em Blender e voz local no exemplo do artigo. O artigo orienta um prompt-guia para roteiro/produção. | Na [analogia](explicacao-analogia.md), definir regra e consequência num cenário com profundidade; Three.js/Blender ou camadas próprias, Edge TTS/WAV e HyperFrames. A duração do nosso piloto é outra, não uma cronometragem do exemplo do autor. |
 | História serial de sobrevivência: figuras 2D em mundo 3D low-poly, luz/sombra, HUD de dia/hora/bateria, cartões de regra/fato e voto no fim; o autor diz que seus quadros são produzidos por código, não imagem/vídeo generativo. | Na [novela](novela-serializada.md), cartão de estado útil e escolha com consequência; em [mascotes](mascotes.md), identidade por rig/código reutilizado. Não dizer que a referência local foi feita assim só por semelhança. |
 | Aula de 45–60 s: apresentador cartoon no canto e títulos/cartões entrando na palavra falada; autor atribui a estrutura inicial a um prompt público de finnardley e relata mudar professor/cores/fontes. | Na analogia, apresentador **original** e cartões ancorados a `captions/words.json`, revistos contra a fala medida; não copiar identidade visual nem prompt integral. |
 | Aprovar história, visual e storyboard antes da animação; manter personagem desenhado por código para consistência (entre os recursos listados, nem todos testados pelo autor). | Aprovar três quadros e reaproveitar rig/modelo nas rotas A; na B testar referência e selecionar tomadas estáveis. Isso é adaptação de método, não garantia de identidade do serviço externo. |

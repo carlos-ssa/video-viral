@@ -1,53 +1,89 @@
-"""Narração com Kokoro ou montagem dos WAVs fornecidos.
+"""Narração online com Edge TTS ou montagem dos WAVs fornecidos.
 
-python scripts/voice.py <projeto> [--voice pf_dora] [--speed 1.0] [--gap 0.25]
+python scripts/voice.py <projeto> [--voice pt-BR-ThalitaMultilingualNeural] [--speed 1.2] [--gap 0.25]
 python scripts/voice.py <projeto> --from-wavs
-Saídas: audio/voice.wav e tempos em scenes[]. Somente Kokoro sintetiza voz.
+Saídas: audio/voice.wav e tempos em scenes[]. Inglês usa en-US-AvaMultilingualNeural.
+Speed 1.2 corresponde a rate +20%. A síntese envia a narração ao serviço Microsoft Edge.
 """
 import argparse
+import asyncio
 import importlib.util
-import json
-import os
+import math
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _common import add_asset, ffprobe_json, load_manifest, need, project_dir, run, save_manifest, use_venv  # noqa: E402
 
-KOKORO_LANG = {"pt-BR": "p", "en-US": "a", "en-GB": "b", "es": "e", "fr": "f", "it": "i", "ja": "j", "zh": "z", "hi": "h"}
+DEFAULT_SPEED = 1.2
+DEFAULT_VOICES = {"pt": "pt-BR-ThalitaMultilingualNeural", "en": "en-US-AvaMultilingualNeural"}
 
 
-def synth_kokoro(proj, m, voice, speed, lang_code, device="auto"):
+def default_voice(lang="pt-BR"):
+    language = lang.replace("_", "-").lower().split("-")[0]
+    if language not in DEFAULT_VOICES:
+        raise ValueError(f"Sem voz padrão para {lang}; informe --voice com um nome de edge-tts --list-voices.")
+    return DEFAULT_VOICES[language]
+
+
+def speed_to_rate(speed):
+    if not math.isfinite(speed) or speed <= 0:
+        raise ValueError("--speed deve ser um número positivo e finito (1.2 = +20%).")
+    percent = round((speed - 1) * 100)
+    if percent <= -100:
+        raise ValueError("--speed deve resultar em uma taxa maior que -100%.")
+    return f"{percent:+d}%"
+
+
+def voice_settings(m, voice=None, speed=None):
+    settings = m.get("voice") or {}
+    # Configurações Kokoro são incompatíveis com Edge; migre para os novos padrões.
+    legacy = settings.get("engine") == "kokoro"
+    selected_voice = voice or (None if legacy else settings.get("voice")) or default_voice(m.get("lang", "pt-BR"))
+    selected_speed = float(speed if speed is not None else
+                           DEFAULT_SPEED if legacy else settings.get("speed", DEFAULT_SPEED))
+    speed_to_rate(selected_speed)
+    return selected_voice, selected_speed
+
+
+def synth_edge(proj, m, voice, speed):
     try:
-        import numpy as np
-        import soundfile as sf
-        import torch
-        from kokoro import KPipeline
+        import edge_tts
     except ImportError as e:
         sys.exit(f"Falta {e.name} neste Python ({sys.executable}). Rode: python scripts/setup_tools.py voz")
-    selected_device = ("cuda" if torch.cuda.is_available() else "cpu") if device == "auto" else device
-    if selected_device == "cpu":
-        # Some CUDA wheels probe an empty GPU list from LSTM.flatten_parameters on CPU.
-        torch.backends.cudnn.enabled = False
-    pipe = KPipeline(lang_code=lang_code, device=selected_device)
-    for sc in m["scenes"]:
-        text = (sc.get("narration") or "").strip()
-        if not text:
-            continue
-        chunks = []
-        for _, _, audio in pipe(text, voice=voice, speed=speed):
-            if audio is None:
+    ff = need("ffmpeg")
+    rate = speed_to_rate(speed)
+    scenes = proj / "audio" / "scenes"
+    scenes.mkdir(parents=True, exist_ok=True)
+
+    async def generate(staging):
+        ready = []
+        for sc in m["scenes"]:
+            text = (sc.get("narration") or "").strip()
+            if not text:
                 continue
-            a = audio.detach().cpu().numpy() if hasattr(audio, "detach") else np.asarray(audio)
-            chunks.append(a.astype("float32").reshape(-1))
-        if not chunks:
-            sys.exit(f"Kokoro não gerou áudio para a cena {sc['id']}.")
-        sf.write(proj / "audio" / "scenes" / f"{sc['id']}.wav", np.concatenate(chunks), 24000)
-        print(f"  {sc['id']}: ok")
+            mp3 = staging / f"{sc['id']}.mp3"
+            wav = staging / f"{sc['id']}.wav"
+            try:
+                await edge_tts.Communicate(text, voice=voice, rate=rate).save(str(mp3))
+            except Exception as exc:
+                sys.exit(f"Edge TTS falhou na cena {sc['id']}: {exc}. Confira internet/voz; "
+                         "sem serviço, forneça WAVs com --from-wavs.")
+            run([ff, "-y", "-hide_banner", "-i", str(mp3), "-ar", "48000", "-ac", "1",
+                 "-c:a", "pcm_s16le", str(wav)])
+            ready.append((wav, scenes / wav.name))
+            print(f"  {sc['id']}: ok")
+        # Só substitui as cenas anteriores quando toda a síntese/conversão terminou.
+        for wav, destination in ready:
+            wav.replace(destination)
+
+    with tempfile.TemporaryDirectory(prefix="edge-tts-", dir=scenes) as staging:
+        asyncio.run(generate(Path(staging)))
 
 
-def kokoro_available():
-    return all(importlib.util.find_spec(p) for p in ("kokoro", "soundfile", "numpy"))
+def edge_available():
+    return importlib.util.find_spec("edge_tts") is not None
 
 
 def duration(path):
@@ -87,15 +123,15 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("project")
     ap.add_argument("--voice")
-    ap.add_argument("--speed", type=float)
+    ap.add_argument("--speed", type=float, help="multiplicador de velocidade (padrão 1.2 = +20%%)")
     ap.add_argument("--gap", type=float, default=0.25, help="pausa após cada cena, em segundos")
     ap.add_argument("--from-wavs", action="store_true", help="não sintetiza; usa os WAV de audio/scenes")
-    ap.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
-    ap.add_argument("--engine", choices=["auto", "kokoro"], default="kokoro", help="auto é alias legado de kokoro; sem fallback para outro motor")
+    ap.add_argument("--engine", choices=["auto", "edge-tts"], default="edge-tts", help="auto é alias de edge-tts; sem fallback para outro motor")
+    ap.add_argument("--license", default="", help="termos/licença aplicáveis ao áudio gerado")
+    ap.add_argument("--commercial-ok", action="store_true", help="confirma uso comercial permitido pela licença informada")
     a = ap.parse_args()
-    if os.environ.get("VIDEO_VIRAL_NO_INSTALL"):
-        os.environ.setdefault("HF_HUB_OFFLINE", "1")
-        os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
+    if a.commercial_ok and not a.license.strip():
+        ap.error("Uso comercial exige --license com os termos aplicáveis ao áudio.")
 
     proj = project_dir(a.project)
     m = load_manifest(proj)
@@ -104,21 +140,29 @@ def main():
     (proj / "audio" / "scenes").mkdir(parents=True, exist_ok=True)
 
     if not a.from_wavs:
+        try:
+            voice, speed = voice_settings(m, a.voice, a.speed)
+        except (TypeError, ValueError) as exc:
+            ap.error(str(exc))
         v = m.setdefault("voice", {})
-        speed = a.speed or float(v.get("speed", 1.0))
-        engine = a.engine
-        if engine in ("auto", "kokoro") and not kokoro_available():
-            use_venv("voz", ["kokoro", "soundfile", "numpy"])  # reexecuta na venv 'voz', instalando-a se preciso
-        if not kokoro_available():
-            sys.exit("Kokoro indisponível; forneça WAVs com --from-wavs ou instale apenas o grupo voz.")
-        voice = a.voice or v.get("voice", "pf_dora")
-        lang = KOKORO_LANG.get(m.get("lang", "pt-BR"), "p")
-        print(f"Kokoro: voz {voice}, velocidade {speed}, idioma {lang}")
-        synth_kokoro(proj, m, voice, speed, lang, a.device)
-        v.update(engine="kokoro", voice=voice, speed=speed)
-        add_asset(m, "audio/voice.wav", "voice", f"Kokoro-82M ({voice})", "Apache-2.0", True)
+        if not edge_available():
+            use_venv("voz", ["edge_tts"])
+        if not edge_available():
+            sys.exit("Edge TTS indisponível; forneça WAVs com --from-wavs ou instale apenas o grupo voz.")
+        print(f"Edge TTS: voz {voice}, velocidade {speed_to_rate(speed)} (online)")
+        synth_edge(proj, m, voice, speed)
+        v.update(engine="edge-tts", voice=voice, speed=speed)
+        if "modules" in m.get("stack", {}):
+            m["stack"]["modules"] = list(dict.fromkeys("edge-tts" if x == "kokoro" else x for x in m["stack"]["modules"]))
+        for entry in m.get("tool_plan", []):
+            if entry.get("module") == "kokoro":
+                entry["module"] = "edge-tts"
 
     total = assemble(proj, m, a.gap)
+    if not a.from_wavs:
+        # A licença LGPL do cliente não define os direitos sobre a fala do serviço Microsoft.
+        add_asset(m, "audio/voice.wav", "voice", f"Microsoft Edge TTS / edge-tts ({voice}, {speed_to_rate(speed)})",
+                  a.license.strip() or "Termos do serviço Microsoft Edge TTS: não verificados", bool(a.commercial_ok))
     save_manifest(proj, m)
     target = m.get("target_seconds")
     print(f"audio/voice.wav: {total:.1f} s" + (f" (alvo {target} s)" if target else ""))

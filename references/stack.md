@@ -18,7 +18,7 @@ O compositor final de produções completas é HyperFrames + GSAP. FFmpeg/ffprob
 | [MCP for Blender](https://github.com/ahujasid/mcp-for-blender) | automation-3d | `references/modules/3d.md` |
 | [glTF Transform](https://github.com/donmccurdy/glTF-Transform) | optimization-3d | `scripts/gltf.mjs` |
 | [ACE-Step 1.5](https://github.com/ace-step/ACE-Step-1.5) | music | `scripts/music.py` |
-| [Kokoro](https://github.com/hexgrad/kokoro) | voice | `scripts/voice.py` |
+| [Edge TTS](https://github.com/rany2/edge-tts) | voice | `scripts/voice.py` |
 | [faster-whisper](https://github.com/SYSTRAN/faster-whisper) | captions | `scripts/captions.py` |
 
 PixiJS, Paper.js e p5.js são alternativas por linguagem, não três dependências criativas obrigatórias em cada cena. Blender MCP é ponte para um Blender configurado; também é possível produzir em Blender headless. glTF Transform otimiza GLB para a cena Three.js. O ACE-Step usado é o 1.5, com serviço/modelo configurado separadamente.
@@ -29,6 +29,6 @@ PixiJS, Paper.js e p5.js são alternativas por linguagem, não três dependênci
 
 ## Pesquisa e ativos
 
-Pesquisa usa a ferramenta web já disponível e fontes como Google Trends; não adiciona um motor de produção nem instala outro repositório. Não há downloader dedicado no stack. Ativos fornecidos entram por arquivos, voz pode vir pronta ou por Kokoro, e legendas por faster-whisper/importação. Modelos/checkpoints de workflows têm termos próprios; registrar os reais.
+Pesquisa usa a ferramenta web já disponível e fontes como Google Trends; não adiciona um motor de produção nem instala outro repositório. Não há downloader dedicado no stack. Ativos fornecidos entram por arquivos, voz pode vir pronta ou por Edge TTS, e legendas por faster-whisper/importação. Modelos/checkpoints de workflows têm termos próprios; registrar os reais.
 
 Veja [módulos](modules.md), [instalação](setup.md), [pipeline](pipeline.md) e [fontes](sources.md).

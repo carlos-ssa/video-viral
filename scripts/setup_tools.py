@@ -26,15 +26,14 @@ CONSENT_REQUIRED = 4
 # grupo -> (venv, Python, módulos de diagnóstico, requirements)
 VENV_GROUPS = {
     "legendas": ("legendas", "3.12", ["faster_whisper"], "requirements-legendas.txt"),
-    "voz": ("voz", "3.12", ["kokoro", "soundfile", "numpy"], "requirements-voz.txt"),
+    "voz": ("voz", "3.12", ["edge_tts"], "requirements-voz.txt"),
 }
 SYSTEM = {
     "ffmpeg": ("Gyan.FFmpeg", "ffmpeg", "ffmpeg"),
     "node": ("OpenJS.NodeJS", "node", "nodejs"),
-    "espeak-ng": ("eSpeak-NG.eSpeak-NG", "espeak-ng", "espeak-ng"),
     "blender": ("BlenderFoundation.Blender", "blender", "blender"),
 }
-SYSTEM_GROUPS = {"base": ["ffmpeg", "node"], "voz": ["espeak-ng"], "blender": ["blender"],
+SYSTEM_GROUPS = {"base": ["ffmpeg", "node"], "blender": ["blender"],
                  "hyperframes": ["node"]}
 
 
@@ -50,9 +49,6 @@ def sh(args, **kw):
 def has_program(name):
     if shutil.which(name):
         return True
-    if WIN and name == "espeak-ng":
-        return any(Path(b, "eSpeak NG", "espeak-ng.exe").exists()
-                   for b in (os.environ.get("ProgramFiles", ""), os.environ.get("ProgramFiles(x86)", "")) if b)
     if WIN and name == "blender":
         return any(Path(os.environ.get("ProgramFiles", ""), "Blender Foundation").glob("*/blender.exe"))
     return False
@@ -133,10 +129,6 @@ def install_venv(group, allow_system=False):
     if not py:
         return False
     # Reaplica os requisitos fixados mesmo quando os módulos já existem.
-    if group == "voz":
-        index = ["--index-url", "https://download.pytorch.org/whl/cu128"] if NVIDIA else []
-        if not sh(UV + ["pip", "install", "--python", py, "-r", PYTHON_ASSETS / "requirements-torch.txt", *index]):
-            return False
     reqs = ["-r", PYTHON_ASSETS / requirements]
     if group == "legendas" and NVIDIA:
         reqs += ["-r", PYTHON_ASSETS / "requirements-cuda.txt"]

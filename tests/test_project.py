@@ -11,6 +11,23 @@ from _common import FORMATS, load_manifest, save_manifest
 
 
 class ProjectTests(unittest.TestCase):
+    def test_narration_defaults_follow_language_and_allow_voice_override(self):
+        with tempfile.TemporaryDirectory() as folder:
+            for lang, override, expected in (('pt-BR', None, 'pt-BR-ThalitaMultilingualNeural'),
+                                              ('en-US', None, 'en-US-AvaMultilingualNeural'),
+                                              ('en-GB', None, 'en-US-AvaMultilingualNeural'),
+                                              ('en-US', 'en-US-GuyNeural', 'en-US-GuyNeural')):
+                with self.subTest(lang=lang, override=override):
+                    slug = 'voice-' + lang.lower() + ('-override' if override else '')
+                    command = [sys.executable, str(ROOT / 'scripts/new_project.py'), slug,
+                               '--dir', folder, '--lang', lang]
+                    if override:
+                        command += ['--voice', override]
+                    result = subprocess.run(command, capture_output=True, text=True)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertEqual(load_manifest(Path(folder) / slug)['voice'],
+                                     {'engine': 'edge-tts', 'voice': expected, 'speed': 1.2})
+
     def test_all_formats_create_planning_fields(self):
         with tempfile.TemporaryDirectory() as folder:
             for format_ in FORMATS:

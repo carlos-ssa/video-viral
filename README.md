@@ -1,4 +1,4 @@
-# Vídeo viral — 2.3.0
+# Vídeo viral — 2.4.0
 
 Skill em português para direção, produção e edição audiovisual com IA, marketing, ganchos, retenção e conversão. Produz vídeos curtos/longos, gravações editadas, demonstrações de produto, UGC, animações e peças musicais com planejamento e revisão. Não promete viralização nem valida estética apenas porque o render passou.
 
@@ -12,7 +12,7 @@ Skill em português para direção, produção e edição audiovisual com IA, ma
 - ComfyUI: geração de imagens por workflows concretos.
 - PixiJS, Paper.js ou p5.js: linguagem visual por cena.
 - Blender MCP + glTF Transform: automação e preparação do 3D.
-- Kokoro: narração.
+- Edge TTS: narração online; Thalita em pt-BR e Ava em inglês, ambas a +20%.
 - faster-whisper: transcrição/tempos de legenda.
 - ACE-Step 1.5: geração musical por serviço configurado.
 
@@ -51,7 +51,7 @@ Sem reprodução/escuta no runtime, o resultado esperado é **entrega técnica a
 |---|---|
 | new_project.py / plan.py | Projeto schema 3, brief, ganchos e consistência do planejamento |
 | footage.py / clips.py | Importar/cortar/enquadrar gravação e selecionar cortes |
-| voice.py | Kokoro ou montagem de WAVs fornecidos |
+| voice.py | Edge TTS (Thalita/Ava a +20%) ou montagem de WAVs fornecidos |
 | captions.py | faster-whisper, importação SRT/VTT, estimativa identificada e legenda ASS |
 | visual_scene.mjs | Projetos de cena determinísticos PixiJS, Paper.js, p5.js e gl-transitions |
 | sound.mjs | Tone.js offline → WAV e receipt; mix por deliver.py |
@@ -87,6 +87,14 @@ A entrega monetizada exige licenças/ativos confirmados; --draft gera rascunho i
 
 Distribuição da skill: MIT. Ferramentas, pesos e ativos têm termos próprios; registre os reais. Sem provas, datas, preços ou analytics fornecidos, não inventar informação para passar num teste.
 
+## Narração Edge TTS — 2.4.0
+
+Kokoro foi substituído por [edge-tts](https://github.com/rany2/edge-tts), fixado em 7.3.1. Projetos novos usam `pt-BR-ThalitaMultilingualNeural` em português e `en-US-AvaMultilingualNeural` em inglês (`--lang en-US`); ambas com `speed: 1.2`, convertido em `rate: +20%`. `--voice` e `--speed` permitem escolhas explícitas. A síntese envia o texto à Microsoft e precisa de internet; não usa GPU, pesos locais nem espeak-ng. O áudio MP3 é convertido para WAV PCM 48 kHz por cena e montado em `audio/voice.wav`, com tempos medidos.
+
+`voice.py <projeto>` migra configurações Kokoro e seus IDs em `stack.modules`/`tool_plan` ao regenerar a narração; confira descrições livres do plano. `--engine auto` passa a ser alias de `edge-tts`; `--engine kokoro` e `--device` foram removidos. `--from-wavs` continua funcionando sem rede. `VIDEO_VIRAL_NO_INSTALL=1` impede instalar pacotes, mas permite a síntese online com edge-tts já instalado quando o uso da rede estiver autorizado. Sem rede, use WAVs fornecidos.
+
+A licença LGPL do cliente edge-tts não define os direitos do áudio do serviço Microsoft. A origem fica registrada e o uso comercial começa sem confirmação; informe os termos aplicáveis com `--license` e confirme com `--commercial-ok` somente quando verificados, como nos demais ativos. Veja [voz e legendas](references/modules.md#voz-e-legendas).
+
 ## Correções dos testes reais — 2.3.0
 
 Legendas segmentadas por frases/pausas e limites de leitura, com `--script-text` para grafia/numerais; wrapper HyperFrames que bloqueia a CLI sob `VIDEO_VIRAL_NO_INSTALL`, mantendo adaptadores locais e perfis curtos sem `subst`; música instrumental de reserva por `--backend procedural`, identificada com `fallback:true`. O review reconhece efeitos sem exigir `kind:sfx` e mede silêncio interior, proporção audível, cauda morta, cama sonora com dispensa `music.bed_waiver` e ocupação do quadro. Colisão de textos e aprovação perceptual continuam exigindo revisão independente. Inclui correções de cortes, entrada de gravações e duração/mix da entrega, sem mudar o stack 2.0.0.
@@ -102,7 +110,7 @@ Guia de composição HyperFrames 0.9.40 até o master, ficha humana importável 
 ## Migração para 2.0.0
 
 - Projetos novos registram o compositor HyperFrames e IDs de módulos no manifesto/tool_plan. Projetos legados continuam legíveis, mas novas revisões exigem as evidências atuais.
-- Kokoro é o único TTS; não há troca automática para voz do sistema. faster-whisper é o transcritor; importação SRT/VTT e estimativa permanecem.
+- Na versão 2.0.0, Kokoro era o único TTS (substituído por Edge TTS na 2.4.0); não havia troca automática para voz do sistema. faster-whisper continua como transcritor; importação SRT/VTT e estimativa permanecem.
 - images.py agora é alias do cliente por workflow API ComfyUI: migrar specs antigas para um grafo exportado e informar o nó de saída.
 - O runtime Node v2 usa pasta/lockfile próprios; não atualiza silenciosamente o cache v1 ou reativa skills removidas.
 
