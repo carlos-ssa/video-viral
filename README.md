@@ -89,9 +89,9 @@ A entrega monetizada exige licenças/ativos confirmados; --draft gera rascunho i
 
 Distribuição da skill: MIT. Ferramentas, pesos e ativos têm termos próprios; registre os reais. Sem provas, datas, preços ou analytics fornecidos, não inventar informação para passar num teste.
 
-## Câmera, referências e itens 3D — 2.5.0
+## Direção, referências e receitas de criação — 2.5.0
 
-Pesquisa movimentos em filmes, séries, vlogs e bibliotecas de exemplos; traduz referências em câmera, lente, trajetória, ritmo e continuidade por plano. A criação de cenas no Blender passa a receber um pacote real de fotos/vídeos inspecionados, carregados no arquivo de trabalho como estudo. Inclui busca de modelos/materiais/HDRIs gratuitos com licença por item e teste de importação. Consulte [câmera e referências](references/camera-references.md), [fluxo Blender](references/modules/3d.md) e [itens gratuitos](references/free-3d-assets.md). Bibliotecas estudadas não são novos motores instalados, e uma foto não prova movimento observado.
+Pesquisa movimentos em filmes, séries, vlogs e bibliotecas de exemplos; traduz referências em câmera, lente, trajetória, ritmo e continuidade por plano. A criação de cenas no Blender passa a receber um pacote real de fotos/vídeos inspecionados, carregados no arquivo de trabalho como estudo. Inclui busca de modelos/materiais/HDRIs gratuitos com licença por item e teste de importação. As [receitas de criação](references/prompt-patterns.md) acrescentam mensagem central, final→gancho, afirmação→evidência visual e eventos ligados às palavras, adaptados ao stack. Consulte também [câmera e referências](references/camera-references.md), [fluxo Blender](references/modules/3d.md) e [itens gratuitos](references/free-3d-assets.md). Bibliotecas estudadas não são novos motores instalados, e uma foto não prova movimento observado.
 
 ## Auditoria e confiabilidade — 2.4.1
 

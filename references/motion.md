@@ -10,6 +10,8 @@ Toda animação é função do tempo/quadro pedido. Não usar relógio real, ale
 
 GSAP usa uma timeline pausada registrada no compositor. PixiJS, Paper.js e p5.js desenham a partir desse tempo. gl-transitions recebe texturas e progresso explícitos. Three.js renderiza câmera/objetos no tempo solicitado; o Blender pode entregar vídeo/frames ou GLB preparado com glTF Transform. Não duplicar motores sem contribuição concreta.
 
+Em explicadores com rewind ou mudança de velocidade, derive dois tempos do quadro solicitado: tempo ambiente e tempo narrativo, por uma função explícita de remapeamento. Não avance contadores por chamadas acumuladas. Grão/tremor/estrelas precisam de seed e índice de frame ou bucket temporal (por exemplo `floor(t * 24)` para textura a 24 Hz), preservando o mesmo resultado em busca fora de ordem e subframes. [Receitas e eventos por palavra](prompt-patterns.md) detalham a direção; isso não substitui o compositor por um player/renderer externo.
+
 ## Linguagens
 
 | Necessidade | Recurso |
